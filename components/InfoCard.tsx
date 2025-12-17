@@ -6,12 +6,23 @@ import { objectTranslations } from '@/data/objectTranslations';
 import { X, Thermometer, Ruler, Orbit, Info, Eclipse, Globe, Image as ImageIcon, BookOpen } from 'lucide-react';
 import { dictionary, Language } from '@/data/dictionary';
 import { useNasaImage } from '@/hooks/useNasaImage';
+import Image from 'next/image';
 
 interface InfoCardProps {
     selectedObject: SolarSystemObject | null;
     onClose: () => void;
     lang: Language;
 }
+
+const StatCard = ({ icon: Icon, label, value, colorClass }: { icon: any, label: string, value: string | number | undefined, colorClass: string }) => (
+    <div className="bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
+        <div className={`flex items-center gap-2 ${colorClass} mb-1`}>
+            <Icon size={16} />
+            <span className="text-xs font-bold uppercase">{label}</span>
+        </div>
+        <span className="text-xl font-mono text-sm">{value || "N/A"}</span>
+    </div>
+);
 
 export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
     // Determine query for NASA API
@@ -40,10 +51,10 @@ export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
     return (
         <AnimatePresence>
             <motion.div
-                initial={{ opacity: 0, x: -20, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                className="absolute top-20 left-4 w-96 max-h-[85vh] overflow-y-auto bg-black/60 backdrop-blur-xl border border-white/20 rounded-2xl text-white shadow-2xl z-50 custom-scrollbar"
+                initial={{ opacity: 0, y: 100, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 100, scale: 0.95 }}
+                className="fixed bottom-0 left-0 w-full h-[85vh] md:h-auto md:max-h-[85vh] md:absolute md:top-20 md:left-4 md:w-full md:max-w-md overflow-y-auto bg-black/60 backdrop-blur-xl border-t md:border border-white/20 rounded-t-2xl md:rounded-2xl text-white shadow-2xl z-50 custom-scrollbar"
             >
                 {/* Header Image/Color */}
                 <div
@@ -65,6 +76,7 @@ export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
                             onClose();
                         }}
                         className="absolute top-4 right-4 p-2 bg-black/40 hover:bg-white/20 rounded-full transition-colors z-50 cursor-pointer pointer-events-auto"
+                        aria-label="Close"
                     >
                         <X size={18} />
                     </button>
@@ -99,20 +111,8 @@ export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
-                            <div className="flex items-center gap-2 text-blue-300 mb-1">
-                                <Thermometer size={16} />
-                                <span className="text-xs font-bold uppercase">{t.temperature}</span>
-                            </div>
-                            <span className="text-xl font-mono text-sm">{displayTemp}</span>
-                        </div>
-                        <div className="bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
-                            <div className="flex items-center gap-2 text-green-300 mb-1">
-                                <Ruler size={16} />
-                                <span className="text-xs font-bold uppercase">{t.distance}</span>
-                            </div>
-                            <span className="text-xl font-mono text-sm">{displayDist}</span>
-                        </div>
+                        <StatCard icon={Thermometer} label={t.temperature} value={displayTemp} colorClass="text-blue-300" />
+                        <StatCard icon={Ruler} label={t.distance} value={displayDist} colorClass="text-green-300" />
 
                         <div className="bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors col-span-2">
                             <div className="flex items-center gap-2 text-cyan-300 mb-1">
@@ -122,20 +122,8 @@ export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
                             <span className="text-xl font-mono">{displayAvgDist || "N/A"}</span>
                         </div>
 
-                        <div className="bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
-                            <div className="flex items-center gap-2 text-purple-300 mb-1">
-                                <Orbit size={16} />
-                                <span className="text-xs font-bold uppercase">{t.orbitalPeriod ? t.orbitalPeriod : t.orbit}</span>
-                            </div>
-                            <span className="text-xl font-mono text-sm">{displayOrbit}</span>
-                        </div>
-                        <div className="bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors">
-                            <div className="flex items-center gap-2 text-yellow-300 mb-1">
-                                <Eclipse size={16} />
-                                <span className="text-xs font-bold uppercase">{t.moons}</span>
-                            </div>
-                            <span className="text-xl font-mono">{data.moons}</span>
-                        </div>
+                        <StatCard icon={Orbit} label={t.orbitalPeriod ? t.orbitalPeriod : t.orbit} value={displayOrbit} colorClass="text-purple-300" />
+                        <StatCard icon={Eclipse} label={t.moons} value={data.moons} colorClass="text-yellow-300" />
                     </div>
 
                     {/* Fun Fact */}
@@ -154,28 +142,41 @@ export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
                     {/* NASA Gallery (4 images) */}
                     <div className="space-y-2">
                         <h3 className="text-gray-400 text-xs font-bold uppercase flex items-center gap-2">
-                            <ImageIcon size={14} /> NASA Gallery
+                            <ImageIcon size={14} /> {t.nasaGallery}
                         </h3>
                         <div className="grid grid-cols-2 gap-2">
                             {imageLoading && (
                                 <div className="col-span-2 h-32 flex items-center justify-center text-gray-500 bg-white/5 rounded-xl">
-                                    <span className="animate-pulse">Loading NASA Images...</span>
+                                    <span className="animate-pulse">{t.loadingImages}</span>
                                 </div>
                             )}
                             {imageError && (
                                 <div className="col-span-2 h-32 flex items-center justify-center text-gray-500 text-sm p-4 text-center bg-white/5 rounded-xl">
-                                    Gallery unavailable
+                                    {t.galleryUnavailable}
                                 </div>
                             )}
                             {!imageLoading && !imageError && images.map((img, idx) => (
-                                <div key={idx} className="aspect-square bg-black/30 rounded-xl overflow-hidden border border-white/10 relative group">
-                                    <img
-                                        src={img}
+                                <a
+                                    key={idx}
+                                    href={`https://images.nasa.gov/details/${img.nasaId}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="aspect-square bg-black/30 rounded-xl overflow-hidden border border-white/10 relative group block cursor-pointer"
+                                    title="View on NASA.gov"
+                                >
+                                    <Image
+                                        src={img.url}
                                         alt={`${displayName} ${idx + 1}`}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                        onError={(e) => { e.currentTarget.style.display = 'none' }}
+                                        fill
+                                        sizes="(max-width: 768px) 50vw, 25vw"
+                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                                     />
-                                </div>
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                        <div className="bg-black/50 p-2 rounded-full text-white/80 backdrop-blur-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                        </div>
+                                    </div>
+                                </a>
                             ))}
                         </div>
                     </div>

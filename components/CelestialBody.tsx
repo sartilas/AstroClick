@@ -7,6 +7,8 @@ import * as THREE from 'three';
 import { SolarSystemObject } from '@/data/solarSystemData';
 import { VoxelSphere } from './VoxelSphere';
 import { VoxelRing } from './VoxelRing';
+import { dictionary, Language } from '@/data/dictionary';
+import { objectTranslations } from '@/data/objectTranslations';
 
 interface CelestialBodyProps {
     data: SolarSystemObject;
@@ -15,12 +17,17 @@ interface CelestialBodyProps {
     orbitMode: 'simplified' | 'real';
     satellites?: SolarSystemObject[];
     timeScale?: number;
+    lang: Language;
 }
 
-export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites, timeScale = 1 }: CelestialBodyProps) {
+export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites, timeScale = 1, lang }: CelestialBodyProps) {
     const bodyGroupRef = useRef<THREE.Group>(null);
     const groupRef = useRef<THREE.Group>(null);
     const [hovered, setHovered] = useState(false);
+
+    // Get translation
+    const translation = objectTranslations[data.id]?.[lang];
+    const displayName = translation?.name || data.name;
 
     // Calculate distance based on mode
     const scaledDistance = useMemo(() => {
@@ -135,7 +142,7 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
             />
 
             {/* Planet Group - Animated Position */}
-            <group ref={groupRef}>
+            <group ref={groupRef} name={`celestial-${data.id}`}>
                 <group
                     ref={bodyGroupRef}
                     onClick={handleClick}
@@ -172,6 +179,7 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
                         isPaused={isPaused}
                         orbitMode={orbitMode}
                         timeScale={timeScale}
+                        lang={lang}
                     // Satellites of satellites? Not supported yet, but hierarchy works.
                     />
                 ))}
@@ -182,7 +190,7 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
                             <div className="flex flex-col items-center animate-fade-in-up">
                                 <div className="w-px h-4 bg-gradient-to-t from-white/50 to-transparent mb-0.5"></div>
                                 <div className="bg-black/90 border border-white/30 backdrop-blur-md text-white px-3 py-1 rounded text-xs font-bold shadow-xl shadow-blue-500/10 whitespace-nowrap tracking-wide uppercase">
-                                    {data.name}
+                                    {displayName}
                                 </div>
                             </div>
                         </Html>

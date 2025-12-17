@@ -9,6 +9,18 @@ import { AsteroidBelt } from './AsteroidBelt';
 import { VoxelSphere } from './VoxelSphere';
 import { solarSystemData, SolarSystemObject } from '@/data/solarSystemData';
 import { RocketCursor } from './RocketCursor';
+import { PhysicsManager } from './PhysicsManager';
+import { ShootingStars } from './ShootingStars';
+import { dictionary, Language } from '@/data/dictionary';
+import { Leaderboard } from './Leaderboard';
+import { Rocket, LayerMode } from './types';
+import { useState, forwardRef } from 'react';
+import { Effects } from './Effects';
+import { HabitableZoneLayer } from './layers/HabitableZoneLayer';
+import { GravityWellLayer } from './layers/GravityWellLayer';
+import { LagrangePointsLayer } from './layers/LagrangePointsLayer';
+
+
 
 interface SolarSystemProps {
     selectedObject: SolarSystemObject | null;
@@ -16,15 +28,20 @@ interface SolarSystemProps {
     orbitMode: 'simplified' | 'real';
     showCursor?: boolean;
     timeScale?: number;
+    lang: Language;
+    rtxMode?: boolean;
+    layerMode: LayerMode;
 }
 
 interface SunProps {
     orbitMode?: 'simplified' | 'real';
     onSelect?: (obj: SolarSystemObject) => void;
     data?: SolarSystemObject;
+    rtxMode?: boolean;
+    sunRef?: React.RefObject<THREE.Mesh>;
 }
 
-function Sun({ orbitMode, onSelect, data }: SunProps) {
+function Sun({ orbitMode, onSelect, data, rtxMode, sunRef }: SunProps) {
     const groupRef = useRef<THREE.Group>(null);
 
     // Scaling for Sun
@@ -42,6 +59,7 @@ function Sun({ orbitMode, onSelect, data }: SunProps) {
     return (
         <group
             ref={groupRef}
+            name="celestial-sun"
             onClick={(e) => {
                 if (onSelect && data) {
                     e.stopPropagation();
@@ -59,6 +77,12 @@ function Sun({ orbitMode, onSelect, data }: SunProps) {
                 type="star"
             />
 
+            {/* God Rays Source Mesh - Core light */}
+            <mesh ref={sunRef} visible={rtxMode}>
+                <sphereGeometry args={[size * 0.9, 32, 32]} />
+                <meshBasicMaterial color="#FDB813" transparent opacity={0.5} />
+            </mesh>
+
             {/* Additional glow/voxel shell */}
             <group scale={1.2}>
                 <mesh>
@@ -70,10 +94,14 @@ function Sun({ orbitMode, onSelect, data }: SunProps) {
             {/* Point light at sun's position */}
             <pointLight
                 position={[0, 0, 0]}
-                intensity={3}
+                intensity={rtxMode ? 5 : 3}
                 distance={orbitMode === 'real' ? 2000 : 300}
-                decay={1}
+                decay={rtxMode ? 2 : 1}
                 color="#ffffff"
+                castShadow={rtxMode}
+                shadow-mapSize-width={2048}
+                shadow-mapSize-height={2048}
+                shadow-bias={-0.0001}
             />
         </group>
     );
@@ -94,7 +122,19 @@ function CameraController({ target, orbitMode }: { target: SolarSystemObject | n
     );
 }
 
-function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1 }: SolarSystemProps) {
+
+interface SceneProps extends SolarSystemProps {
+    rockets: Rocket[];
+    setRockets: React.Dispatch<React.SetStateAction<Rocket[]>>;
+    history: Rocket[];
+    setHistory: React.Dispatch<React.SetStateAction<Rocket[]>>;
+    rtxMode: boolean;
+    layerMode: LayerMode;
+}
+
+function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode }: SceneProps) {
+    const sunRef = useRef<THREE.Mesh>(null);
+
     // Separate primaries (Sun orbiters) and satellites (Moon, etc)
     const { primaries, satelliteMap, sunData } = useMemo(() => {
         const p: SolarSystemObject[] = [];
@@ -119,8 +159,9 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
 
     return (
         <>
-            {/* Ambient light - increased for Toon material visibility */}
-            <ambientLight intensity={0.7} />
+            {/* Ambient light - drastically reduced in RTX mode for contrast */}
+            <ambientLight intensity={rtxMode ? 0.05 : 1.5} />
+            <hemisphereLight intensity={rtxMode ? 0.1 : 0.6} groundColor="#000000" color="#ffffff" />
 
             {/* Stars background */}
             <Stars
@@ -133,11 +174,27 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                 speed={0.5}
             />
 
+            {/* Shooting Stars Background Effect */}
+            <ShootingStars />
+
             {/* Sun */}
-            <Sun orbitMode={orbitMode} onSelect={onSelectObject} data={sunData} />
+            <Sun orbitMode={orbitMode} onSelect={onSelectObject} data={sunData} rtxMode={rtxMode} sunRef={sunRef} />
+
+            {/* RTX Effects */}
+            <Effects sunRef={sunRef} rtxMode={rtxMode} />
+
+            {/* LAYERS */}
+            {layerMode === 'habitable' && <HabitableZoneLayer orbitMode={orbitMode} />}
+            {layerMode === 'gravity' && (
+                <>
+                    <color attach="background" args={['#ffffff']} />
+                    <GravityWellLayer />
+                </>
+            )}
+            {layerMode === 'lagrange' && <LagrangePointsLayer />}
 
             {/* Asteroid Belt */}
-            <AsteroidBelt />
+            <AsteroidBelt timeScale={timeScale} orbitMode={orbitMode} />
 
             {/* All celestial bodies */}
             {primaries.map((obj) => (
@@ -149,6 +206,7 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                     orbitMode={orbitMode}
                     satellites={satelliteMap[obj.id]}
                     timeScale={timeScale}
+                    lang={lang}
                 />
             ))}
 
@@ -157,18 +215,38 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
 
             {/* Rocket Cursor */}
             {showCursor && <RocketCursor />}
+
+            {/* Physics Manager */}
+            <PhysicsManager
+                isActive={showCursor || false}
+                timeScale={timeScale}
+                rockets={rockets}
+                setRockets={setRockets}
+                history={history}
+                setHistory={setHistory}
+            />
         </>
     );
 }
 
-export default function SolarSystem({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale }: SolarSystemProps) {
+export default function SolarSystem({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale, lang, rtxMode = false, layerMode }: SolarSystemProps) {
+    const [rockets, setRockets] = useState<Rocket[]>([]);
+    const [history, setHistory] = useState<Rocket[]>([]);
+
+
     return (
-        <div className="w-full h-screen">
+        <div className="w-full h-screen relative">
+            <Leaderboard rockets={rockets} history={history} />
+
+
+
             <Canvas
                 shadows
                 camera={{ position: [0, 50, 80], fov: 60 }}
                 gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
-                onPointerMissed={() => onSelectObject(null)}
+                onPointerMissed={() => {
+                    if (!showCursor) onSelectObject(null);
+                }}
             >
                 <Scene
                     selectedObject={selectedObject}
@@ -176,6 +254,13 @@ export default function SolarSystem({ selectedObject, onSelectObject, orbitMode,
                     orbitMode={orbitMode}
                     showCursor={showCursor}
                     timeScale={timeScale}
+                    lang={lang}
+                    rockets={rockets}
+                    setRockets={setRockets}
+                    history={history}
+                    setHistory={setHistory}
+                    rtxMode={rtxMode}
+                    layerMode={layerMode}
                 />
             </Canvas>
         </div>

@@ -100,37 +100,50 @@ export function RocketCursor() {
     return (
         <>
             <group ref={rocketRef}>
-                {/* Rocket Body */}
-                <mesh position={[0, 0, 0]} rotation={[0, 0, 0]} raycast={() => null}>
-                    <cylinderGeometry args={[0.1, 0.15, 0.5, 8]} />
-                    <meshStandardMaterial color="#ff3333" metalness={0.5} roughness={0.2} />
+                {/* Main Fuselage - White/Shiny */}
+                <mesh position={[0, -0.1, 0]} castShadow>
+                    <cylinderGeometry args={[0.12, 0.15, 0.6, 16]} />
+                    <meshStandardMaterial color="#eeeeee" metalness={0.6} roughness={0.2} />
                 </mesh>
-                {/* Nose Cone */}
-                <mesh position={[0, 0.35, 0]} raycast={() => null}>
-                    <coneGeometry args={[0.1, 0.3, 8]} />
-                    <meshStandardMaterial color="#ffffff" />
+
+                {/* Upper Stage/Nose connection */}
+                <mesh position={[0, 0.25, 0]}>
+                    <cylinderGeometry args={[0.12, 0.12, 0.1, 16]} />
+                    <meshStandardMaterial color="#cc0000" metalness={0.3} roughness={0.4} />
                 </mesh>
-                {/* Fins */}
-                <group position={[0, -0.25, 0]}>
-                    <mesh position={[0.1, 0, 0]} rotation={[0, 0, -0.5]} raycast={() => null}>
-                        <boxGeometry args={[0.1, 0.2, 0.02]} />
-                        <meshStandardMaterial color="#999" />
-                    </mesh>
-                    <mesh position={[-0.1, 0, 0]} rotation={[0, 0, 0.5]} raycast={() => null}>
-                        <boxGeometry args={[0.1, 0.2, 0.02]} />
-                        <meshStandardMaterial color="#999" />
-                    </mesh>
-                    <mesh position={[0, 0, 0.1]} rotation={[0.5, 0, 0]} raycast={() => null}>
-                        <boxGeometry args={[0.02, 0.2, 0.1]} />
-                        <meshStandardMaterial color="#999" />
-                    </mesh>
-                    <mesh position={[0, 0, -0.1]} rotation={[-0.5, 0, 0]} raycast={() => null}>
-                        <boxGeometry args={[0.02, 0.2, 0.1]} />
-                        <meshStandardMaterial color="#999" />
-                    </mesh>
+
+                {/* Nose Cone - Red tip */}
+                <mesh position={[0, 0.45, 0]}>
+                    <coneGeometry args={[0.12, 0.4, 16]} />
+                    <meshStandardMaterial color="#ff0000" metalness={0.2} roughness={0.3} />
+                </mesh>
+
+                {/* Cockpit Window */}
+                <mesh position={[0, 0.1, 0.1]} rotation={[0.2, 0, 0]}>
+                    <sphereGeometry args={[0.06, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.5]} />
+                    <meshStandardMaterial color="#88ccff" metalness={0.9} roughness={0.1} emissive="#004488" emissiveIntensity={0.5} />
+                </mesh>
+
+                {/* Lower Fins - 4 fins in cross shape */}
+                <group position={[0, -0.3, 0]}>
+                    {[0, Math.PI / 2, Math.PI, Math.PI * 1.5].map((angle, i) => (
+                        <group key={i} rotation={[0, angle, 0]}>
+                            <mesh position={[0.18, -0.1, 0]} rotation={[0, 0, -0.3]}>
+                                <boxGeometry args={[0.15, 0.3, 0.03]} />
+                                <meshStandardMaterial color="#cc0000" metalness={0.4} roughness={0.5} />
+                            </mesh>
+                        </group>
+                    ))}
                 </group>
+
+                {/* Engine Nozzle */}
+                <mesh position={[0, -0.45, 0]}>
+                    <cylinderGeometry args={[0.1, 0.14, 0.15, 16]} />
+                    <meshStandardMaterial color="#333333" />
+                </mesh>
+
                 {/* Engine Flame Glow */}
-                <pointLight position={[0, -0.3, 0]} color="orange" intensity={2} distance={2} decay={2} />
+                <pointLight position={[0, -0.6, 0]} color="#ffaa00" intensity={3} distance={3} decay={2} />
             </group>
 
             {/* Smoke Particles */}

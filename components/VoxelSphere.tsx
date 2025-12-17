@@ -92,12 +92,17 @@ export function VoxelSphere({ radius, color, resolution = 32, type = 'rocky' }: 
             }
         }
         return { positions: tempPositions, colors: tempColors };
-    }, [radius, color, resolution, type]);
+    }, [color, resolution, type]);
 
     useLayoutEffect(() => {
         if (meshRef.current) {
             const tempObject = new THREE.Object3D();
             const voxelSize = (radius * 2) / resolution;
+
+            // Ensure color buffer exists
+            if (!meshRef.current.instanceColor) {
+                meshRef.current.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(positions.length * 3), 3);
+            }
 
             positions.forEach((pos, i) => {
                 tempObject.position.set(pos.x * voxelSize, pos.y * voxelSize, pos.z * voxelSize);
@@ -113,7 +118,7 @@ export function VoxelSphere({ radius, color, resolution = 32, type = 'rocky' }: 
     }, [positions, colors, radius, resolution]);
 
     return (
-        <instancedMesh ref={meshRef} args={[undefined, undefined, positions.length]}>
+        <instancedMesh ref={meshRef} args={[undefined, undefined, positions.length]} castShadow receiveShadow>
             <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial
                 roughness={0.8}
