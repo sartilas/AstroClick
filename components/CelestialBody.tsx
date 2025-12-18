@@ -18,9 +18,11 @@ interface CelestialBodyProps {
     satellites?: SolarSystemObject[];
     timeScale?: number;
     lang: Language;
+    eaten?: boolean;
+    positionRef?: React.MutableRefObject<Record<string, THREE.Vector3>>;
 }
 
-export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites, timeScale = 1, lang }: CelestialBodyProps) {
+export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites, timeScale = 1, lang, eaten, positionRef }: CelestialBodyProps) {
     const bodyGroupRef = useRef<THREE.Group>(null);
     const groupRef = useRef<THREE.Group>(null);
     const [hovered, setHovered] = useState(false);
@@ -82,6 +84,14 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
             const x = Math.cos(angle.current) * scaledDistance;
             const z = Math.sin(angle.current) * scaledDistance;
             groupRef.current.position.set(x, 0, z);
+
+            // Update position ref if provided
+            if (positionRef) {
+                positionRef.current[data.id] = groupRef.current.position.clone();
+            }
+        } else if (isPaused && groupRef.current && positionRef) {
+            // Even if paused, ensure ref is populated (it won't move, but might not be set yet)
+            positionRef.current[data.id] = groupRef.current.position.clone();
         }
 
         if (bodyGroupRef.current) {
@@ -91,6 +101,8 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
             }
         }
     });
+
+
 
     const handleClick = (e: any) => {
         e.stopPropagation();
@@ -138,6 +150,8 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
         // In Real Mode, hide orbits for small satellites/moon to avoid clutter
         return !['moon', 'iss', 'hubble', 'james-webb'].includes(data.id);
     }, [orbitMode, data.id]);
+
+    if (eaten) return null;
 
     return (
         <group>

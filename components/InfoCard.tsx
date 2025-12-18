@@ -7,6 +7,87 @@ import { X, Thermometer, Ruler, Orbit, Info, Eclipse, Globe, Image as ImageIcon,
 import { dictionary, Language } from '@/data/dictionary';
 import { useNasaImage } from '@/hooks/useNasaImage';
 import Image from 'next/image';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
+import { VoxelSphere } from './VoxelSphere';
+
+import { VoxelModel } from './VoxelModel';
+
+// Wrapper for the 3D Header to handle hydration/sizing nicely
+const Object3DPreview = ({ data, onClose, lang }: { data: SolarSystemObject, onClose: () => void, lang: Language }) => {
+    // Determine type for Visualization
+    let type = 'rocky';
+    let isCustomModel = false;
+    let customModelType: 'iss' | 'hubble' | 'james-webb' = 'iss';
+
+    if (['iss', 'hubble', 'james-webb'].includes(data.id)) {
+        isCustomModel = true;
+        customModelType = data.id as any;
+    } else {
+        if (data.type === 'star') type = 'star';
+        else if (['jupiter', 'saturn', 'uranus', 'neptune'].includes(data.id)) type = 'gas-giant';
+        else if (data.id === 'earth') type = 'earth';
+    }
+
+    const t = dictionary[lang];
+
+    return (
+        <div className="h-64 mb-4 relative overflow-hidden bg-black/40 rounded-t-2xl border-b border-white/10">
+            <div className="absolute inset-0 z-0">
+                <Canvas camera={{ position: [0, 0, 3.5], fov: 45 }} gl={{ antialias: true, alpha: true }}>
+                    <ambientLight intensity={0.8} />
+                    <pointLight position={[10, 10, 10]} intensity={1.5} />
+                    <pointLight position={[-10, -10, -5]} intensity={0.5} color="blue" />
+
+                    <group rotation={[0.2, 0, 0]}>
+                        {isCustomModel ? (
+                            <VoxelModel type={customModelType} scale={1} />
+                        ) : (
+                            <VoxelSphere
+                                radius={1}
+                                color={data.color}
+                                resolution={32}
+                                type={type}
+                                castShadow={false}
+                            />
+                        )}
+                    </group>
+
+                    <OrbitControls
+                        autoRotate
+                        autoRotateSpeed={2}
+                        enableZoom={false}
+                        enablePan={false}
+                        minPolarAngle={Math.PI / 4}
+                        maxPolarAngle={Math.PI / 1.5}
+                    />
+                </Canvas>
+            </div>
+
+            {/* Overlays */}
+            <div className="absolute top-4 left-4 z-10 pointer-events-none">
+                <span className="text-xs font-bold font-mono px-2 py-1 rounded bg-black/50 backdrop-blur-md uppercase tracking-widest border border-white/20 text-white/90 shadow-lg">
+                    {data.type === 'planet' && (t?.planet || 'Planet')}
+                    {data.type === 'dwarf-planet' && (t?.dwarfPlanet || 'Dwarf Planet')}
+                    {data.type === 'telescope' && (t?.telescope || 'Telescope')}
+                    {data.type === 'satellite' && (t?.satellite || 'Satellite')}
+                    {data.type === 'star' && (t?.star || 'Star')}
+                </span>
+            </div>
+
+            <button
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onClose();
+                }}
+                className="absolute top-4 right-4 p-2 bg-black/40 hover:bg-white/20 rounded-full transition-colors z-50 cursor-pointer pointer-events-auto backdrop-blur-sm border border-white/10"
+                aria-label="Close"
+            >
+                <X size={18} />
+            </button>
+        </div>
+    );
+}
 
 interface InfoCardProps {
     selectedObject: SolarSystemObject | null;
@@ -54,38 +135,10 @@ export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
                 initial={{ opacity: 0, y: 100, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 100, scale: 0.95 }}
-                className="fixed bottom-0 left-0 w-full h-[85vh] md:h-auto md:max-h-[85vh] md:absolute md:top-20 md:left-4 md:w-full md:max-w-md overflow-y-auto bg-black/60 backdrop-blur-xl border-t md:border border-white/20 rounded-t-2xl md:rounded-2xl text-white shadow-2xl z-50 custom-scrollbar"
+                className="fixed bottom-0 left-0 w-full h-[66vh] md:h-auto md:max-h-[85vh] md:absolute md:top-20 md:left-4 md:w-full md:max-w-md overflow-y-auto bg-black/60 backdrop-blur-xl border-t md:border border-white/20 rounded-t-2xl md:rounded-2xl text-white shadow-2xl z-50 custom-scrollbar"
             >
-                {/* Header Image/Color */}
-                <div
-                    className="h-32 mb-4 relative overflow-hidden"
-                    style={{ background: `linear-gradient(to bottom, ${data.color}44, transparent)` }}
-                >
-                    <div className="absolute top-4 left-4">
-                        <span className="text-xs font-bold font-mono px-2 py-1 rounded bg-white/10 uppercase tracking-widest border border-white/10">
-                            {data.type === 'planet' && t.planet}
-                            {data.type === 'dwarf-planet' && t.dwarfPlanet}
-                            {data.type === 'telescope' && t.telescope}
-                            {data.type === 'satellite' && t.satellite}
-                            {data.type === 'star' && t.star}
-                        </span>
-                    </div>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onClose();
-                        }}
-                        className="absolute top-4 right-4 p-2 bg-black/40 hover:bg-white/20 rounded-full transition-colors z-50 cursor-pointer pointer-events-auto"
-                        aria-label="Close"
-                    >
-                        <X size={18} />
-                    </button>
-
-                    {/* Giant Background Icon/Text */}
-                    <h1 className="absolute -bottom-6 -right-6 text-9xl font-black text-white/5 select-none overflow-hidden">
-                        {data.id.substring(0, 2).toUpperCase()}
-                    </h1>
-                </div>
+                {/* 3D Header */}
+                <Object3DPreview data={data} onClose={onClose} lang={lang} />
 
                 <div className="px-6 pb-6 space-y-6">
                     {/* Header */}

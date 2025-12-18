@@ -33,9 +33,15 @@ interface PhysicsManagerProps {
     setRockets: React.Dispatch<React.SetStateAction<Rocket[]>>;
     history: Rocket[];
     setHistory: React.Dispatch<React.SetStateAction<Rocket[]>>;
+    blackHole?: {
+        position: THREE.Vector3;
+        active: boolean;
+        mass: number;
+        radius: number; // Event Horizon Radius
+    }
 }
 
-export function PhysicsManager({ isActive, timeScale, rockets, setRockets, history, setHistory }: PhysicsManagerProps) {
+export function PhysicsManager({ isActive, timeScale, rockets, setRockets, history, setHistory, blackHole }: PhysicsManagerProps) {
     const rocketsRef = useRef<Rocket[]>([]); // Ref to track rockets without re-binding listeners
     const [explosions, setExplosions] = useState<Explosion[]>([]);
     const { scene, camera, gl, pointer } = useThree();
@@ -131,6 +137,38 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
     };
 
 
+    // Launch Logic extracted for reuse
+    const launchRocket = useCallback(() => {
+        // Calculate Launch Params
+        raycaster.setFromCamera(pointer, camera);
+        const origin = raycaster.ray.origin.clone();
+        const direction = raycaster.ray.direction.clone();
+        const startPos = origin.clone().add(direction.multiplyScalar(15));
+
+        // FIXED SPEED (Refined for better feel)
+        const speed = 60;
+        const velocity = direction.multiplyScalar(speed * 0.05);
+
+        const newRocket: Rocket = {
+            id: Date.now(),
+            position: startPos,
+            velocity: velocity,
+            createdAt: getSimTime(),
+            color: '#AAA',
+            name: getRandomName(),
+            designType: Math.floor(Math.random() * 10),
+            score: 0,
+            attractorEnabled: false,
+            lastMoveTime: getSimTime()
+        };
+
+        // Limit to 15 active satellites (increased from 10)
+        if (rocketsRef.current.length < 15) {
+            setRockets(prev => [...prev, newRocket]);
+        }
+        setTrajectoryPoints([]); // Clear trajectory
+    }, [camera, pointer, raycaster, getSimTime, setRockets]);
+
     // Gestion du clavier pour lancer un satellite (Espace)
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -152,48 +190,47 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             // Launch!
             if (isCharging) {
                 setIsCharging(false);
-                const chargeDuration = Math.min((Date.now() - chargeStartTimeRef.current) / 1000, 3.0); // Cap at 3s
-
-                // Calculate Launch Params
-                raycaster.setFromCamera(pointer, camera);
-                const origin = raycaster.ray.origin.clone();
-                const direction = raycaster.ray.direction.clone();
-                const startPos = origin.clone().add(direction.multiplyScalar(15));
-
-                // Base speed + charge bonus
-                // 0s = 0.5 speed, 3s = 5 speed
-                const speed = 20 + (chargeDuration * 80);
-                const velocity = direction.multiplyScalar(speed * 0.05); // Scale down for physics units
-
-                const newRocket: Rocket = {
-                    id: Date.now(),
-                    position: startPos,
-                    velocity: velocity,
-                    createdAt: getSimTime(),
-                    color: '#AAA',
-                    name: getRandomName(),
-                    designType: Math.floor(Math.random() * 10),
-                    score: 0,
-                    attractorEnabled: false, // Disable attractor for skill shots
-                    lastMoveTime: getSimTime()
-                };
-
-                // Limit to 10 active satellites
-                if (rocketsRef.current.length < 10) {
-                    setRockets(prev => [...prev, newRocket]);
-                }
-                setTrajectoryPoints([]); // Clear trajectory
+                launchRocket();
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
 
+        // TOUCH HANDLING (Mobile/Tablet Long Press)
+
+        const canvas = gl.domElement;
+
+        const handleTouchStart = (e: TouchEvent) => {
+            if (!isActive) return;
+            // On touch start, we start "charging" (showing trajectory)
+            // We do NOT preventDefault to allow user to pan camera while aiming
+            if (!isCharging) {
+                setIsCharging(true);
+                chargeStartTimeRef.current = Date.now();
+            }
+        };
+
+        const handleTouchEnd = (e: TouchEvent) => {
+            if (!isActive) return;
+            if (isCharging) {
+                setIsCharging(false);
+                // Only launch if it was a valid charge (e.g. not cancelled by a huge swipe if we wanted logic for that)
+                // For now, simplicity: Release finger = launch
+                launchRocket();
+            }
+        };
+
+        canvas.addEventListener('touchstart', handleTouchStart);
+        canvas.addEventListener('touchend', handleTouchEnd);
+
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
+            canvas.removeEventListener('touchstart', handleTouchStart);
+            canvas.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [isActive, camera, pointer, raycaster, isCharging, getSimTime, setRockets]); // Added isCharging to deps
+    }, [isActive, camera, pointer, raycaster, isCharging, getSimTime, setRockets, launchRocket, gl.domElement]);
 
     const explodeSatellite = (id: number, position: THREE.Vector3) => {
         setExplosions(prev => [...prev, { id: Math.random(), position: position.clone(), startTime: getSimTime() }]);
@@ -213,14 +250,12 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
     useFrame((state, delta) => {
         // --- 1. TRAJECTORY PREDICTION (If Charging) ---
         if (isCharging) {
-            const chargeDuration = Math.min((Date.now() - chargeStartTimeRef.current) / 1000, 3.0);
-
             raycaster.setFromCamera(pointer, camera);
             const origin = raycaster.ray.origin.clone();
             const direction = raycaster.ray.direction.clone();
             const startPos = origin.clone().add(direction.multiplyScalar(15));
-            const speed = 20 + (chargeDuration * 80);
-            const startVel = direction.multiplyScalar(speed * 0.05); // Matches launch math
+            const speed = 60; // Fixed speed matches launch math
+            const startVel = direction.multiplyScalar(speed * 0.05);
 
             const points: THREE.Vector3[] = [startPos.clone()];
             const simPos = startPos.clone();
@@ -249,7 +284,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
         }
 
 
-        if (rockets.length === 0 && explosions.length === 0) return;
+        // if (rockets.length === 0 && explosions.length === 0) return; // REMOVED to keep focus
 
         // Apply reduced simulation speed for satellites as requested
         const SIMULATION_SPEED_FACTOR = 0.2;
@@ -283,12 +318,24 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
 
         rockets.forEach(rocket => {
             // --- SCORING & PHYSICS UPDATE ---
-            const distanceMoved = rocket.velocity.length() * scaledDelta;
+            const velocity = rocket.velocity;
+            const distanceMoved = velocity.length() * scaledDelta;
             rocket.score += distanceMoved * 100;
 
             if (distanceMoved > 0.0001) rocket.lastMoveTime = now;
-            if (now - rocket.lastMoveTime > 5000) {
-                activeRockets.push({ ...rocket, kill: true } as any); // Mark for death
+
+            // --- DESTRUCTION LIMITS ---
+            // 1. Timeout (Stopped moving)
+            if (now - rocket.lastMoveTime > 8000) {
+                activeRockets.push({ ...rocket, kill: true, reason: 'STOPPED' } as any);
+                return;
+            }
+
+            // 2. Out of bounds (Satellite lost in deep space)
+            // Solar system radius is around 100-200. 500 is a safe "lost" distance.
+            const distFromCenter = rocket.position.length();
+            if (distFromCenter > 500) {
+                activeRockets.push({ ...rocket, kill: true, reason: 'SIGNAL_LOST' } as any);
                 return;
             }
 
@@ -332,6 +379,31 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                 }
             }
 
+            // BLACK HOLE ATTRACTION
+            if (blackHole && blackHole.active) {
+                const bhPos = blackHole.position;
+                const distSqMax = rocket.position.distanceToSquared(bhPos);
+                const dist = Math.sqrt(distSqMax);
+
+                // Event Horizon (Absorption)
+                if (dist < blackHole.radius) {
+                    activeRockets.push({ ...rocket, kill: true, collision: false, reason: 'ABSORBED' } as any);
+                    return;
+                }
+
+                // Super Gravity
+                const dir = bhPos.clone().sub(rocket.position).normalize();
+                // Stronger gravity than Sun
+                const fVal = (G * blackHole.mass) / distSqMax;
+
+                // Add drag to make them spiral in
+                velocity.multiplyScalar(0.99);
+
+                force.add(dir.multiplyScalar(fVal));
+                // Also pull velocity vector to align with force for "suck in" effect
+                rocket.velocity.lerp(dir.multiplyScalar(100), 0.02 * scaledDelta);
+            }
+
             // Integration
             rocket.velocity.add(force.multiplyScalar(scaledDelta));
             rocket.position.add(rocket.velocity.clone().multiplyScalar(scaledDelta));
@@ -346,7 +418,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             killed.forEach((r: any) => {
                 setExplosions(prev => [...prev, { id: Math.random(), position: r.position.clone(), startTime: now }]);
                 playExplosionSound();
-                if (r.collision) { // Only score history if collided (or maybe timeout too?) - Keeping original logic roughly
+                if (r.collision || r.reason === 'SIGNAL_LOST') {
                     setHistory(prev => {
                         const h = [...prev, { ...r, score: r.score }];
                         return h.sort((a, b) => b.score - a.score).slice(0, 3);

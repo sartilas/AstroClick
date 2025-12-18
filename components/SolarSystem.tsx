@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState, forwardRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
 import * as THREE from 'three';
@@ -14,11 +14,11 @@ import { ShootingStars } from './ShootingStars';
 import { dictionary, Language } from '@/data/dictionary';
 import { Leaderboard } from './Leaderboard';
 import { Rocket, LayerMode } from './types';
-import { useState, forwardRef } from 'react';
 import { Effects } from './Effects';
 import { HabitableZoneLayer } from './layers/HabitableZoneLayer';
 import { GravityWellLayer } from './layers/GravityWellLayer';
 import { LagrangePointsLayer } from './layers/LagrangePointsLayer';
+import { BlackHoleEvent } from './BlackHoleEvent';
 
 
 
@@ -33,6 +33,8 @@ interface SolarSystemProps {
     layerMode: LayerMode;
     isHudVisible: boolean;
     resetCameraTrigger: number;
+    blackHoleActive?: boolean;
+    onBlackHoleComplete?: () => void;
 }
 
 interface SunProps {
@@ -146,11 +148,12 @@ interface SceneProps extends SolarSystemProps {
     setHistory: React.Dispatch<React.SetStateAction<Rocket[]>>;
     rtxMode: boolean;
     layerMode: LayerMode;
+    blackHoleActive?: boolean;
+    onBlackHoleComplete?: () => void;
 }
 
-function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode, resetCameraTrigger }: SceneProps) {
+function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode, resetCameraTrigger, blackHoleActive, onBlackHoleComplete }: SceneProps) {
     const sunRef = useRef<THREE.Mesh>(null);
-
     // Separate primaries (Sun orbiters) and satellites (Moon, etc)
     const { primaries, satelliteMap, sunData } = useMemo(() => {
         const p: SolarSystemObject[] = [];
@@ -172,6 +175,8 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
         });
         return { primaries: p, satelliteMap: s, sunData: sun };
     }, []);
+
+
 
     return (
         <>
@@ -199,14 +204,18 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
             {/* RTX Effects */}
             <Effects sunRef={sunRef} rtxMode={rtxMode} />
 
+            {/* Black Hole Easter Egg */}
+            {blackHoleActive && (
+                <BlackHoleEvent
+                    isActive={blackHoleActive}
+                    onComplete={() => onBlackHoleComplete && onBlackHoleComplete()}
+                    position={new THREE.Vector3(0, 0, -400)}
+                />
+            )}
+
             {/* LAYERS */}
             {layerMode === 'habitable' && <HabitableZoneLayer orbitMode={orbitMode} />}
-            {layerMode === 'gravity' && (
-                <>
-                    <color attach="background" args={['#ffffff']} />
-                    <GravityWellLayer />
-                </>
-            )}
+            {layerMode === 'gravity' && <GravityWellLayer />}
             {layerMode === 'lagrange' && <LagrangePointsLayer />}
 
             {/* Asteroid Belt */}
@@ -218,7 +227,7 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                     key={obj.id}
                     data={obj}
                     onSelect={onSelectObject}
-                    isPaused={selectedObject !== null}
+                    isPaused={false}
                     orbitMode={orbitMode}
                     satellites={satelliteMap[obj.id]}
                     timeScale={timeScale}
@@ -240,12 +249,18 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                 setRockets={setRockets}
                 history={history}
                 setHistory={setHistory}
+                blackHole={{
+                    active: !!blackHoleActive,
+                    position: new THREE.Vector3(0, 0, -400),
+                    mass: 200000,
+                    radius: 150
+                }}
             />
         </>
     );
 }
 
-export default function SolarSystem({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale, lang, rtxMode = false, layerMode, isHudVisible, resetCameraTrigger }: SolarSystemProps) {
+export default function SolarSystem({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale, lang, rtxMode = false, layerMode, isHudVisible, resetCameraTrigger, blackHoleActive, onBlackHoleComplete }: SolarSystemProps) {
     const [rockets, setRockets] = useState<Rocket[]>([]);
     const [history, setHistory] = useState<Rocket[]>([]);
 
@@ -278,6 +293,8 @@ export default function SolarSystem({ selectedObject, onSelectObject, orbitMode,
                     layerMode={layerMode}
                     isHudVisible={isHudVisible}
                     resetCameraTrigger={resetCameraTrigger}
+                    blackHoleActive={blackHoleActive}
+                    onBlackHoleComplete={onBlackHoleComplete}
                 />
             </Canvas>
         </div>

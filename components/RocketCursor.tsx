@@ -15,16 +15,18 @@ export function RocketCursor() {
     const upVector = useMemo(() => new THREE.Vector3(0, 1, 0), []); // Rocket nose points Y+
 
     // Particle system (smoke)
-    const particleCount = 20;
+    const particleCount = 40;
     const tempObject = new THREE.Object3D();
     const particles = useMemo(() => {
         return new Array(particleCount).fill(0).map(() => ({
             position: new THREE.Vector3(),
             velocity: new THREE.Vector3(),
             life: Math.random(),
-            scale: Math.random() * 0.5 + 0.2
+            scale: Math.random() * 0.4 + 0.1
         }));
     }, []);
+
+    const flameRef = useRef<THREE.Mesh>(null);
 
     useFrame((state, delta) => {
         if (!rocketRef.current) return;
@@ -41,51 +43,47 @@ export function RocketCursor() {
         rocketRef.current.position.lerp(targetPos, 0.2);
 
         // Calculate movement vector for orientation
-        // We compare current position with targetPos (where we are going) 
-        // OR current position vs previous frame position for actual trail
         const velocity = targetPos.clone().sub(rocketRef.current.position);
 
         // Orient rocket to face movement direction
         if (velocity.lengthSq() > 0.01) {
             velocity.normalize();
-            // Create quaternion that rotates Y-up (rocket nose) to align with velocity vector
             targetQuaternion.current.setFromUnitVectors(upVector, velocity);
-            // Apply extra rotation to align top with camera up roughly, or just simple alignment?
-            // Simple alignment is fine for space
             rocketRef.current.quaternion.slerp(targetQuaternion.current, 0.15);
-        } else {
-            // If stopped, maybe slowly rotate back to "up" relative to camera? 
-            // Or just keep last direction. Keeping last direction feels better.
-
-            // Optional: Tilt slightly to camera for aesthetics when idle
-            // const camRot = camera.quaternion.clone();
-            // rocketRef.current.quaternion.slerp(camRot, 0.05);
         }
 
         prevPos.current.copy(rocketRef.current.position);
 
+        // Animate flame
+        if (flameRef.current) {
+            const pulse = Math.sin(state.clock.elapsedTime * 30) * 0.1 + 0.9;
+            flameRef.current.scale.set(pulse, pulse * (1 + Math.random() * 0.2), pulse);
+            if (flameRef.current.material instanceof THREE.MeshStandardMaterial) {
+                flameRef.current.material.emissiveIntensity = 2 + Math.random() * 2;
+            }
+        }
+
         // Animate particles
         if (particlesRef.current) {
             particles.forEach((p, i) => {
-                p.life -= delta * 2;
+                p.life -= delta * 1.5;
                 if (p.life <= 0) {
                     // Reset to rocket tail
                     p.life = 1;
                     p.position.copy(rocketRef.current!.position);
-                    // Offset to tail: move opposite to rocket UP vector (which is its local Y)
-                    const tailOffset = new THREE.Vector3(0, -0.6, 0).applyQuaternion(rocketRef.current!.quaternion);
+                    // Offset to tail
+                    const tailOffset = new THREE.Vector3(0, -0.5, 0).applyQuaternion(rocketRef.current!.quaternion);
                     p.position.add(tailOffset);
 
-                    // Random velocity away + slight inertia from rocket?
-                    // Basic spread
+                    // Random velocity away + slight inertia
                     p.velocity.set(
-                        (Math.random() - 0.5) * 0.5,
-                        (Math.random() - 0.5) * 0.5,
-                        (Math.random() - 0.5) * 0.5
-                    );
+                        (Math.random() - 0.5) * 0.8,
+                        (Math.random() - 0.5) * 0.8,
+                        (Math.random() - 0.5) * 0.8
+                    ).add(new THREE.Vector3(0, -2, 0).applyQuaternion(rocketRef.current!.quaternion));
                 }
 
-                p.position.add(p.velocity.clone().multiplyScalar(delta * 5));
+                p.position.add(p.velocity.clone().multiplyScalar(delta * 2));
 
                 tempObject.position.copy(p.position);
                 const scale = p.life * p.scale;
@@ -142,14 +140,26 @@ export function RocketCursor() {
                     <meshStandardMaterial color="#333333" />
                 </mesh>
 
+                {/* Engine Flame */}
+                <mesh ref={flameRef} position={[0, -0.65, 0]} rotation={[Math.PI, 0, 0]}>
+                    <coneGeometry args={[0.1, 0.4, 12]} />
+                    <meshStandardMaterial
+                        color="#ff6600"
+                        emissive="#ff3300"
+                        emissiveIntensity={2}
+                        transparent
+                        opacity={0.8}
+                    />
+                </mesh>
+
                 {/* Engine Flame Glow */}
-                <pointLight position={[0, -0.6, 0]} color="#ffaa00" intensity={3} distance={3} decay={2} />
+                <pointLight position={[0, -0.7, 0]} color="#ffaa00" intensity={5} distance={4} decay={2} />
             </group>
 
             {/* Smoke Particles */}
             <instancedMesh ref={particlesRef} args={[undefined, undefined, particleCount]}>
-                <sphereGeometry args={[0.1, 8, 8]} />
-                <meshBasicMaterial color="#aaaaaa" transparent opacity={0.5} depthWrite={false} />
+                <sphereGeometry args={[0.15, 8, 8]} />
+                <meshStandardMaterial color="#666666" transparent opacity={0.4} depthWrite={false} emissive="#333333" />
             </instancedMesh>
         </>
     );
