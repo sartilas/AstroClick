@@ -13,6 +13,10 @@ export interface SolarSystemObject {
     orbitSpeed: number; // Orbital speed multiplier
     rotationSpeed: number; // Rotation speed
 
+    // Scientific Data (km) for Real Scale Mode
+    scientificRadius?: number;
+    scientificDistance?: number;
+
     // Special features
     hasRings?: boolean;
     ringColor?: string;
@@ -42,6 +46,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'star',
         color: '#FDB813',
         size: 5,
+        scientificRadius: 696340,
+        scientificDistance: 0,
         distance: 0,
         orbitSpeed: 0,
         rotationSpeed: 0.005,
@@ -60,6 +66,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'planet',
         color: '#8C7853',
         size: 0.4,
+        scientificRadius: 2440,
+        scientificDistance: 57900000,
         distance: 4,
         orbitSpeed: 1.6,
         rotationSpeed: 0.01,
@@ -77,6 +85,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'planet',
         color: '#FFC649',
         size: 0.9,
+        scientificRadius: 6052,
+        scientificDistance: 108200000,
         distance: 7,
         orbitSpeed: 1.2,
         rotationSpeed: -0.005, // Retrograde rotation
@@ -94,6 +104,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'planet',
         color: '#4A90E2',
         size: 1,
+        scientificRadius: 6371,
+        scientificDistance: 149600000,
         distance: 10,
         orbitSpeed: 1.0,
         rotationSpeed: 0.02,
@@ -112,6 +124,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'satellite',
         color: '#D0D0D0',
         size: 0.27,
+        scientificRadius: 1737,
+        scientificDistance: 384400, // Relative to Earth
         distance: 2, // Relative to Earth
         orbitSpeed: 2.0, // Faster orbit around Earth
         rotationSpeed: 0.01,
@@ -130,6 +144,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'planet',
         color: '#E27B58',
         size: 0.5,
+        scientificRadius: 3390,
+        scientificDistance: 227900000,
         distance: 15,
         orbitSpeed: 0.8,
         rotationSpeed: 0.018,
@@ -147,6 +163,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'planet',
         color: '#C88B3A',
         size: 3,
+        scientificRadius: 69911,
+        scientificDistance: 778600000,
         distance: 25,
         orbitSpeed: 0.4,
         rotationSpeed: 0.04,
@@ -164,6 +182,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'planet',
         color: '#FAD5A5',
         size: 2.5,
+        scientificRadius: 58232,
+        scientificDistance: 1433500000,
         distance: 35,
         orbitSpeed: 0.3,
         rotationSpeed: 0.038,
@@ -183,6 +203,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'planet',
         color: '#4FD0E7',
         size: 1.8,
+        scientificRadius: 25362,
+        scientificDistance: 2872500000,
         distance: 45,
         orbitSpeed: 0.2,
         rotationSpeed: 0.03,
@@ -203,6 +225,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'planet',
         color: '#4166F5',
         size: 1.7,
+        scientificRadius: 24622,
+        scientificDistance: 4495100000,
         distance: 55,
         orbitSpeed: 0.15,
         rotationSpeed: 0.032,
@@ -221,6 +245,8 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'dwarf-planet',
         color: '#D4A574',
         size: 0.2,
+        scientificRadius: 1188,
+        scientificDistance: 5906380000,
         distance: 65,
         orbitSpeed: 0.1,
         rotationSpeed: 0.008,

@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0] - 2025-12-18
+
+### Added
+- **Satellite Vizualisation**:
+    - Added visible orbit lines for major satellites (Moon, Europa, Titan, etc.).
+    - Interactive orbit tooltips with information and navigation links.
+    - Dynamic coloring of orbits based on parent planet.
+- **UI/UX**:
+    - Added "Reset View" button to quickly return to default camera position.
+    - Added "Dev" badges for experimental features (RTX, Orbit Scale).
+    - Improved accessibility and labels.
+
+### Changed
+- Refined satellite distances in 'Real Scale' mode for better visibility.
+- improved navigation controls.
+
 ## [1.1.0] - 2025-12-17
 
 ### Added

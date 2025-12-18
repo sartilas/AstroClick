@@ -11,14 +11,20 @@ interface AsteroidBeltProps {
 
 export function AsteroidBelt({ timeScale = 1, orbitMode = 'simplified' }: AsteroidBeltProps) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
-    const count = 500; // Even fewer elements for cleaner look
+    const count = orbitMode === 'real' ? 15000 : 500; // Drastically increased for the massive real scale belt
     const tempObject = useMemo(() => new THREE.Object3D(), []);
     const tempColor = useMemo(() => new THREE.Color(), []);
 
     const particles = useMemo(() => {
         const data = [];
-        const innerRadius = orbitMode === 'real' ? 24 : 18;
-        const outerRadius = orbitMode === 'real' ? 32 : 23;
+        // Real Mode: Belt is roughly 2.2-3.2 AU
+        // 1 AU = ~150 units. Belt = 330 - 480.
+        // Real Mode (1u = 25,000 km):
+        // Mars (227M km) = ~9,100u. Jupiter (778M km) = ~31,000u.
+        // Belt Start (~2.2 AU / 329M km) = 13,160u.
+        // Belt End (~3.2 AU / 478M km) = 19,150u.
+        const innerRadius = orbitMode === 'real' ? 13160 : 18;
+        const outerRadius = orbitMode === 'real' ? 19150 : 23;
 
         // Visual improvements: 8 distinct vibrant color variations
         const colors = [
@@ -83,7 +89,7 @@ export function AsteroidBelt({ timeScale = 1, orbitMode = 'simplified' }: Astero
     });
 
     return (
-        <instancedMesh ref={meshRef} args={[undefined, undefined, count]} castShadow receiveShadow>
+        <instancedMesh ref={meshRef} args={[undefined, undefined, count]} castShadow={false} receiveShadow>
             <boxGeometry args={[0.5, 0.5, 0.5]} />
             <meshStandardMaterial
                 roughness={0.7}

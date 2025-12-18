@@ -9,10 +9,14 @@ export function HabitableZoneLayer({ orbitMode }: HabitableZoneLayerProps) {
     // Earth Distance: 10 (Simplified) vs 15 (Real)
     // HZ approx 0.95 AU to 1.5 AU
 
-    const earthDist = orbitMode === 'real' ? 15 : 10;
+    // Real Mode Scale: 1 unit = 25,000,000 km.
+    // Inner (0.95 AU / 142M km) = 5.68 units
+    // Outer (1.67 AU / 250M km) = 10 units
+    // Simplified Scale (Earth = 10):
+    // Inner = 9.5, Outer = 16.7
 
-    const innerRadius = earthDist * 0.95;
-    const outerRadius = earthDist * 1.5;
+    const innerRadius = orbitMode === 'real' ? 5.68 : 9.5;
+    const outerRadius = orbitMode === 'real' ? 10 : 16.7;
 
     return (
         <group rotation={[-Math.PI / 2, 0, 0]}>

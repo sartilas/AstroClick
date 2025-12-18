@@ -1,8 +1,8 @@
 'use client';
 
 import { EffectComposer, Bloom, GodRays } from '@react-three/postprocessing';
-import { BlendFunction, Resizer, KernelSize } from 'postprocessing';
-import { forwardRef } from 'react';
+import { BlendFunction } from 'postprocessing';
+import React, { memo } from 'react';
 import * as THREE from 'three';
 
 interface EffectsProps {
@@ -10,7 +10,7 @@ interface EffectsProps {
     rtxMode: boolean;
 }
 
-export const Effects = ({ sunRef, rtxMode }: EffectsProps) => {
+export const Effects = memo(({ sunRef, rtxMode }: EffectsProps) => {
     if (!rtxMode) return null;
 
     return (
@@ -36,4 +36,7 @@ export const Effects = ({ sunRef, rtxMode }: EffectsProps) => {
             ) as any}
         </EffectComposer>
     );
-};
+});
+
+Effects.displayName = 'Effects';
+

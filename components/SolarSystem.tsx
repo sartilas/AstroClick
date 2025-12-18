@@ -31,6 +31,8 @@ interface SolarSystemProps {
     lang: Language;
     rtxMode?: boolean;
     layerMode: LayerMode;
+    isHudVisible: boolean;
+    resetCameraTrigger: number;
 }
 
 interface SunProps {
@@ -46,8 +48,8 @@ function Sun({ orbitMode, onSelect, data, rtxMode, sunRef }: SunProps) {
 
     // Scaling for Sun
     // Simplified: Radius 3
-    // Real: Radius 5
-    const size = orbitMode === 'real' ? 5 : 3;
+    // Real: Radius 0.02785 (Scientific: 696,340 / 25,000,000 = 0.02785) - Factor 1000 reduction
+    const size = orbitMode === 'real' ? 0.02785 : 3;
 
     useFrame((state, delta) => {
         if (groupRef.current) {
@@ -75,6 +77,7 @@ function Sun({ orbitMode, onSelect, data, rtxMode, sunRef }: SunProps) {
                 color="#FDB813"
                 resolution={orbitMode === 'real' ? 64 : 24}
                 type="star"
+                castShadow={false}
             />
 
             {/* God Rays Source Mesh - Core light */}
@@ -94,28 +97,41 @@ function Sun({ orbitMode, onSelect, data, rtxMode, sunRef }: SunProps) {
             {/* Point light at sun's position */}
             <pointLight
                 position={[0, 0, 0]}
-                intensity={rtxMode ? 5 : 3}
-                distance={orbitMode === 'real' ? 2000 : 300}
-                decay={rtxMode ? 2 : 1}
+                intensity={rtxMode ? 6 : 3}
+                distance={orbitMode === 'real' ? 1000 : 500}
+                decay={rtxMode ? 0 : 1}
                 color="#ffffff"
                 castShadow={rtxMode}
-                shadow-mapSize-width={2048}
-                shadow-mapSize-height={2048}
-                shadow-bias={-0.0001}
+                shadow-mapSize-width={4096}
+                shadow-mapSize-height={4096}
+                shadow-bias={-0.0005}
             />
         </group>
     );
 }
 
-function CameraController({ target, orbitMode }: { target: SolarSystemObject | null, orbitMode: 'simplified' | 'real' }) {
+function CameraController({ target, orbitMode, resetCameraTrigger }: { target: SolarSystemObject | null, orbitMode: 'simplified' | 'real', resetCameraTrigger: number }) {
+    const controlsRef = useRef<any>(null);
+    const prevTrigger = useRef(resetCameraTrigger);
+
+    useFrame(() => {
+        if (resetCameraTrigger !== prevTrigger.current) {
+            if (controlsRef.current) {
+                controlsRef.current.reset();
+            }
+            prevTrigger.current = resetCameraTrigger;
+        }
+    });
+
     return (
         <OrbitControls
+            ref={controlsRef}
             enablePan={true}
             enableZoom={true}
             enableRotate={true}
-            minDistance={5}
-            // Allow huge zoom out in real mode (distances go up to 400+)
-            maxDistance={orbitMode === 'real' ? 3000 : 150}
+            minDistance={orbitMode === 'real' ? 0.1 : 5}
+            // Real mode: Neptune is at ~180 units. Max distance 1000 covers everything comfortably.
+            maxDistance={orbitMode === 'real' ? 1000 : 150}
             zoomSpeed={orbitMode === 'real' ? 4 : 0.8}
             panSpeed={orbitMode === 'real' ? 2 : 1}
         />
@@ -132,7 +148,7 @@ interface SceneProps extends SolarSystemProps {
     layerMode: LayerMode;
 }
 
-function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode }: SceneProps) {
+function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode, resetCameraTrigger }: SceneProps) {
     const sunRef = useRef<THREE.Mesh>(null);
 
     // Separate primaries (Sun orbiters) and satellites (Moon, etc)
@@ -160,12 +176,12 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
     return (
         <>
             {/* Ambient light - drastically reduced in RTX mode for contrast */}
-            <ambientLight intensity={rtxMode ? 0.05 : 1.5} />
+            <ambientLight intensity={rtxMode ? 0.1 : 1.5} />
             <hemisphereLight intensity={rtxMode ? 0.1 : 0.6} groundColor="#000000" color="#ffffff" />
 
             {/* Stars background */}
             <Stars
-                radius={300}
+                radius={orbitMode === 'real' ? 2000 : 300}
                 depth={60}
                 count={5000}
                 factor={7}
@@ -211,7 +227,7 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
             ))}
 
             {/* Camera controls */}
-            <CameraController target={selectedObject} orbitMode={orbitMode} />
+            <CameraController target={selectedObject} orbitMode={orbitMode} resetCameraTrigger={resetCameraTrigger} />
 
             {/* Rocket Cursor */}
             {showCursor && <RocketCursor />}
@@ -229,20 +245,19 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
     );
 }
 
-export default function SolarSystem({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale, lang, rtxMode = false, layerMode }: SolarSystemProps) {
+export default function SolarSystem({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale, lang, rtxMode = false, layerMode, isHudVisible, resetCameraTrigger }: SolarSystemProps) {
     const [rockets, setRockets] = useState<Rocket[]>([]);
     const [history, setHistory] = useState<Rocket[]>([]);
 
 
     return (
         <div className="w-full h-screen relative">
-            <Leaderboard rockets={rockets} history={history} />
-
+            {isHudVisible && <Leaderboard rockets={rockets} history={history} />}
 
 
             <Canvas
                 shadows
-                camera={{ position: [0, 50, 80], fov: 60 }}
+                camera={{ position: [0, 50, 80], fov: 60, far: 5000 }} // Reduced far plane
                 gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
                 onPointerMissed={() => {
                     if (!showCursor) onSelectObject(null);
@@ -261,6 +276,8 @@ export default function SolarSystem({ selectedObject, onSelectObject, orbitMode,
                     setHistory={setHistory}
                     rtxMode={rtxMode}
                     layerMode={layerMode}
+                    isHudVisible={isHudVisible}
+                    resetCameraTrigger={resetCameraTrigger}
                 />
             </Canvas>
         </div>

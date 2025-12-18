@@ -4,7 +4,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useRef, useState, useMemo, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { Rocket, Explosion } from './types';
-import { Trail, Text } from '@react-three/drei';
+import { Trail, Text, Line } from '@react-three/drei';
 import { solarSystemData } from '@/data/solarSystemData';
 
 // Fun random names for satellites
@@ -40,6 +40,11 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
     const [explosions, setExplosions] = useState<Explosion[]>([]);
     const { scene, camera, gl, pointer } = useThree();
     const raycaster = useMemo(() => new THREE.Raycaster(), []);
+
+    // Charge & Trajectory State
+    const [isCharging, setIsCharging] = useState(false);
+    const chargeStartTimeRef = useRef<number>(0);
+    const [trajectoryPoints, setTrajectoryPoints] = useState<THREE.Vector3[]>([]);
 
     // Audio ref for explosion
     const explosionAudio = useRef<HTMLAudioElement | null>(null);
@@ -87,53 +92,108 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
     const ATTRACTOR_G = 15000;
     const ATTRACTOR_DISTANCE = 50;
     const MAX_LIFETIME = 30000;
-    const INITIAL_VELOCITY = 0; // Launch with zero velocity, let attractor pull it
+
+    // Physics Simulation Helper
+    const calculatePhysicsStep = (pos: THREE.Vector3, vel: THREE.Vector3, delta: number, bodies: any[]) => {
+        const force = new THREE.Vector3(0, 0, 0);
+        let hasCollided = false;
+
+        for (const bodyData of bodies) {
+            const obj = scene.getObjectByName(`celestial-${bodyData.id}`);
+            if (obj) {
+                // Approximate position access for simulation (might lag one frame vs real update but fine for prediction)
+                // For prediction, using the CURRENT body position is acceptable as planets move slowly compared to rockets
+                const bodyPos = obj.position.clone();
+
+                const distSq = pos.distanceToSquared(bodyPos);
+                const dist = Math.sqrt(distSq);
+
+                // Collision Check
+                if (dist < (bodyData.radius + 0.5)) {
+                    hasCollided = true;
+                }
+
+                // Gravity
+                if (dist > bodyData.radius) {
+                    const dir = bodyPos.clone().sub(pos).normalize();
+                    const fVal = (G * bodyData.mass) / distSq;
+                    force.add(dir.multiplyScalar(fVal));
+                }
+            }
+        }
+
+        if (!hasCollided) {
+            vel.add(force.multiplyScalar(delta));
+            pos.add(vel.clone().multiplyScalar(delta));
+        }
+
+        return hasCollided;
+    };
+
 
     // Gestion du clavier pour lancer un satellite (Espace)
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (!isActive) return;
             if (event.code !== 'Space') return;
-            event.preventDefault(); // Prevent page scrolling
+            if (event.repeat) return; // Ignore auto-repeat
 
-            // Raycasting à partir de la position actuelle de la souris (pointer)
-            raycaster.setFromCamera(pointer, camera);
-
-            const origin = raycaster.ray.origin.clone();
-            const direction = raycaster.ray.direction.clone();
-
-            // Position de départ: devant la caméra
-            const startPos = origin.clone().add(direction.multiplyScalar(15));
-
-            const newRocket: Rocket = {
-                id: Date.now(),
-                position: startPos,
-                // Vitesse initiale nulle, c'est l'attracteur qui va tirer
-                velocity: new THREE.Vector3(0, 0, 0),
-                createdAt: getSimTime(),
-                color: '#AAA',
-                name: getRandomName(),
-                designType: Math.floor(Math.random() * 10),
-                score: 0,
-                attractorEnabled: true,
-                lastMoveTime: getSimTime()
-            };
-
-            // Limit to 10 active satellites - Block new launches
-            if (rocketsRef.current.length >= 10) {
-                // Optional: Visual feedback that limit is reached?
-                return;
+            // Start Charging
+            if (!isCharging) {
+                setIsCharging(true);
+                chargeStartTimeRef.current = Date.now();
             }
+        };
 
-            setRockets(prev => [...prev, newRocket]);
+        const handleKeyUp = (event: KeyboardEvent) => {
+            if (!isActive) return;
+            if (event.code !== 'Space') return;
+
+            // Launch!
+            if (isCharging) {
+                setIsCharging(false);
+                const chargeDuration = Math.min((Date.now() - chargeStartTimeRef.current) / 1000, 3.0); // Cap at 3s
+
+                // Calculate Launch Params
+                raycaster.setFromCamera(pointer, camera);
+                const origin = raycaster.ray.origin.clone();
+                const direction = raycaster.ray.direction.clone();
+                const startPos = origin.clone().add(direction.multiplyScalar(15));
+
+                // Base speed + charge bonus
+                // 0s = 0.5 speed, 3s = 5 speed
+                const speed = 20 + (chargeDuration * 80);
+                const velocity = direction.multiplyScalar(speed * 0.05); // Scale down for physics units
+
+                const newRocket: Rocket = {
+                    id: Date.now(),
+                    position: startPos,
+                    velocity: velocity,
+                    createdAt: getSimTime(),
+                    color: '#AAA',
+                    name: getRandomName(),
+                    designType: Math.floor(Math.random() * 10),
+                    score: 0,
+                    attractorEnabled: false, // Disable attractor for skill shots
+                    lastMoveTime: getSimTime()
+                };
+
+                // Limit to 10 active satellites
+                if (rocketsRef.current.length < 10) {
+                    setRockets(prev => [...prev, newRocket]);
+                }
+                setTrajectoryPoints([]); // Clear trajectory
+            }
         };
 
         window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
 
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keyup', handleKeyUp);
         };
-    }, [isActive, camera, pointer, raycaster, getSimTime, setRockets]);
+    }, [isActive, camera, pointer, raycaster, isCharging, getSimTime, setRockets]); // Added isCharging to deps
 
     const explodeSatellite = (id: number, position: THREE.Vector3) => {
         setExplosions(prev => [...prev, { id: Math.random(), position: position.clone(), startTime: getSimTime() }]);
@@ -143,7 +203,6 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             if (rocket) {
                 setHistory(prevHistory => {
                     const newHistory = [...prevHistory, { ...rocket, score: rocket.score }];
-                    // Keep only top 3 best scores in history
                     return newHistory.sort((a, b) => b.score - a.score).slice(0, 3);
                 });
             }
@@ -152,6 +211,44 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
     };
 
     useFrame((state, delta) => {
+        // --- 1. TRAJECTORY PREDICTION (If Charging) ---
+        if (isCharging) {
+            const chargeDuration = Math.min((Date.now() - chargeStartTimeRef.current) / 1000, 3.0);
+
+            raycaster.setFromCamera(pointer, camera);
+            const origin = raycaster.ray.origin.clone();
+            const direction = raycaster.ray.direction.clone();
+            const startPos = origin.clone().add(direction.multiplyScalar(15));
+            const speed = 20 + (chargeDuration * 80);
+            const startVel = direction.multiplyScalar(speed * 0.05); // Matches launch math
+
+            const points: THREE.Vector3[] = [startPos.clone()];
+            const simPos = startPos.clone();
+            const simVel = startVel.clone();
+
+            // Physics Bodies for Simulation
+            const bodies = solarSystemData.map(d => ({
+                id: d.id,
+                mass: d.id === 'sun' ? 2000 : (d.size * 200),
+                radius: d.id === 'sun' ? 5 : (d.size * 1.5)
+            }));
+
+            // Simulate 100 steps into future
+            // Using a fixed delta for prediction to ensure consistent curve regardless of framerate
+            const simDelta = 0.016 * 2; // Simulate roughly 2x speed for preview
+
+            for (let i = 0; i < 300; i++) {
+                const collided = calculatePhysicsStep(simPos, simVel, simDelta, bodies);
+                points.push(simPos.clone());
+                if (collided) break;
+            }
+
+            setTrajectoryPoints(points);
+        } else if (trajectoryPoints.length > 0) {
+            setTrajectoryPoints([]);
+        }
+
+
         if (rockets.length === 0 && explosions.length === 0) return;
 
         // Apply reduced simulation speed for satellites as requested
@@ -161,14 +258,11 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
         if (scaledDelta <= 0 && timeScale !== 0) return;
         if (timeScale === 0) return;
 
-        // Update ref for event listeners
         rocketsRef.current = rockets;
-
         const now = getSimTime();
         let activeRockets: Rocket[] = [];
 
-        // --- ATTRACTOR LOGIC ---
-        // Calculate attractor position relative to current cursor
+        // Attractor vars
         raycaster.setFromCamera(pointer, camera);
         const cursorOrigin = raycaster.ray.origin.clone();
         const cursorDir = raycaster.ray.direction.clone();
@@ -188,37 +282,20 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
         }));
 
         rockets.forEach(rocket => {
-            // --- SCORING SYSTEM ---
-            // Score based on distance traveled (Odometer)
-            // We use the actual distance moved this frame: velocity * time
+            // --- SCORING & PHYSICS UPDATE ---
             const distanceMoved = rocket.velocity.length() * scaledDelta;
-
-            // Multiply by a factor to make it look like "km" (e.g. * 100)
             rocket.score += distanceMoved * 100;
 
-            // --- STAGNATION CHECK (5s NO MOVEMENT) ---
-            // If satellite moves enough, reset the timer
-            if (distanceMoved > 0.0001) {
-                rocket.lastMoveTime = now;
-            }
-
-            // If it hasn't moved for 5 seconds, explode
+            if (distanceMoved > 0.0001) rocket.lastMoveTime = now;
             if (now - rocket.lastMoveTime > 5000) {
-                setExplosions(prev => [...prev, { id: Math.random(), position: rocket.position.clone(), startTime: now }]);
-                playExplosionSound();
-                setHistory(prevHistory => {
-                    const newHistory = [...prevHistory, { ...rocket, score: rocket.score }];
-                    // Keep only top 3 best scores in history
-                    return newHistory.sort((a, b) => b.score - a.score).slice(0, 3);
-                });
-                activeRockets = activeRockets.filter(r => r.id !== rocket.id);
-                return; // Die
+                activeRockets.push({ ...rocket, kill: true } as any); // Mark for death
+                return;
             }
 
             let hasCollided = false;
             const force = new THREE.Vector3(0, 0, 0);
-            let inGravityWell = false;
 
+            // Gravity & Collision
             for (const bodyData of bodies) {
                 const obj = scene.getObjectByName(`celestial-${bodyData.id}`);
                 if (obj) {
@@ -228,24 +305,12 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                     const distSq = rocket.position.distanceToSquared(bodyPos);
                     const dist = Math.sqrt(distSq);
 
-                    // Collision Check
                     if (dist < (bodyData.radius + 0.5)) {
-                        if ((rocket as any).isDead) { hasCollided = true; break; } // Prevent double processing
-                        (rocket as any).isDead = true;
                         hasCollided = true;
-
-                        setExplosions(prev => [...prev, { id: Math.random(), position: rocket.position.clone(), startTime: now }]);
-                        playExplosionSound();
-
-                        setHistory(prevHistory => {
-                            const newHistory = [...prevHistory, { ...rocket, score: rocket.score }];
-                            // Keep only top 3 best scores in history
-                            return newHistory.sort((a, b) => b.score - a.score).slice(0, 3);
-                        });
+                        activeRockets.push({ ...rocket, kill: true, collision: true } as any);
                         break;
                     }
 
-                    // Gravité
                     if (dist > bodyData.radius) {
                         const dir = bodyPos.clone().sub(rocket.position).normalize();
                         const fVal = (G * bodyData.mass) / distSq;
@@ -253,14 +318,11 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                     }
                 }
             }
+            if (hasCollided) return;
 
-
-
-            // Apply Attractor Force (First 5 seconds AND if enabled)
+            // Attractor (Only if enabled)
             if (rocket.attractorEnabled && now - rocket.createdAt < 5000) {
                 const distSq = rocket.position.distanceToSquared(attractorPos);
-
-                // If we reach the attractor, disable it to prevent sticking/orbiting the cursor point forever
                 if (distSq < 2) {
                     rocket.attractorEnabled = false;
                 } else if (distSq > 5) {
@@ -270,18 +332,31 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                 }
             }
 
-            if (!hasCollided) {
-                // Euler Integration
-                rocket.velocity.add(force.multiplyScalar(scaledDelta));
-                rocket.position.add(rocket.velocity.clone().multiplyScalar(scaledDelta));
-                activeRockets.push(rocket);
-            }
+            // Integration
+            rocket.velocity.add(force.multiplyScalar(scaledDelta));
+            rocket.position.add(rocket.velocity.clone().multiplyScalar(scaledDelta));
+            activeRockets.push(rocket);
         });
 
-        if (activeRockets.length !== rockets.length || state.clock.elapsedTime % 0.2 < 0.05) {
-            // Force update every ~0.1 - 0.2s or if count changes to keep UI in sync
-            // creating a new array reference triggers React render
-            setRockets([...activeRockets]);
+        // Filter killed rockets and update state
+        const surviving = activeRockets.filter((r: any) => !r.kill);
+        const killed = activeRockets.filter((r: any) => r.kill);
+
+        if (killed.length > 0) {
+            killed.forEach((r: any) => {
+                setExplosions(prev => [...prev, { id: Math.random(), position: r.position.clone(), startTime: now }]);
+                playExplosionSound();
+                if (r.collision) { // Only score history if collided (or maybe timeout too?) - Keeping original logic roughly
+                    setHistory(prev => {
+                        const h = [...prev, { ...r, score: r.score }];
+                        return h.sort((a, b) => b.score - a.score).slice(0, 3);
+                    });
+                }
+            });
+        }
+
+        if (surviving.length !== rockets.length || state.clock.elapsedTime % 0.2 < 0.05) {
+            setRockets(surviving);
         }
     });
 
@@ -294,13 +369,24 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                     onClick={() => explodeSatellite(rocket.id, rocket.position)}
                     isPaused={timeScale === 0}
                 />
-            ))
-            }
-            {
-                explosions.map(ex => (
-                    <ExplosionEffect key={ex.id} position={ex.position} />
-                ))
-            }
+            ))}
+            {explosions.map(ex => (
+                <ExplosionEffect key={ex.id} position={ex.position} />
+            ))}
+            {/* TRAJECTORY LINE */}
+            {trajectoryPoints.length > 1 && (
+                <Line
+                    points={trajectoryPoints}
+                    color={trajectoryPoints.length > 150 ? "#FF4500" : "#4fd0e7"} // Change color if powerful/long
+                    lineWidth={2}
+                    dashed={true}
+                    dashScale={2}
+                    dashSize={2}
+                    gapSize={1}
+                    opacity={0.6}
+                    transparent
+                />
+            )}
         </group >
     );
 }

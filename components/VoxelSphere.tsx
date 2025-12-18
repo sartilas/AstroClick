@@ -16,7 +16,7 @@ function noise(x: number, y: number, z: number) {
         Math.sin(x * 1.5 + y * 2.3) * 0.5;
 }
 
-export function VoxelSphere({ radius, color, resolution = 32, type = 'rocky' }: VoxelSphereProps) {
+export function VoxelSphere({ radius, color, resolution = 32, type = 'rocky', castShadow = true }: VoxelSphereProps & { castShadow?: boolean }) {
     const meshRef = useRef<THREE.InstancedMesh>(null);
 
     const { positions, colors } = useMemo(() => {
@@ -118,11 +118,13 @@ export function VoxelSphere({ radius, color, resolution = 32, type = 'rocky' }: 
     }, [positions, colors, radius, resolution]);
 
     return (
-        <instancedMesh ref={meshRef} args={[undefined, undefined, positions.length]} castShadow receiveShadow>
+        <instancedMesh ref={meshRef} args={[undefined, undefined, positions.length]} castShadow={castShadow} receiveShadow>
             <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial
-                roughness={0.8}
-                metalness={0.1}
+                roughness={type === 'star' ? 0 : (type === 'gas-giant' ? 0.4 : 0.8)}
+                metalness={type === 'star' ? 0 : 0.1}
+                emissive={type === 'star' ? color : "#000000"}
+                emissiveIntensity={type === 'star' ? 2 : 0}
                 envMapIntensity={0.5}
             />
         </instancedMesh>

@@ -6,7 +6,7 @@ import { InfoCard } from '@/components/InfoCard';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import Image from 'next/image';
 import { SolarSystemObject } from '@/data/solarSystemData';
-import { Moon, Sun, Minimize2, Maximize2, Ruler, Orbit, Rocket, Music, VolumeX, Volume2, Info, X, Eye, EyeOff, Layers, Ban, Leaf, Magnet, Network } from 'lucide-react';
+import { Moon, Sun, Minimize2, Maximize2, Ruler, Orbit, Rocket, Music, VolumeX, Volume2, Info, X, Eye, EyeOff, Layers, Ban, Leaf, Magnet, Network, RotateCcw } from 'lucide-react';
 import { LayerMode } from '@/components/types';
 
 import { dictionary, Language } from '@/data/dictionary';
@@ -30,6 +30,17 @@ export default function Home() {
     const [isHudVisible, setIsHudVisible] = useState(true);
     const [rtxMode, setRtxMode] = useState(false);
     const [layerMode, setLayerMode] = useState<LayerMode>('none');
+    const [resetCameraTrigger, setResetCameraTrigger] = useState(0);
+
+    useEffect(() => {
+        // Auto-detect language from browser
+        const browserLang = navigator.language.split('-')[0];
+        if (['fr', 'en', 'es', 'zh', 'hi'].includes(browserLang)) {
+            setLang(browserLang as Language);
+        } else {
+            setLang('en'); // Default fallback
+        }
+    }, []);
 
     const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -117,7 +128,7 @@ export default function Home() {
                             AstroClick
                         </h2>
                         <p className="text-gray-500 text-center text-xs font-mono mb-6 uppercase tracking-widest">
-                            v1.0.0 • Open Source
+                            v1.2.0 • Open Source
                         </p>
 
                         <div className="space-y-4 text-gray-300 text-sm leading-relaxed text-center">
@@ -157,6 +168,8 @@ export default function Home() {
                     lang={lang}
                     rtxMode={rtxMode}
                     layerMode={layerMode}
+                    isHudVisible={isHudVisible}
+                    resetCameraTrigger={resetCameraTrigger}
                 />
 
                 {/* UI Controls - Top Right */}
@@ -175,24 +188,6 @@ export default function Home() {
 
                         {/* GROUP 1: General Settings (Language, Theme, About) */}
                         <div className="flex items-center gap-2">
-                            {/* Language Selector */}
-                            <div className="flex items-center gap-1 bg-black/40 backdrop-blur-md p-1.5 rounded-xl border border-white/10">
-                                {(['fr', 'en', 'es', 'zh', 'hi'] as Language[]).map((l) => (
-                                    <button
-                                        key={l}
-                                        onClick={() => setLang(l)}
-                                        className={`px-2 py-1 rounded-lg text-lg transition-all ${lang === l ? 'bg-white/20 scale-110 shadow-lg' : 'opacity-60 hover:opacity-100 hover:scale-105'}`}
-                                        title={l.toUpperCase()}
-                                    >
-                                        {l === 'en' && '🇺🇸'}
-                                        {l === 'fr' && '🇫🇷'}
-                                        {l === 'es' && '🇪🇸'}
-                                        {l === 'zh' && '🇨🇳'}
-                                        {l === 'hi' && '🇮🇳'}
-                                    </button>
-                                ))}
-                            </div>
-
                             {/* Theme Toggle */}
                             <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md p-2 rounded-full border border-white/10 h-fit">
                                 <button
@@ -243,19 +238,36 @@ export default function Home() {
 
                         {/* GROUP 3: Simulation Controls */}
                         <div className="flex gap-2">
-                            {/* Time Scale Controls */}
+                            {/* Time Scale Controls - 2x2 Grid */}
                             <div className="flex flex-col gap-1 bg-black/40 backdrop-blur-md p-2 rounded-xl border border-white/10">
                                 <span className="text-xs text-center text-gray-400 font-mono mb-1">{t.timeControl}</span>
-                                <div className="flex gap-1">
-                                    {[0, 1, 2, 5].map((scale) => (
-                                        <button
-                                            key={scale}
-                                            onClick={() => setTimeScale(scale)}
-                                            className={`px-3 py-1 rounded-lg text-xs font-bold font-mono transition-all ${timeScale === scale ? 'bg-purple-600 text-white' : 'hover:bg-white/10 text-gray-400'}`}
-                                        >
-                                            {scale === 0 ? '||' : `${scale}x`}
-                                        </button>
-                                    ))}
+                                <div className="grid grid-cols-2 gap-1">
+                                    {/* Top Row: Pause (0) and 1x */}
+                                    <button
+                                        onClick={() => setTimeScale(0)}
+                                        className={`px-3 py-1 rounded-lg text-xs font-bold font-mono transition-all ${timeScale === 0 ? 'bg-purple-600 text-white' : 'hover:bg-white/10 text-gray-400'}`}
+                                    >
+                                        ||
+                                    </button>
+                                    <button
+                                        onClick={() => setTimeScale(1)}
+                                        className={`px-3 py-1 rounded-lg text-xs font-bold font-mono transition-all ${timeScale === 1 ? 'bg-purple-600 text-white' : 'hover:bg-white/10 text-gray-400'}`}
+                                    >
+                                        1x
+                                    </button>
+                                    {/* Bottom Row: 2x and 5x */}
+                                    <button
+                                        onClick={() => setTimeScale(2)}
+                                        className={`px-3 py-1 rounded-lg text-xs font-bold font-mono transition-all ${timeScale === 2 ? 'bg-purple-600 text-white' : 'hover:bg-white/10 text-gray-400'}`}
+                                    >
+                                        2x
+                                    </button>
+                                    <button
+                                        onClick={() => setTimeScale(5)}
+                                        className={`px-3 py-1 rounded-lg text-xs font-bold font-mono transition-all ${timeScale === 5 ? 'bg-purple-600 text-white' : 'hover:bg-white/10 text-gray-400'}`}
+                                    >
+                                        5x
+                                    </button>
                                 </div>
                             </div>
 
@@ -332,6 +344,15 @@ export default function Home() {
                                     <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all duration-300 ${rtxMode ? 'left-4.5' : 'left-0.5'}`} />
                                 </button>
                             </div>
+
+                            {/* Reset View Button */}
+                            <button
+                                onClick={() => setResetCameraTrigger(prev => prev + 1)}
+                                className="p-3 rounded-xl border border-white/10 bg-black/40 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                                title="Reset View"
+                            >
+                                <RotateCcw size={20} />
+                            </button>
 
                             {/* Rocket Cursor Toggle */}
                             <button

@@ -2,7 +2,7 @@
 
 **L'exploration du système solaire, cube par cube.**
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![Three.js](https://img.shields.io/badge/Three.js-R3F-orange)

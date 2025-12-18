@@ -31,34 +31,39 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
 
     // Calculate distance based on mode
     const scaledDistance = useMemo(() => {
-        // If this is a satellite (has 'orbiting' property), use simplified relative distance always?
-        // Or scale it? For visibility, satellites usually need relative scale.
-        // data.distance for Moon is 2. For Jupiter moons might be less.
-        if (data.orbiting) {
-            return data.distance; // Keep satellites close to parents
+        if (orbitMode === 'simplified') {
+            if (data.orbiting) return data.distance;
+            return data.distance;
         }
 
-        if (orbitMode === 'simplified') return data.distance;
+        // Real Scale Mode
+        // New Unified Scale: 1 unit = 25,000,000 km (Factor 1000 reduction)
+        // This ensures coherence between size and distance.
+        if (data.orbiting) {
+            // Satellites: Scale distance relative to parent
+            if (data.scientificDistance) {
+                let alignedDist = data.scientificDistance / 25000000;
+                // Min visual distance to avoid merging with planet mesh at this scale
+                if (alignedDist < 0.003) alignedDist = 0.003 + (Math.random() * 0.001);
+                return alignedDist;
+            }
+            return data.distance * 2; // Fallback
+        }
 
-        // "Real" scale approximation (Better spacing to avoid Sun overlap)
+        // Planets: Scale distance to fit scene
+        if (data.scientificDistance) {
+            return data.scientificDistance / 25000000;
+        }
+
+        // Fallback for objects without scientific data
         const realDistances: Record<string, number> = {
-            'mercury': 8,
-            'venus': 11,
-            'earth': 15,
-            'mars': 20,
-            'jupiter': 35,
-            'saturn': 50,
-            'uranus': 70,
-            'neptune': 90,
-            'pluto': 110,
-            'ceres': 28,
-            'eris': 120,
-            'makemake': 115,
-            'haumea': 112
+            'ceres': 16.52, // 413M / 25M
+            'eris': 404,
+            'makemake': 272,
+            'haumea': 260
         };
-
-        return realDistances[data.id] || data.distance * 2;
-    }, [orbitMode, data.id, data.distance, data.orbiting]);
+        return realDistances[data.id] || data.distance * 0.1;
+    }, [orbitMode, data.id, data.distance, data.orbiting, data.scientificDistance]);
 
     // Use deterministic initial angle based on planet ID to avoid hydration errors
     const initialAngle = useMemo(() => {
@@ -79,8 +84,8 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
             groupRef.current.position.set(x, 0, z);
         }
 
-        if (bodyGroupRef.current) { // Apply rotation and tilt to the inner group
-            bodyGroupRef.current.rotation.y += delta * data.rotationSpeed * timeScale; // Also scale rotation? Yes.
+        if (bodyGroupRef.current) {
+            bodyGroupRef.current.rotation.y += delta * data.rotationSpeed * timeScale;
             if (data.tilt) {
                 bodyGroupRef.current.rotation.z = (data.tilt * Math.PI) / 180;
             }
@@ -106,14 +111,17 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
 
     // Calculate size based on mode
     const scaledSize = useMemo(() => {
-        // Satellites need to be visible.
-        if (data.orbiting) return data.size * (orbitMode === 'real' ? 0.5 : 1);
-
         if (orbitMode === 'simplified') return data.size;
 
-        // Approximate relative sizes for "Real" mode
-        return data.size; // Using stylized size even in real mode for visibility
-    }, [orbitMode, data.size, data.orbiting]);
+        // Real Mode
+        // Scale: 1 unit = 25,000,000 km
+        if (data.scientificRadius) {
+            return data.scientificRadius / 25000000;
+        }
+
+        // Fallback
+        return data.size * 0.0001;
+    }, [orbitMode, data.size, data.scientificRadius]);
 
     // Determine Planet Type for Voxel Generation
     const planetType = useMemo(() => {
@@ -125,21 +133,47 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
 
     const voxelResolution = Math.max(16, Math.min(48, Math.floor(scaledSize * 15)));
 
+    const showOrbit = useMemo(() => {
+        if (orbitMode === 'simplified') return true;
+        // In Real Mode, hide orbits for small satellites/moon to avoid clutter
+        return !['moon', 'iss', 'hubble', 'james-webb'].includes(data.id);
+    }, [orbitMode, data.id]);
+
     return (
         <group>
             {/* Dashed Orbit Path */}
-            <Line
-                points={orbitPoints}
-                color="white"
-                opacity={0.1}
-                transparent
-                lineWidth={1}
-                dashed={true}
-                dashScale={scaledDistance * 0.1}
-                dashSize={1}
-                gapSize={1}
-                rotation={[0, 0, 0]}
-            />
+            {showOrbit && (
+                <group>
+                    <Line
+                        points={orbitPoints}
+                        color={orbitMode === 'real' ? data.color : 'white'}
+                        opacity={orbitMode === 'real' ? 0.6 : 0.1}
+                        transparent
+                        lineWidth={orbitMode === 'real' ? 2 : 1}
+                        dashed={true}
+                        dashScale={scaledDistance * 0.1}
+                        dashSize={1}
+                        gapSize={1}
+                        rotation={[0, 0, 0]}
+                    />
+                    {orbitMode === 'real' && (
+                        <Html position={[scaledDistance, 0, 0]} zIndexRange={[0, 0]}>
+                            <div
+                                className="pointer-events-auto cursor-pointer flex items-center group"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onSelect(data);
+                                }}
+                            >
+                                <div className={`w-2 h-2 rounded-full mr-2 opacity-1 transition-transform group-hover:scale-150`} style={{ backgroundColor: data.color }}></div>
+                                <div className="bg-black/80 text-[10px] text-white/80 px-2 py-0.5 rounded border border-white/10 backdrop-blur-sm whitespace-nowrap opacity-50 group-hover:opacity-100 transition-opacity">
+                                    {(dictionary[lang]?.orbitOf || 'Orbit of')} {displayName}
+                                </div>
+                            </div>
+                        </Html>
+                    )}
+                </group>
+            )}
 
             {/* Planet Group - Animated Position */}
             <group ref={groupRef} name={`celestial-${data.id}`}>
