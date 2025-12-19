@@ -3,6 +3,12 @@ import { useFrame, extend, ReactThreeFiber } from '@react-three/fiber';
 import * as THREE from 'three';
 import { shaderMaterial } from '@react-three/drei';
 import { solarSystemData } from '../../data/solarSystemData';
+import { kerbolSystemData } from '../../data/kerbolSystemData';
+import { SystemType } from '../types';
+
+interface GravityWellLayerProps {
+    systemType?: SystemType;
+}
 
 // Custom Shader Material that handles both vertex displacement (density/well) 
 // and fragment styling (tech grid/black holes).
@@ -196,15 +202,20 @@ declare global {
     }
 }
 
-export function GravityWellLayer() {
+export function GravityWellLayer({ systemType = 'solar' }: GravityWellLayerProps) {
     const materialRef = useRef<THREE.ShaderMaterial>(null);
     const planeRef = useRef<THREE.Mesh>(null);
+
+    // Select the correct system data based on systemType
+    const currentSystemData = systemType === 'kerbol' ? kerbolSystemData : solarSystemData;
+    const starId = systemType === 'kerbol' ? 'kerbol' : 'sun';
+
     const bodiesData = useMemo(() => {
-        return solarSystemData.map(d => ({
+        return currentSystemData.map(d => ({
             id: d.id,
-            mass: d.id === 'sun' ? 50.0 : Math.max(d.size * 5, 2.0),
+            mass: d.id === starId ? 50.0 : Math.max(d.size * 5, 2.0),
         }));
-    }, []);
+    }, [currentSystemData, starId]);
 
     useFrame(({ scene, clock }) => {
         if (!materialRef.current) return;

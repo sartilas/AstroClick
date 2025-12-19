@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.3.0] - 2025-12-20
+
+### Added
+- **SEO & Référencement Google**:
+    - Fichier `robots.ts` pour le crawling des moteurs de recherche (Googlebot, Bingbot).
+    - Fichier `sitemap.ts` dynamique avec support multilingue (FR, EN, ES, ZH, HI).
+    - Métadonnées Open Graph complètes pour le partage sur Facebook/LinkedIn.
+    - Twitter Cards pour un aperçu riche sur Twitter.
+    - Données structurées JSON-LD (Schema.org) pour les résultats enrichis Google.
+    - Configuration PWA avec `manifest.json`.
+    - Balises `hreflang` pour le SEO international.
+- **UI/UX**:
+    - Badges "SEO Optimisé" et "PWA Ready" dans la modal À propos.
+    - Lien vers astroclick.org dans la modal À propos.
+    
+### Changed
+- Langue HTML passée de `en` à `fr` pour correspondre au contenu principal.
+- Métadonnées enrichies avec mots-clés, auteurs, et descriptions optimisées.
+- Ajout de preconnect/dns-prefetch pour les images NASA (performance).
+
 ## [1.2.0] - 2025-12-18
 
 ### Added

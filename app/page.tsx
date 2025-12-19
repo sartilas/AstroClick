@@ -6,8 +6,8 @@ import { InfoCard } from '@/components/InfoCard';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import Image from 'next/image';
 import { SolarSystemObject } from '@/data/solarSystemData';
-import { Moon, Sun, Minimize2, Maximize2, Ruler, Orbit, Rocket, Music, VolumeX, Volume2, Info, X, Eye, EyeOff, Layers, Ban, Leaf, Magnet, Network, RotateCcw, ChevronUp, ChevronDown, Languages } from 'lucide-react';
-import { LayerMode } from '@/components/types';
+import { Moon, Sun, Minimize2, Maximize2, Ruler, Orbit, Rocket, Music, VolumeX, Volume2, Info, X, Eye, EyeOff, Layers, Ban, Leaf, Magnet, Network, RotateCcw, ChevronUp, ChevronDown, Languages, Globe } from 'lucide-react';
+import { LayerMode, SystemType } from '@/components/types';
 
 import { dictionary, Language } from '@/data/dictionary';
 
@@ -31,6 +31,7 @@ export default function Home() {
     const [rtxMode, setRtxMode] = useState(false);
     const [layerMode, setLayerMode] = useState<LayerMode>('none');
     const [resetCameraTrigger, setResetCameraTrigger] = useState(0);
+    const [systemType, setSystemType] = useState<SystemType>('solar');
 
     const [showInstructions, setShowInstructions] = useState(true);
 
@@ -175,7 +176,7 @@ export default function Home() {
                             AstroClick
                         </h2>
                         <p className="text-gray-500 text-center text-xs font-mono mb-6 uppercase tracking-widest">
-                            v1.2.0 • Open Source
+                            v1.3.0 • Open Source
                         </p>
 
                         <div className="space-y-4 text-gray-300 text-sm leading-relaxed text-center">
@@ -187,6 +188,17 @@ export default function Home() {
                                 <span className="text-blue-400 font-bold"> Gemini 3 Pro</span> et
                                 <span className="text-purple-400 font-bold"> Claude 4.5</span>.
                             </p>
+
+                            {/* SEO & Accessibility Badge */}
+                            <div className="flex justify-center gap-2 my-3">
+                                <span className="bg-green-600/20 text-green-400 text-[10px] px-2 py-1 rounded-full border border-green-500/30 font-mono">
+                                    🔍 SEO Optimisé
+                                </span>
+                                <span className="bg-blue-600/20 text-blue-400 text-[10px] px-2 py-1 rounded-full border border-blue-500/30 font-mono">
+                                    📱 PWA Ready
+                                </span>
+                            </div>
+
                             <p className="text-xs text-yellow-500/80 italic mt-2 animate-pulse">
                                 Psst... Cliquez 3 fois sur le logo pour une surprise cosmique !
                             </p>
@@ -202,6 +214,15 @@ export default function Home() {
                                 >
                                     <Network size={12} />
                                     github.com/sartilas/AstroClick
+                                </a>
+                                <a
+                                    href="https://astroclick.org"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-300 hover:text-blue-400 text-xs flex items-center gap-1 transition-colors"
+                                >
+                                    <Globe size={12} />
+                                    astroclick.org
                                 </a>
                             </div>
                         </div>
@@ -231,6 +252,7 @@ export default function Home() {
                     resetCameraTrigger={resetCameraTrigger}
                     blackHoleActive={blackHoleActive}
                     onBlackHoleComplete={() => setBlackHoleActive(false)}
+                    systemType={systemType}
                 />
 
                 {/* UI Controls - Bottom Dock */}
@@ -288,11 +310,39 @@ export default function Home() {
                                         </button>
                                     </div>
                                 </div>
+
+                                <div className="w-px h-8 bg-white/10" />
+
+                                {/* System Toggle - Solar vs Kerbol */}
+                                <div className="flex flex-col gap-1 items-center px-1">
+                                    <span className="text-[9px] uppercase tracking-tighter text-gray-400 font-bold">{t.systemToggle}</span>
+                                    <div className="flex gap-1">
+                                        <button
+                                            onClick={() => { setSystemType('solar'); setSelectedObject(null); }}
+                                            className={`p-2 rounded-lg transition-all flex items-center gap-1 ${systemType === 'solar' ? 'bg-yellow-600 text-white shadow-lg shadow-yellow-500/30' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                            title={t.solarSystem}
+                                        >
+                                            <Sun size={16} />
+                                            <span className="text-[9px] font-bold hidden sm:inline">☀️</span>
+                                        </button>
+                                        <div className="relative">
+                                            <div className="absolute -top-2 -right-1 bg-gradient-to-r from-purple-600 to-pink-500 text-[6px] font-black px-1 py-0.5 rounded-full text-white shadow-lg border border-purple-400 pointer-events-none z-10 animate-pulse">NEW</div>
+                                            <button
+                                                onClick={() => { setSystemType('kerbol'); setSelectedObject(null); }}
+                                                className={`p-2 rounded-lg transition-all flex items-center gap-1 ${systemType === 'kerbol' ? 'bg-green-600 text-white shadow-lg shadow-green-500/30' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                                title={t.kerbolSystem}
+                                            >
+                                                <Rocket size={16} />
+                                                <span className="text-[9px] font-bold hidden sm:inline">KSP</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* GROUP 2: Visuals (Layers, Theme, RTX) */}
                             <div className="flex items-center gap-3 bg-black/40 p-2 rounded-2xl border border-white/10 backdrop-blur-sm relative">
-                                <div className="absolute -top-2 right-2 bg-red-600 text-[8px] font-black px-1.5 py-0.5 rounded-full text-white shadow-lg border border-red-400 pointer-events-none">DEV</div>
+                                <div className="absolute -top-2 right-2 bg-gradient-to-r from-purple-600 to-pink-500 text-[8px] font-black px-1.5 py-0.5 rounded-full text-white shadow-lg border border-purple-400 pointer-events-none animate-pulse">NEW</div>
 
                                 <div className="flex flex-col gap-1 items-center px-1">
                                     <span className="text-[9px] uppercase tracking-tighter text-gray-400 font-bold">{t.layers}</span>
@@ -328,16 +378,13 @@ export default function Home() {
                                     </button>
 
                                     {/* RTX Toggle */}
-                                    <div className="flex flex-col gap-1 items-center">
-                                        <button
-                                            onClick={() => setRtxMode(!rtxMode)}
-                                            className={`w-9 h-5 rounded-full relative transition-colors duration-300 shadow-inner ${rtxMode ? 'bg-yellow-500' : 'bg-gray-700'}`}
-                                            title="RTX Mode"
-                                        >
-                                            <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all duration-300 shadow-sm ${rtxMode ? 'left-5' : 'left-1'}`} />
-                                        </button>
-                                        <span className={`text-[8px] font-black tracking-widest ${rtxMode ? 'text-yellow-400' : 'text-gray-600'}`}>RTX</span>
-                                    </div>
+                                    <button
+                                        onClick={() => setRtxMode(!rtxMode)}
+                                        className={`px-3 py-2 rounded-xl font-black text-[10px] tracking-widest transition-all ${rtxMode ? 'bg-green-600 text-white shadow-lg shadow-green-500/30' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                        title="RTX Mode"
+                                    >
+                                        RTX
+                                    </button>
                                 </div>
                             </div>
 
@@ -363,9 +410,20 @@ export default function Home() {
                                         <RotateCcw size={20} />
                                     </button>
 
+
                                     {orbitMode !== 'real' && (
                                         <button
-                                            onClick={() => setShowCursor(!showCursor)}
+                                            onClick={(e) => {
+                                                setShowCursor(!showCursor);
+                                                // Remove focus to prevent spacebar from toggling button
+                                                (e.target as HTMLButtonElement).blur();
+                                            }}
+                                            onKeyDown={(e) => {
+                                                // Prevent spacebar from triggering button click (used for launching satellites)
+                                                if (e.code === 'Space') {
+                                                    e.preventDefault();
+                                                }
+                                            }}
                                             className={`p-2 rounded-xl transition-all ${showCursor ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/30' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
                                             title="Rocket Mode"
                                         >
@@ -429,6 +487,7 @@ export default function Home() {
                     selectedObject={selectedObject}
                     onClose={() => setSelectedObject(null)}
                     lang={lang}
+                    systemType={systemType}
                 />
             </div>
         </main>

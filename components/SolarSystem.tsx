@@ -1,19 +1,20 @@
 'use client';
 
-import { useRef, useMemo, useState, forwardRef, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { useRef, useMemo, useState, forwardRef, useEffect, useCallback } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import { CelestialBody } from './CelestialBody';
 import { AsteroidBelt } from './AsteroidBelt';
 import { VoxelSphere } from './VoxelSphere';
 import { solarSystemData, SolarSystemObject } from '@/data/solarSystemData';
+import { kerbolSystemData } from '@/data/kerbolSystemData';
 import { RocketCursor } from './RocketCursor';
 import { PhysicsManager } from './PhysicsManager';
 import { ShootingStars } from './ShootingStars';
 import { dictionary, Language } from '@/data/dictionary';
 import { Leaderboard } from './Leaderboard';
-import { Rocket, LayerMode } from './types';
+import { Rocket, LayerMode, SystemType } from './types';
 import { Effects } from './Effects';
 import { HabitableZoneLayer } from './layers/HabitableZoneLayer';
 import { GravityWellLayer } from './layers/GravityWellLayer';
@@ -35,17 +36,20 @@ interface SolarSystemProps {
     resetCameraTrigger: number;
     blackHoleActive?: boolean;
     onBlackHoleComplete?: () => void;
+    systemType?: SystemType;
 }
 
 interface SunProps {
     orbitMode?: 'simplified' | 'real';
     onSelect?: (obj: SolarSystemObject) => void;
+    onDoubleClick?: (obj: SolarSystemObject) => void;
     data?: SolarSystemObject;
     rtxMode?: boolean;
     sunRef?: React.RefObject<THREE.Mesh>;
+    color?: string; // Allow custom color for Kerbol
 }
 
-function Sun({ orbitMode, onSelect, data, rtxMode, sunRef }: SunProps) {
+function Sun({ orbitMode, onSelect, onDoubleClick, data, rtxMode, sunRef, color = '#FDB813' }: SunProps) {
     const groupRef = useRef<THREE.Group>(null);
 
     // Scaling for Sun
@@ -63,11 +67,17 @@ function Sun({ orbitMode, onSelect, data, rtxMode, sunRef }: SunProps) {
     return (
         <group
             ref={groupRef}
-            name="celestial-sun"
+            name={data ? `celestial-${data.id}` : "celestial-sun"}
             onClick={(e) => {
                 if (onSelect && data) {
                     e.stopPropagation();
                     onSelect(data);
+                }
+            }}
+            onDoubleClick={(e) => {
+                if (onDoubleClick && data) {
+                    e.stopPropagation();
+                    onDoubleClick(data);
                 }
             }}
             onPointerOver={() => { document.body.style.cursor = 'pointer' }}
@@ -76,7 +86,7 @@ function Sun({ orbitMode, onSelect, data, rtxMode, sunRef }: SunProps) {
             {/* Main sun Voxel Sphere */}
             <VoxelSphere
                 radius={size}
-                color="#FDB813"
+                color={color}
                 resolution={orbitMode === 'real' ? 64 : 24}
                 type="star"
                 castShadow={false}
@@ -85,7 +95,7 @@ function Sun({ orbitMode, onSelect, data, rtxMode, sunRef }: SunProps) {
             {/* God Rays Source Mesh - Core light */}
             <mesh ref={sunRef} visible={rtxMode}>
                 <sphereGeometry args={[size * 0.9, 32, 32]} />
-                <meshBasicMaterial color="#FDB813" transparent opacity={0.5} />
+                <meshBasicMaterial color={color} transparent opacity={0.5} />
             </mesh>
 
             {/* Additional glow/voxel shell */}
@@ -112,16 +122,76 @@ function Sun({ orbitMode, onSelect, data, rtxMode, sunRef }: SunProps) {
     );
 }
 
-function CameraController({ target, orbitMode, resetCameraTrigger }: { target: SolarSystemObject | null, orbitMode: 'simplified' | 'real', resetCameraTrigger: number }) {
+function CameraController({
+    target,
+    orbitMode,
+    resetCameraTrigger,
+    focusTarget,
+    onClearFocus
+}: {
+    target: SolarSystemObject | null,
+    orbitMode: 'simplified' | 'real',
+    resetCameraTrigger: number,
+    focusTarget: string | null,
+    onClearFocus: () => void
+}) {
     const controlsRef = useRef<any>(null);
     const prevTrigger = useRef(resetCameraTrigger);
+    const { scene } = useThree();
+    const isDragging = useRef(false);
+
+    // Handle mouse events to detect right-click drag (exit focus mode)
+    useEffect(() => {
+        const handleMouseDown = (e: MouseEvent) => {
+            if (e.button === 2) { // Right click
+                isDragging.current = true;
+            }
+        };
+
+        const handleMouseUp = (e: MouseEvent) => {
+            if (e.button === 2 && isDragging.current) {
+                isDragging.current = false;
+            }
+        };
+
+        const handleMouseMove = (e: MouseEvent) => {
+            // If right-click dragging while focused, clear focus to allow free camera
+            if (isDragging.current && focusTarget && (e.movementX !== 0 || e.movementY !== 0)) {
+                onClearFocus();
+            }
+        };
+
+        window.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener('mousemove', handleMouseMove);
+
+        return () => {
+            window.removeEventListener('mousedown', handleMouseDown);
+            window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, [focusTarget, onClearFocus]);
 
     useFrame(() => {
+        // Handle reset camera trigger
         if (resetCameraTrigger !== prevTrigger.current) {
             if (controlsRef.current) {
                 controlsRef.current.reset();
             }
             prevTrigger.current = resetCameraTrigger;
+        }
+
+        // Follow focus target smoothly
+        if (focusTarget && controlsRef.current) {
+            const targetObj = scene.getObjectByName(`celestial-${focusTarget}`);
+            if (targetObj) {
+                const targetPos = new THREE.Vector3();
+                targetObj.getWorldPosition(targetPos);
+
+                // Smoothly lerp camera target to the object
+                controlsRef.current.target.lerp(targetPos, 0.05);
+                controlsRef.current.update();
+            }
         }
     });
 
@@ -132,7 +202,6 @@ function CameraController({ target, orbitMode, resetCameraTrigger }: { target: S
             enableZoom={true}
             enableRotate={true}
             minDistance={orbitMode === 'real' ? 0.1 : 5}
-            // Real mode: Neptune is at ~180 units. Max distance 1000 covers everything comfortably.
             maxDistance={orbitMode === 'real' ? 1000 : 150}
             zoomSpeed={orbitMode === 'real' ? 4 : 0.8}
             panSpeed={orbitMode === 'real' ? 2 : 1}
@@ -150,19 +219,37 @@ interface SceneProps extends SolarSystemProps {
     layerMode: LayerMode;
     blackHoleActive?: boolean;
     onBlackHoleComplete?: () => void;
+    systemType: SystemType;
+    focusTarget: string | null;
+    setFocusTarget: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode, resetCameraTrigger, blackHoleActive, onBlackHoleComplete }: SceneProps) {
+function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode, resetCameraTrigger, blackHoleActive, onBlackHoleComplete, systemType, focusTarget, setFocusTarget }: SceneProps) {
     const sunRef = useRef<THREE.Mesh>(null);
-    // Separate primaries (Sun orbiters) and satellites (Moon, etc)
-    const { primaries, satelliteMap, sunData } = useMemo(() => {
+
+    // Callback to clear focus (when user right-click drags)
+    const handleClearFocus = useCallback(() => {
+        setFocusTarget(null);
+    }, [setFocusTarget]);
+
+    // Handle double-click on objects to focus camera
+    const handleDoubleClick = useCallback((obj: SolarSystemObject) => {
+        setFocusTarget(obj.id);
+    }, [setFocusTarget]);
+
+    // Get current system data based on systemType
+    const currentSystemData = systemType === 'kerbol' ? kerbolSystemData : solarSystemData;
+    const starId = systemType === 'kerbol' ? 'kerbol' : 'sun';
+
+    // Separate primaries (Star orbiters) and satellites (Moons, etc)
+    const { primaries, satelliteMap, starData } = useMemo(() => {
         const p: SolarSystemObject[] = [];
         const s: Record<string, SolarSystemObject[]> = {};
-        let sun: SolarSystemObject | undefined;
+        let star: SolarSystemObject | undefined;
 
-        solarSystemData.forEach(obj => {
-            if (obj.id === 'sun') {
-                sun = obj;
+        currentSystemData.forEach(obj => {
+            if (obj.id === starId) {
+                star = obj;
                 return;
             }
 
@@ -173,8 +260,8 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                 p.push(obj);
             }
         });
-        return { primaries: p, satelliteMap: s, sunData: sun };
-    }, []);
+        return { primaries: p, satelliteMap: s, starData: star };
+    }, [currentSystemData, starId]);
 
 
 
@@ -198,8 +285,8 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
             {/* Shooting Stars Background Effect */}
             <ShootingStars />
 
-            {/* Sun */}
-            <Sun orbitMode={orbitMode} onSelect={onSelectObject} data={sunData} rtxMode={rtxMode} sunRef={sunRef} />
+            {/* Star (Sun or Kerbol) */}
+            <Sun orbitMode={orbitMode} onSelect={onSelectObject} onDoubleClick={handleDoubleClick} data={starData} rtxMode={rtxMode} sunRef={sunRef} color={starData?.color || '#FDB813'} />
 
             {/* RTX Effects */}
             <Effects sunRef={sunRef} rtxMode={rtxMode} />
@@ -215,11 +302,11 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
 
             {/* LAYERS */}
             {layerMode === 'habitable' && <HabitableZoneLayer orbitMode={orbitMode} />}
-            {layerMode === 'gravity' && <GravityWellLayer />}
+            {layerMode === 'gravity' && <GravityWellLayer systemType={systemType} />}
             {layerMode === 'lagrange' && <LagrangePointsLayer />}
 
-            {/* Asteroid Belt */}
-            <AsteroidBelt timeScale={timeScale} orbitMode={orbitMode} />
+            {/* Asteroid Belt - Only show for Solar System */}
+            {systemType === 'solar' && <AsteroidBelt timeScale={timeScale} orbitMode={orbitMode} />}
 
             {/* All celestial bodies */}
             {primaries.map((obj) => (
@@ -227,6 +314,7 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                     key={obj.id}
                     data={obj}
                     onSelect={onSelectObject}
+                    onDoubleClick={handleDoubleClick}
                     isPaused={false}
                     orbitMode={orbitMode}
                     satellites={satelliteMap[obj.id]}
@@ -236,10 +324,16 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
             ))}
 
             {/* Camera controls */}
-            <CameraController target={selectedObject} orbitMode={orbitMode} resetCameraTrigger={resetCameraTrigger} />
+            <CameraController
+                target={selectedObject}
+                orbitMode={orbitMode}
+                resetCameraTrigger={resetCameraTrigger}
+                focusTarget={focusTarget}
+                onClearFocus={handleClearFocus}
+            />
 
             {/* Rocket Cursor */}
-            {showCursor && <RocketCursor />}
+            {showCursor && <RocketCursor isKSP={systemType === 'kerbol'} />}
 
             {/* Physics Manager */}
             <PhysicsManager
@@ -260,9 +354,10 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
     );
 }
 
-export default function SolarSystem({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale, lang, rtxMode = false, layerMode, isHudVisible, resetCameraTrigger, blackHoleActive, onBlackHoleComplete }: SolarSystemProps) {
+export default function SolarSystem({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale, lang, rtxMode = false, layerMode, isHudVisible, resetCameraTrigger, blackHoleActive, onBlackHoleComplete, systemType = 'solar' }: SolarSystemProps) {
     const [rockets, setRockets] = useState<Rocket[]>([]);
     const [history, setHistory] = useState<Rocket[]>([]);
+    const [focusTarget, setFocusTarget] = useState<string | null>(null);
 
 
     return (
@@ -295,6 +390,9 @@ export default function SolarSystem({ selectedObject, onSelectObject, orbitMode,
                     resetCameraTrigger={resetCameraTrigger}
                     blackHoleActive={blackHoleActive}
                     onBlackHoleComplete={onBlackHoleComplete}
+                    systemType={systemType}
+                    focusTarget={focusTarget}
+                    setFocusTarget={setFocusTarget}
                 />
             </Canvas>
         </div>

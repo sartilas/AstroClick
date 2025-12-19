@@ -33,6 +33,10 @@ export const dictionary: Record<Language, any> = {
         nasaGallery: "NASA Gallery",
         loadingImages: "Loading NASA Images...",
         galleryUnavailable: "Gallery unavailable",
+        systemToggle: "SYSTEM",
+        solarSystem: "Solar",
+        kerbolSystem: "Kerbol (KSP)",
+        distanceKerbin: "Avg Dist. to Kerbin",
         objects: {
             sun: { name: "Sun", desc: "The star at the center of our Solar System. It provides light and energy to all planets.", funFact: "The Sun accounts for 99.86% of the mass in the solar system!" },
             mercury: { name: "Mercury", desc: "The smallest planet and closest to the Sun. Its surface is covered with craters like our Moon!", funFact: "Mercury is the fastest planet, zooming around the Sun in just 88 Earth days!" },
@@ -50,59 +54,236 @@ export const dictionary: Record<Language, any> = {
             haumea: { name: "Haumea", desc: "The egg-shaped dwarf planet! It's one of the fastest rotating objects in our solar system.", funFact: "Haumea spins super fast! One day on Haumea is only 4 hours long, making it shaped like a football!" },
             'james-webb': { name: "James Webb", desc: "The most powerful space telescope ever built! It uses infrared light to see through cosmic dust.", funFact: "James Webb can see galaxies that formed just after the Big Bang, over 13 billion years ago!" },
             hubble: { name: "Hubble", desc: "A legendary space telescope that has shown us amazing images of distant galaxies, nebulae, and planets!", funFact: "Hubble has taken over 1.5 million pictures of the universe! It orbits Earth every 95 minutes." },
-            iss: { name: "ISS", desc: "A giant laboratory in space where astronauts live and work! It's been continuously occupied since 2000.", funFact: "The ISS is as big as a football field! Astronauts see 16 sunrises and sunsets every day up there!" }
+            iss: { name: "ISS", desc: "A giant laboratory in space where astronauts live and work! It's been continuously occupied since 2000.", funFact: "The ISS is as big as a football field! Astronauts see 16 sunrises and sunsets every day up there!" },
+            // Kerbol System Objects
+            kerbol: { name: "Kerbol", desc: "The yellow dwarf star at the center of the Kerbol System, similar to our Sun but much smaller.", funFact: "⚠️ Easter Egg: In older KSP versions, descending below -250m caused a division by zero crash!" },
+            moho: { name: "Moho", desc: "The closest planet to Kerbol, scorched and airless with dark volcanic terrain.", funFact: "🕳️ The Mohole: A gigantic near-vertical hole at the North Pole - a bug turned into a feature!" },
+            eve: { name: "Eve", desc: "Easy to reach, impossible to leave! A purple world with crushing atmosphere and mysterious oceans.", funFact: "💜 The atmosphere is so thick that solar panels shatter from pressure! Oceans are filled with 'Explodium'." },
+            gilly: { name: "Gilly", desc: "A tiny captured asteroid orbiting Eve with extremely low gravity.", funFact: "🦘 Gravity is 0.005g - you can orbit just by jumping with a jetpack!" },
+            kerbin: { name: "Kerbin", desc: "Home of the Kerbals! The only planet with breathable atmosphere and life.", funFact: "🏠 Full of secrets: KSC 2, black monoliths (2001 reference), and developer memorials!" },
+            'the-mun': { name: "The Mun", desc: "Kerbin's grey, cratered moon. The first destination for every KSP player!", funFact: "🌑 Multiple Arch formations and Monoliths - a 2001: Space Odyssey tribute!" },
+            minmus: { name: "Minmus", desc: "A small mint-colored moon with strange icy flats and very low gravity.", funFact: "🍧 According to lore, Minmus is made of frozen dessert (mint ice cream)!" },
+            duna: { name: "Duna", desc: "The rust-red Mars analog. First interplanetary target for most Kerbal explorers.", funFact: "👽 Giant Kerbal Face rock + a pyramid with SSTV signals that decode to a Soyuz image!" },
+            ike: { name: "Ike", desc: "A large grey moon tidally locked to Duna, dominating its sky.", funFact: "🔒 So close that its gravity noticeably affects Duna operations!" },
+            dres: { name: "Dres", desc: "A lonely forgotten dwarf planet in the asteroid belt. 'Dres doesn't exist' joke.", funFact: "🤔 Running community joke: nobody ever visits! Has a massive canyon scar." },
+            jool: { name: "Jool", desc: "The green gas giant - the 'final boss' for beginners with 5 complex moons.", funFact: "☠️ Descend too deep and you're instantly destroyed! The 'Jool 5' challenge is legendary." },
+            laythe: { name: "Laythe", desc: "An oceanic moon with breathable but cold/radioactive atmosphere. Most Earth-like world!", funFact: "🌊 Part of the 1:2:4 Laplace resonance with Vall and Tylo!" },
+            vall: { name: "Vall", desc: "A beautiful blue ice ball. Smooth frozen surface makes landing easy.", funFact: "❄️ Part of the legendary 1:2:4 Laplace orbital resonance!" },
+            tylo: { name: "Tylo", desc: "Massive rocky moon with Kerbin gravity but NO atmosphere. Hardest landing!", funFact: "💪 Landing here is one of the hardest challenges in all of KSP!" },
+            bop: { name: "Bop", desc: "A lumpy brown captured asteroid with the Dead Kraken Easter egg.", funFact: "🦑 The Space Kraken corpse is impaled near the North Pole!" },
+            pol: { name: "Pol", desc: "Yellow spiky moon resembling a pollen grain. Strange rock formations.", funFact: "🌵 Surface covered in strange yellow spiky rocks - looks like a cactus!" },
+            eeloo: { name: "Eeloo", desc: "A distant ice world with Tiger Stripes like Jupiter's moon Europa.", funFact: "📡 Was planned as a moon of a second gas giant that was never added!" }
         }
     },
     fr: {
         title: "AstroClick",
-        subtitle: "L'exploration du système solaire, cube par cube.",
-        clickInstruction: "Cliquez sur une planète pour en savoir plus ! 🚀",
-        orbitScale: "ÉCHELLE ORBITE",
-        timeControl: "CONTRÔLE TEMPOREL",
-        simplified: "SIMPLIFIÉ",
-        realScale: "RÉELLE",
-        layers: "CALQUES",
+        subtitle: "L'exploration spatiale, cube par cube.",
+        clickInstruction: "Cliquez sur une planète pour en découvrir tous les secrets ! 🚀",
+        orbitScale: "ÉCHELLE ORBITALE",
+        timeControl: "VITESSE DU TEMPS",
+        simplified: "SCHÉMATIQUE",
+        realScale: "ÉCHELLE RÉELLE",
+        layers: "FILTRES",
         layerNone: "Aucun",
         layerHabitable: "Zone Habitable",
-        layerGravity: "Puits Gravité",
-        layerLagrange: "Points Lagrange",
-        backToSpace: "🚀 Retour à l'espace",
+        layerGravity: "Puits de Gravité",
+        layerLagrange: "Points de Lagrange",
+        backToSpace: "🚀 Retour à l'exploration",
         didYouKnow: "💡 Le saviez-vous ?",
         temperature: "Température",
-        distance: "Distance",
-        distanceEarth: "Dist. Moy. Terre",
-        moons: "Lunes",
-        special: "Spécial",
-        launchDate: "Lancement",
-        purpose: "Mission",
+        distance: "Distance du Soleil",
+        distanceEarth: "Distance moyenne de la Terre",
+        moons: "Nombre de lunes",
+        special: "Caractéristiques",
+        launchDate: "Date de lancement",
+        purpose: "Mission principale",
         orbit: "Orbite",
         orbitOf: "Orbite de",
+        orbitalPeriod: "Période orbitale",
         planet: "🪐 Planète",
-        dwarfPlanet: "⭐ Planète Naine",
-        telescope: "🔭 Télescope",
+        dwarfPlanet: "⭐ Planète naine",
+        telescope: "🔭 Télescope spatial",
         satellite: "🛰️ Satellite",
         star: "☀️ Étoile",
         nasaGallery: "Galerie NASA",
-        loadingImages: "Chargement des images...",
-        galleryUnavailable: "Galerie indisponible",
+        loadingImages: "Chargement des images NASA...",
+        galleryUnavailable: "Galerie temporairement indisponible",
+        systemToggle: "SYSTÈME STELLAIRE",
+        solarSystem: "Système Solaire",
+        kerbolSystem: "Kerbol (KSP)",
+        distanceKerbin: "Distance moyenne de Kerbin",
         objects: {
-            sun: { name: "Soleil", desc: "L'étoile au centre de notre système. Elle fournit lumière et énergie à toutes les planètes.", funFact: "Le Soleil représente 99,86% de la masse du système solaire !" },
-            mercury: { name: "Mercure", desc: "La plus petite planète et la plus proche du Soleil. Sa surface est couverte de cratères comme notre Lune !", funFact: "Mercure est la planète la plus rapide, elle fait le tour du Soleil en seulement 88 jours terrestres !" },
-            venus: { name: "Vénus", desc: "Souvent appelée la jumelle de la Terre pour sa taille, mais c'est un enfer brûlant aux nuages toxiques !", funFact: "Vénus tourne à l'envers ! C'est la seule planète qui tourne dans la direction opposée." },
-            earth: { name: "Terre", desc: "La Planète Bleue ! 71% de la Terre est couverte d'eau, et elle a les conditions parfaites pour la vie.", funFact: "La Terre est la seule planète connue abritant la vie ! C'est notre beau foyer dans l'espace." },
-            mars: { name: "Mars", desc: "La Planète Rouge ! Elle doit sa couleur à la rouille de son sol. Les scientifiques y cherchent des traces de vie ancienne !", funFact: "Mars abrite le plus grand volcan du système solaire - Olympus Mons est 3 fois plus haut que l'Everest !" },
-            jupiter: { name: "Jupiter", desc: "La plus grande planète de notre système ! C'est une géante gazeuse avec de magnifiques nuages tourbillonnants.", funFact: "Jupiter est si grande que toutes les autres planètes pourraient tenir à l'intérieur ! Elle a aussi une tempête géante, la Grande Tache Rouge." },
-            saturn: { name: "Saturne", desc: "Le Seigneur des Anneaux ! Saturne possède le système d'anneaux le plus spectaculaire de notre système solaire.", funFact: "Les anneaux de Saturne sont faits de milliards de morceaux de glace et de roche ! Certains sont minuscules, d'autres gros comme des maisons !" },
-            uranus: { name: "Uranus", desc: "La planète couchée ! C'est une géante de glace bleu-vert à cause du méthane.", funFact: "Uranus est inclinée sur le côté ! Elle roule autour du Soleil comme une balle au lieu de tourner comme une toupie." },
-            neptune: { name: "Neptune", desc: "La planète la plus venteuse ! Cette géante de glace bleu profond est la plus lointaine du Soleil.", funFact: "Neptune a les vents les plus forts du système solaire - jusqu'à 2 000 km/h ! C'est plus rapide qu'un avion de chasse !" },
-            pluto: { name: "Pluton", desc: "Autrefois la 9ème planète ! Pluton est maintenant une planète naine mais reste super cool !", funFact: "Pluton a une région en forme de cœur sur sa surface appelée Tombaugh Regio, faite d'azote gelé." },
-            ceres: { name: "Cérès", desc: "La résidente la plus grosse de la ceinture d'astéroïdes ! Cérès pourrait cacher un océan sous sa surface glacée.", funFact: "Cérès vit dans la ceinture d'astéroïdes entre Mars et Jupiter ! C'est le plus gros objet qui s'y trouve." },
-            eris: { name: "Éris", desc: "L'une des plus lointaines planètes naines ! Elle porte le nom de la déesse grecque de la discorde.", funFact: "Éris est presque de la même taille que Pluton ! Sa découverte a aidé à créer la catégorie 'planète naine'." },
-            makemake: { name: "Makemake", desc: "Une mystérieuse planète naine du système solaire externe avec une surface brun-rouge.", funFact: "Makemake est nommée d'après le dieu créateur du peuple Rapa Nui de l'Île de Pâques !" },
-            haumea: { name: "Haumea", desc: "La planète naine en forme d'œuf ! C'est l'un des objets tournant le plus vite du système solaire.", funFact: "Haumea tourne super vite ! Une journée ne dure que 4 heures, ce qui lui donne une forme de ballon de rugby !" },
-            'james-webb': { name: "James Webb", desc: "Le télescope spatial le plus puissant jamais construit ! Il utilise l'infrarouge pour voir à travers la poussière cosmique.", funFact: "James Webb peut voir des galaxies qui se sont formées juste après le Big Bang, il y a plus de 13 milliards d'années !" },
-            hubble: { name: "Hubble", desc: "Un télescope légendaire qui nous a montré des images incroyables de galaxies, nébuleuses et planètes !", funFact: "Hubble a pris plus d'1,5 million de photos de l'univers ! Il fait le tour de la Terre toutes les 95 minutes." },
-            iss: { name: "ISS", desc: "Un laboratoire géant dans l'espace où vivent et travaillent des astronautes ! Occupé en continu depuis 2000.", funFact: "L'ISS est aussi grande qu'un terrain de football ! Les astronautes y voient 16 levers et couchers de soleil par jour !" }
+            sun: {
+                name: "Soleil",
+                desc: "Notre étoile ! Le Soleil est une gigantesque boule de gaz brûlant qui fournit lumière et chaleur à toutes les planètes de notre système.",
+                funFact: "Le Soleil représente à lui seul 99,86% de la masse totale du système solaire ! Toutes les planètes réunies ne font que 0,14%."
+            },
+            mercury: {
+                name: "Mercure",
+                desc: "La plus petite planète et la plus proche du Soleil. Sa surface criblée de cratères ressemble beaucoup à notre Lune.",
+                funFact: "Mercure est la planète la plus rapide : elle boucle son tour du Soleil en seulement 88 jours terrestres !"
+            },
+            venus: {
+                name: "Vénus",
+                desc: "Souvent appelée 'sœur jumelle' de la Terre pour sa taille similaire, mais c'est en réalité un enfer brûlant recouvert de nuages d'acide sulfurique !",
+                funFact: "Vénus tourne à l'envers ! C'est la seule planète du système solaire qui effectue sa rotation dans le sens inverse des autres."
+            },
+            earth: {
+                name: "Terre",
+                desc: "La Planète Bleue ! Recouverte à 71% d'eau, elle possède les conditions idéales pour abriter la vie. C'est notre maison dans l'immensité de l'espace.",
+                funFact: "La Terre est le seul endroit connu dans l'univers où la vie existe ! Elle abrite plus de 8 millions d'espèces différentes."
+            },
+            mars: {
+                name: "Mars",
+                desc: "La Planète Rouge ! Elle tire sa couleur caractéristique de l'oxyde de fer (rouille) présent dans son sol. Les scientifiques y recherchent des traces de vie ancienne.",
+                funFact: "Mars possède le plus grand volcan du système solaire : Olympus Mons, 3 fois plus haut que l'Everest et aussi large que la France !"
+            },
+            jupiter: {
+                name: "Jupiter",
+                desc: "La géante du système solaire ! Cette immense planète gazeuse arbore de magnifiques bandes nuageuses et une tempête légendaire : la Grande Tache Rouge.",
+                funFact: "Jupiter est si massive que toutes les autres planètes du système solaire pourraient tenir à l'intérieur ! Sa Grande Tache Rouge fait rage depuis plus de 400 ans."
+            },
+            saturn: {
+                name: "Saturne",
+                desc: "Le Seigneur des Anneaux ! Saturne possède le système d'anneaux le plus spectaculaire et le plus visible de tout le système solaire.",
+                funFact: "Les anneaux de Saturne sont composés de milliards de fragments de glace et de roche ! Certains sont minuscules comme des grains de sable, d'autres gigantesques comme des maisons."
+            },
+            uranus: {
+                name: "Uranus",
+                desc: "La planète couchée ! Cette géante de glace bleu-vert doit sa couleur au méthane présent dans son atmosphère.",
+                funFact: "Uranus est inclinée à 98° sur son axe ! Elle 'roule' littéralement autour du Soleil comme une boule de bowling plutôt que de tourner comme une toupie."
+            },
+            neptune: {
+                name: "Neptune",
+                desc: "La planète des tempêtes ! Cette géante de glace d'un bleu profond est la plus éloignée du Soleil et possède les vents les plus violents du système.",
+                funFact: "Neptune détient le record des vents les plus puissants : jusqu'à 2 100 km/h ! C'est plus rapide que la vitesse du son."
+            },
+            pluto: {
+                name: "Pluton",
+                desc: "L'ancien 9ème planète ! Reclassée comme planète naine en 2006, Pluton reste fascinante avec sa surface glacée et son atmosphère ténue.",
+                funFact: "Pluton possède un 'cœur' ! Cette région en forme de cœur, nommée Tombaugh Regio, est composée d'azote gelé et mesure 1 600 km de large."
+            },
+            ceres: {
+                name: "Cérès",
+                desc: "La reine de la ceinture d'astéroïdes ! Cérès est le plus gros objet entre Mars et Jupiter. Elle pourrait abriter un océan souterrain.",
+                funFact: "Cérès représente environ un tiers de la masse totale de la ceinture d'astéroïdes ! Elle a été découverte en 1801, bien avant les autres planètes naines."
+            },
+            eris: {
+                name: "Éris",
+                desc: "La discorde céleste ! Cette planète naine, nommée d'après la déesse grecque de la discorde, est l'une des plus massives du système solaire externe.",
+                funFact: "C'est la découverte d'Éris en 2005 qui a provoqué le reclassement de Pluton ! Elle est légèrement plus petite mais plus massive que Pluton."
+            },
+            makemake: {
+                name: "Makemake",
+                desc: "Le créateur mystérieux ! Cette planète naine rougeâtre orbite dans les confins glacés du système solaire, au-delà de Neptune.",
+                funFact: "Makemake est nommée d'après le dieu créateur des Rapa Nui, les habitants de l'île de Pâques ! Elle a été découverte le jour de Pâques 2005."
+            },
+            haumea: {
+                name: "Haumea",
+                desc: "L'œuf cosmique ! Cette planète naine est unique : sa rotation ultra-rapide lui donne une forme ovale, comme un ballon de rugby.",
+                funFact: "Haumea effectue une rotation complète en seulement 4 heures ! C'est l'un des objets qui tourne le plus vite dans le système solaire."
+            },
+            'james-webb': {
+                name: "James Webb",
+                desc: "Le télescope le plus puissant jamais lancé dans l'espace ! Il observe l'univers en infrarouge pour percer les voiles de poussière cosmique.",
+                funFact: "Le miroir du James Webb mesure 6,5 mètres de diamètre ! Il peut voir des galaxies formées il y a 13,5 milliards d'années, juste après le Big Bang."
+            },
+            hubble: {
+                name: "Hubble",
+                desc: "Un véritable pionnier légendaire ! Depuis 1990, ce télescope spatial nous offre des images époustouflantes de galaxies lointaines, de nébuleuses colorées et de phénomènes cosmiques.",
+                funFact: "Hubble a capturé plus de 1,5 million d'images de l'univers ! Il orbite la Terre à 547 km d'altitude et fait un tour complet toutes les 95 minutes."
+            },
+            iss: {
+                name: "Station Spatiale Internationale",
+                desc: "Un laboratoire géant en orbite ! Des astronautes de différentes nationalités y vivent et travaillent en permanence depuis novembre 2000.",
+                funFact: "L'ISS est aussi grande qu'un terrain de football ! Les astronautes à bord assistent à 16 levers et 16 couchers de soleil chaque jour."
+            },
+            // Système Kerbol (KSP)
+            kerbol: {
+                name: "Kerbol",
+                desc: "L'étoile naine jaune au centre du système Kerbol. Similaire à notre Soleil, mais bien plus petite et parfaite pour les missions Kerbal !",
+                funFact: "⚠️ Easter Egg : Dans les anciennes versions de KSP, descendre sous -250m causait un crash par division par zéro ! Il n'y a pas de surface solide."
+            },
+            moho: {
+                name: "Moho",
+                desc: "La planète la plus proche de Kerbol. Un monde calciné et sans atmosphère, couvert de cratères et de plaines volcaniques sombres.",
+                funFact: "🕳️ Le Mohole : Un gigantesque trou quasi-vertical au Pôle Nord ! C'était un bug de génération de terrain que les développeurs ont gardé car les joueurs l'adoraient."
+            },
+            eve: {
+                name: "Eve",
+                desc: "Facile à atteindre, presque impossible à quitter ! Ce magnifique monde violet possède une atmosphère écrasante et des océans mystérieux.",
+                funFact: "💜 L'atmosphère d'Eve est si dense que les panneaux solaires peuvent exploser sous la pression ! Ses océans contiennent de l'« Explodium »."
+            },
+            gilly: {
+                name: "Gilly",
+                desc: "Un minuscule astéroïde capturé en orbite autour d'Eve. Sa forme irrégulière et sa gravité quasi inexistante en font un défi unique.",
+                funFact: "🦘 La gravité de Gilly n'est que de 0,005g ! On peut littéralement se mettre en orbite rien qu'en sautant avec un jetpack."
+            },
+            kerbin: {
+                name: "Kerbin",
+                desc: "Le foyer des Kerbals ! C'est la seule planète avec une atmosphère respirable et de la vie. Océans bleus, continents verts et calottes polaires blanches.",
+                funFact: "🏠 Kerbin regorge de secrets : KSC 2 (un centre spatial abandonné), des monolithes noirs (référence à 2001), et des mémoriaux aux développeurs !"
+            },
+            'the-mun': {
+                name: "The Mun",
+                desc: "La lune grise et cratérisée de Kerbin. La première destination de tout joueur KSP et un rite de passage incontournable !",
+                funFact: "🌑 On trouve sur la Mun de multiples formations en arche et des Monolithes noirs - un hommage évident à 2001 : L'Odyssée de l'espace !"
+            },
+            minmus: {
+                name: "Minmus",
+                desc: "La petite lune couleur menthe de Kerbin. Ses étranges plaines glacées et sa faible gravité en font une destination populaire.",
+                funFact: "🍧 Selon la légende KSP, Minmus serait faite de glace à la menthe ! Sa couleur vert pâle soutient parfaitement cette théorie."
+            },
+            duna: {
+                name: "Duna",
+                desc: "L'analogue de Mars ! Un monde rouge-rouille avec une atmosphère ténue et d'imposantes calottes glaciaires aux pôles. Parfait pour les rovers.",
+                funFact: "👽 On y trouve un visage de Kerbal géant (référence au visage de Mars) et une pyramide émettant des signaux SSTV qui décodent une image de Soyouz !"
+            },
+            ike: {
+                name: "Ike",
+                desc: "L'imposante lune grise de Duna. Elle est en rotation synchrone et domine le ciel de Duna par sa taille impressionnante.",
+                funFact: "🔒 Ike est si proche de Duna que sa gravité affecte notablement les opérations à la surface ! Elle crée des vues spectaculaires dans le ciel."
+            },
+            dres: {
+                name: "Dres",
+                desc: "Une planète naine solitaire dans la ceinture d'astéroïdes. Souvent oubliée des explorateurs, elle possède un canyon géant.",
+                funFact: "🤔 « Dres n'existe pas » - Une blague récurrente de la communauté KSP car personne n'y va jamais ! Elle mérite pourtant le détour."
+            },
+            jool: {
+                name: "Jool",
+                desc: "La majestueuse géante gazeuse verte ! Le « boss final » des joueurs débutants avec son système complexe de 5 lunes en résonance orbitale.",
+                funFact: "☠️ Descendre trop profondément dans l'atmosphère de Jool détruit instantanément votre vaisseau ! Le défi « Jool 5 » (atterrir sur les 5 lunes) est légendaire."
+            },
+            laythe: {
+                name: "Laythe",
+                desc: "Une lune océanique avec une atmosphère respirable mais froide et radioactive. Le monde le plus similaire à Kerbin en dehors de celui-ci !",
+                funFact: "🌊 Laythe fait partie de la résonance de Laplace 1:2:4 avec Vall et Tylo, comme les lunes galiléennes de Jupiter !"
+            },
+            vall: {
+                name: "Vall",
+                desc: "Une magnifique boule de glace bleutée. Sa surface lisse et gelée rend l'atterrissage relativement facile. Paysages à couper le souffle.",
+                funFact: "❄️ Vall fait partie de la légendaire résonance orbitale de Laplace 1:2:4 avec Laythe et Tylo !"
+            },
+            tylo: {
+                name: "Tylo",
+                desc: "Une massive lune rocheuse avec la gravité de Kerbin mais SANS atmosphère. L'atterrissage le plus difficile du jeu !",
+                funFact: "💪 Atterrir sur Tylo est considéré comme l'un des plus grands défis de tout KSP. Il faut des quantités énormes de carburant !"
+            },
+            bop: {
+                name: "Bop",
+                desc: "Un petit astéroïde capturé, brun et bosselé. Sa forme irrégulière et sa faible gravité rendent l'atterrissage délicat.",
+                funFact: "🦑 L'Easter Egg du Kraken Mort ! Le cadavre du légendaire Kraken de l'espace est empalé près du Pôle Nord de Bop."
+            },
+            pol: {
+                name: "Pol",
+                desc: "La plus petite lune de Jool avec une surface jaune hérissée de pics rocheux. Elle ressemble à un grain de pollen géant.",
+                funFact: "🌵 La surface de Pol est couverte d'étranges formations rocheuses jaunes et épineuses - on dirait un cactus cosmique !"
+            },
+            eeloo: {
+                name: "Eeloo",
+                desc: "Un monde glacé aux confins du système. Sa surface blanche est marquée de crevasses brunes rappelant les « Tiger Stripes » d'Europe.",
+                funFact: "📡 Eeloo devait à l'origine être la lune d'une seconde géante gazeuse qui n'a jamais été ajoutée au jeu !"
+            }
         }
     },
     zh: {
@@ -137,6 +318,10 @@ export const dictionary: Record<Language, any> = {
         nasaGallery: "NASA 画廊",
         loadingImages: "加载 NASA 图像中...",
         galleryUnavailable: "画廊不可用",
+        systemToggle: "系统",
+        solarSystem: "太阳系",
+        kerbolSystem: "Kerbol (KSP)",
+        distanceKerbin: "到Kerbin距离",
         objects: {
             sun: { name: "太阳", desc: "位于我们太阳系中心的恒星。它为所有行星提供光和能量。", funFact: "太阳占整个太阳系质量的99.86%！" },
             mercury: { name: "水星", desc: "最小的行星，最接近太阳。表面像月球一样布满陨石坑！", funFact: "水星是公转最快的行星，只需88个地球日就能绕太阳一圈！" },
@@ -154,7 +339,25 @@ export const dictionary: Record<Language, any> = {
             haumea: { name: "妊神星", desc: "蛋形的矮行星！它是太阳系中自转最快的天体之一。", funFact: "妊神星自转超快！一天只有4小时，这使它变成了橄榄球形状！" },
             'james-webb': { name: "詹姆斯·韦伯", desc: "有史以来最强大的太空望远镜！利用红外线穿透宇宙尘埃。", funFact: "詹姆斯·韦伯可以看到大爆炸后不久形成的星系，距今超过130亿年！" },
             hubble: { name: "哈勃", desc: "传奇的太空望远镜，向我们展示了遥远星系和星云的惊人图像！", funFact: "哈勃已经拍摄了超过150万张宇宙照片！它每95分钟绕地球一圈。" },
-            iss: { name: "国际空间站", desc: "宇航员生活和工作的太空巨大实验室！自2000年以来一直持续有人驻留。", funFact: "国际空间站和足球场一样大！宇航员在那里每天能看到16次日出和日落！" }
+            iss: { name: "国际空间站", desc: "宇航员生活和工作的太空巨大实验室！自2000年以来一直持续有人驻留。", funFact: "国际空间站和足球场一样大！宇航员在那里每天能看到16次日出和日落！" },
+            // Kerbol系统
+            kerbol: { name: "Kerbol", desc: "Kerbol系统中心的黄矮星，类似我们的太阳但小得多。", funFact: "⚠️ 彩蛋：在KSP旧版本中，下降到-250m以下会导致除以零崩溃！" },
+            moho: { name: "Moho", desc: "距离Kerbol最近的行星，无大气，表面被灼烧。", funFact: "🕳️ Mohole：北极有一个巨大的垂直洞穴 - 一个被保留的bug！" },
+            eve: { name: "Eve", desc: "容易到达，难以离开！紫色世界，大气压极高。", funFact: "💜 大气如此稠密，太阳能板会因压力破碎！海洋里是'Explodium'！" },
+            gilly: { name: "Gilly", desc: "一颗绕Eve运行的微小捕获小行星，重力极低。", funFact: "🦘 重力只有0.005g - 用喷气背包跳跃就能入轨！" },
+            kerbin: { name: "Kerbin", desc: "Kerbal的家园！唯一有可呼吸大气和生命的星球。", funFact: "🏠 充满秘密：KSC 2、黑色方尖碑（2001参考）和开发者纪念碑！" },
+            'the-mun': { name: "The Mun", desc: "Kerbin灰色、布满陨石坑的卫星。每个KSP玩家的第一目标！", funFact: "🌑 多个拱门和方尖碑 - 向2001太空漫游致敬！" },
+            minmus: { name: "Minmus", desc: "一颗薄荷色的小卫星，有奇怪的冰原和极低重力。", funFact: "🍧 根据传说，Minmus是由冷冻甜点（薄荷冰淇淋）制成的！" },
+            duna: { name: "Duna", desc: "铁锈红色的火星类似物。大多数探险者的第一个行星际目标。", funFact: "👽 巨大的Kerbal脸岩石 + 金字塔发射SSTV信号解码为联盟号图像！" },
+            ike: { name: "Ike", desc: "一颗大型灰色卫星，与Duna潮汐锁定，主宰其天空。", funFact: "🔒 如此接近，它的重力明显影响Duna上的操作！" },
+            dres: { name: "Dres", desc: "小行星带中被遗忘的矮行星。'Dres不存在'笑话。", funFact: "🤔 社区笑话：没人去那里！有一条巨大的峡谷。" },
+            jool: { name: "Jool", desc: "绿色气态巨行星 - 初学者的'最终Boss'，有5颗复杂卫星。", funFact: "☠️ 下降太深会立即被摧毁！'Jool 5'挑战是传奇。" },
+            laythe: { name: "Laythe", desc: "有可呼吸但寒冷/放射性大气的海洋卫星。最像地球！", funFact: "🌊 与Vall和Tylo形成1:2:4拉普拉斯共振！" },
+            vall: { name: "Vall", desc: "美丽的蓝色冰球。光滑的冰面使着陆容易。", funFact: "❄️ 传奇的1:2:4拉普拉斯轨道共振的一部分！" },
+            tylo: { name: "Tylo", desc: "巨大的岩石卫星，有Kerbin级重力但无大气。最难着陆！", funFact: "💪 在这里着陆是KSP中最难的挑战之一！" },
+            bop: { name: "Bop", desc: "一颗棕色凹凸不平的捕获小行星，有死Kraken彩蛋。", funFact: "🦑 太空Kraken的尸体被刺穿在北极附近！" },
+            pol: { name: "Pol", desc: "黄色尖刺卫星，像花粉粒。奇怪的岩石构造。", funFact: "🌵 表面覆盖着奇怪的黄色尖刺岩石 - 像仙人掌！" },
+            eeloo: { name: "Eeloo", desc: "遥远的冰雪世界，有像木星欧罗巴的虎纹。", funFact: "📡 原计划是第二颗从未添加的气态巨行星的卫星！" }
         }
     },
     es: {
@@ -189,6 +392,10 @@ export const dictionary: Record<Language, any> = {
         nasaGallery: "Galería de la NASA",
         loadingImages: "Cargando imágenes...",
         galleryUnavailable: "Galería no disponible",
+        systemToggle: "SISTEMA",
+        solarSystem: "Solar",
+        kerbolSystem: "Kerbol (KSP)",
+        distanceKerbin: "Dist. a Kerbin",
         objects: {
             sun: { name: "Sol", desc: "La estrella en el centro de nuestro sistema. Proporciona luz y energía a todos los planetas.", funFact: "¡El Sol representa el 99.86% de la masa del sistema solar!" },
             mercury: { name: "Mercurio", desc: "El planeta más pequeño y cercano al Sol. ¡Su superficie está cubierta de cráteres como nuestra Luna!", funFact: "¡Mercurio es el planeta más rápido, orbita el Sol en solo 88 días terrestres!" },
@@ -206,7 +413,25 @@ export const dictionary: Record<Language, any> = {
             haumea: { name: "Haumea", desc: "¡El planeta enano con forma de huevo! Gira rapidísimo.", funFact: "¡Haumea gira súper rápido! Un día dura solo 4 horas, ¡lo que le da forma de balón de fútbol!" },
             'james-webb': { name: "James Webb", desc: "¡El telescopio espacial más potente jamás construido! Usa luz infrarroja.", funFact: "¡James Webb puede ver galaxias que se formaron justo después del Big Bang, hace más de 13 mil millones de años!" },
             hubble: { name: "Hubble", desc: "¡Un telescopio legendario que nos ha mostrado imágenes increíbles del universo!", funFact: "¡Hubble ha tomado más de 1.5 millones de fotos! Orbita la Tierra cada 95 minutos." },
-            iss: { name: "EEI", desc: "¡Un laboratorio gigante en el espacio donde viven astronautas! Ocupado desde el 2000.", funFact: "¡La EEI es tan grande como un campo de fútbol! ¡Los astronautas ven 16 amaneceres al día!" }
+            iss: { name: "EEI", desc: "¡Un laboratorio gigante en el espacio donde viven astronautas! Ocupado desde el 2000.", funFact: "¡La EEI es tan grande como un campo de fútbol! ¡Los astronautas ven 16 amaneceres al día!" },
+            // Sistema Kerbol
+            kerbol: { name: "Kerbol", desc: "La estrella enana amarilla en el centro del Sistema Kerbol, similar a nuestro Sol pero mucho más pequeña.", funFact: "⚠️ Easter Egg: ¡En versiones antiguas de KSP, bajar de -250m causaba un crash por división por cero!" },
+            moho: { name: "Moho", desc: "El planeta más cercano a Kerbol, abrasado y sin atmósfera con terreno volcánico oscuro.", funFact: "🕳️ El Mohole: ¡Un agujero gigante casi vertical en el Polo Norte - un bug convertido en característica!" },
+            eve: { name: "Eve", desc: "¡Fácil de alcanzar, imposible de escapar! Un mundo púrpura con atmósfera aplastante.", funFact: "💜 ¡La atmósfera es tan densa que los paneles solares explotan! ¡Los océanos tienen 'Explodium'!" },
+            gilly: { name: "Gilly", desc: "Un diminuto asteroide capturado orbitando Eve con gravedad extremadamente baja.", funFact: "🦘 ¡Gravedad de 0.005g - puedes orbitar solo saltando con jetpack!" },
+            kerbin: { name: "Kerbin", desc: "¡Hogar de los Kerbals! El único planeta con atmósfera respirable y vida.", funFact: "🏠 ¡Lleno de secretos: KSC 2, monolitos negros (referencia 2001) y memoriales de desarrolladores!" },
+            'the-mun': { name: "The Mun", desc: "La luna gris y llena de cráteres de Kerbin. ¡El primer destino de todo jugador de KSP!", funFact: "🌑 ¡Múltiples arcos y Monolitos - tributo a 2001: Odisea del Espacio!" },
+            minmus: { name: "Minmus", desc: "Una pequeña luna color menta con extrañas llanuras heladas y muy baja gravedad.", funFact: "🍧 ¡Según el lore, Minmus está hecha de postre congelado (helado de menta)!" },
+            duna: { name: "Duna", desc: "El análogo rojo-óxido de Marte. Primer objetivo interplanetario de la mayoría de exploradores.", funFact: "👽 ¡Cara de Kerbal gigante + pirámide con señales SSTV que decodifican una imagen de Soyuz!" },
+            ike: { name: "Ike", desc: "Una gran luna gris bloqueada gravitacionalmente a Duna, dominando su cielo.", funFact: "🔒 ¡Tan cerca que su gravedad afecta notablemente las operaciones en Duna!" },
+            dres: { name: "Dres", desc: "Un planeta enano olvidado en el cinturón. Broma: 'Dres no existe'.", funFact: "🤔 ¡Broma de la comunidad: nadie va! Tiene un cañón masivo." },
+            jool: { name: "Jool", desc: "El gigante gaseoso verde - el 'jefe final' para principiantes con 5 lunas complejas.", funFact: "☠️ ¡Desciende demasiado y serás destruido! ¡El desafío 'Jool 5' es legendario!" },
+            laythe: { name: "Laythe", desc: "Luna oceánica con atmósfera respirable pero fría/radiactiva. ¡El mundo más parecido a la Tierra!", funFact: "🌊 ¡Parte de la resonancia de Laplace 1:2:4 con Vall y Tylo!" },
+            vall: { name: "Vall", desc: "Una hermosa bola de hielo azul. La superficie lisa facilita el aterrizaje.", funFact: "❄️ ¡Parte de la legendaria resonancia orbital de Laplace 1:2:4!" },
+            tylo: { name: "Tylo", desc: "Luna rocosa masiva con gravedad de Kerbin pero SIN atmósfera. ¡El aterrizaje más difícil!", funFact: "💪 ¡Aterrizar aquí es uno de los desafíos más difíciles de KSP!" },
+            bop: { name: "Bop", desc: "Un asteroide capturado marrón con el Easter egg del Kraken Muerto.", funFact: "🦑 ¡El cadáver del Kraken espacial está empalado cerca del Polo Norte!" },
+            pol: { name: "Pol", desc: "Luna amarilla puntiaguda que parece un grano de polen. Formaciones rocosas extrañas.", funFact: "🌵 ¡Superficie cubierta de rocas amarillas puntiagudas - parece un cactus!" },
+            eeloo: { name: "Eeloo", desc: "Un mundo de hielo distante con Tiger Stripes como la luna Europa de Júpiter.", funFact: "📡 ¡Estaba planeado como luna de un segundo gigante gaseoso que nunca se añadió!" }
         }
     },
     hi: {
@@ -241,6 +466,10 @@ export const dictionary: Record<Language, any> = {
         nasaGallery: "नासा गैलरी",
         loadingImages: "नासा छवियों को लोड कर रहा है...",
         galleryUnavailable: "गैलरी अनुपलब्ध",
+        systemToggle: "प्रणाली",
+        solarSystem: "सौर",
+        kerbolSystem: "Kerbol (KSP)",
+        distanceKerbin: "Kerbin से दूरी",
         objects: {
             sun: { name: "सूर्य", desc: "हमारे सौर मंडल के केंद्र में स्थित तारा। यह सभी ग्रहों को प्रकाश और ऊर्जा प्रदान करता है।", funFact: "सूर्य सौर मंडल के द्रव्यमान का 99.86% है!" },
             mercury: { name: "बुध", desc: "सबसे छोटा और सूर्य के सबसे निकटतम ग्रह। इसकी सतह चंद्रमा की तरह क्रेटर से ढकी है!", funFact: "बुध सबसे तेज ग्रह है, यह केवल 88 दिनों में सूर्य का चक्कर लगा लेता है!" },
@@ -258,7 +487,25 @@ export const dictionary: Record<Language, any> = {
             haumea: { name: "हौमिया", desc: "अंडे के आकार का बौना ग्रह! यह सौर मंडल में सबसे तेजी से घूमने वाली वस्तुओं में से एक है।", funFact: "हौमिया बहुत तेजी से घूमता है! यहाँ एक दिन केवल 4 घंटे का होता है, जिससे इसका आकार फुटबॉल जैसा हो जाता है!" },
             'james-webb': { name: "जेम्स वेब", desc: "अब तक का सबसे शक्तिशाली स्पेस टेलीस्कोप! यह ब्रह्मांडीय धूल के माध्यम से देखने के लिए अवरक्त प्रकाश का उपयोग करता है।", funFact: "जेम्स वेब उन आकाशगंगाओं को देख सकता है जो बिग बैंग के ठीक बाद बनी थीं, 13 अरब साल पहले!" },
             hubble: { name: "हबल", desc: "एक प्रसिद्ध टेलीस्कोप जिसने हमें आकाशगंगाओं और ग्रहों की अद्भुत तस्वीरें दिखाई हैं!", funFact: "हबल ने ब्रह्मांड की 15 लाख से अधिक तस्वीरें ली हैं! यह हर 95 मिनट में पृथ्वी की परिक्रमा करता है।" },
-            iss: { name: "ISS", desc: "अंतरिक्ष में एक विशाल प्रयोगशाला जहाँ अंतरिक्ष यात्री रहते हैं और काम करते हैं! 2000 से लगातार व्याप्त।", funFact: "ISS फुटबॉल मैदान जितना बड़ा है! अंतरिक्ष यात्री वहाँ हर दिन 16 सूर्योदय और सूर्यास्त देखते हैं!" }
+            iss: { name: "ISS", desc: "अंतरिक्ष में एक विशाल प्रयोगशाला जहाँ अंतरिक्ष यात्री रहते हैं और काम करते हैं! 2000 से लगातार व्याप्त।", funFact: "ISS फुटबॉल मैदान जितना बड़ा है! अंतरिक्ष यात्री वहाँ हर दिन 16 सूर्योदय और सूर्यास्त देखते हैं!" },
+            // Kerbol सिस्टम
+            kerbol: { name: "Kerbol", desc: "Kerbol सिस्टम के केंद्र में पीला बौना तारा, हमारे सूर्य जैसा लेकिन छोटा।", funFact: "⚠️ ईस्टर एग: पुराने KSP में -250m से नीचे जाने पर शून्य से विभाजन क्रैश होता था!" },
+            moho: { name: "Moho", desc: "Kerbol के सबसे नजदीक ग्रह, झुलसा और वायुमंडल रहित।", funFact: "🕳️ Mohole: उत्तरी ध्रुव पर एक विशाल लगभग ऊर्ध्वाधर छेद - एक बग जो फीचर बना!" },
+            eve: { name: "Eve", desc: "पहुंचना आसान, छोड़ना असंभव! कुचलने वाले वायुमंडल वाली बैंगनी दुनिया।", funFact: "💜 वायुमंडल इतना घना है कि सोलर पैनल फट जाते हैं! समुद्र में 'Explodium' है!" },
+            gilly: { name: "Gilly", desc: "Eve की परिक्रमा करता एक छोटा पकड़ा गया क्षुद्रग्रह, अत्यंत कम गुरुत्वाकर्षण।", funFact: "🦘 गुरुत्वाकर्षण 0.005g - जेटपैक से कूदकर कक्षा में जा सकते हैं!" },
+            kerbin: { name: "Kerbin", desc: "Kerbals का घर! सांस लेने योग्य वायुमंडल और जीवन वाला एकमात्र ग्रह।", funFact: "🏠 रहस्यों से भरा: KSC 2, काले मोनोलिथ (2001 संदर्भ), और डेवलपर स्मारक!" },
+            'the-mun': { name: "The Mun", desc: "Kerbin का धूसर, गड्ढों से भरा चंद्रमा। हर KSP खिलाड़ी की पहली मंजिल!", funFact: "🌑 कई आर्च और मोनोलिथ - 2001: स्पेस ओडिसी को श्रद्धांजलि!" },
+            minmus: { name: "Minmus", desc: "पुदीने रंग का छोटा चंद्रमा, अजीब बर्फीले मैदान और बहुत कम गुरुत्वाकर्षण।", funFact: "🍧 किंवदंती के अनुसार, Minmus जमे हुए मिठाई (पुदीना आइसक्रीम) से बना है!" },
+            duna: { name: "Duna", desc: "जंग-लाल मंगल एनालॉग। अधिकांश खोजकर्ताओं का पहला अंतरग्रहीय लक्ष्य।", funFact: "👽 विशाल Kerbal चेहरा + SSTV सिग्नल वाला पिरामिड जो सोयुज छवि डीकोड करता है!" },
+            ike: { name: "Ike", desc: "Duna से ज्वारीय रूप से बंधा एक बड़ा धूसर चंद्रमा, इसके आकाश पर हावी।", funFact: "🔒 इतना करीब कि इसका गुरुत्वाकर्षण Duna संचालन को प्रभावित करता है!" },
+            dres: { name: "Dres", desc: "क्षुद्रग्रह बेल्ट में भूला हुआ बौना ग्रह। 'Dres मौजूद नहीं है' मजाक।", funFact: "🤔 समुदाय का मजाक: कोई नहीं जाता! एक विशाल घाटी है।" },
+            jool: { name: "Jool", desc: "हरा गैस दानव - 5 जटिल चंद्रमाओं के साथ शुरुआती लोगों का 'अंतिम बॉस'।", funFact: "☠️ बहुत गहरे उतरो और नष्ट हो जाओ! 'Jool 5' चुनौती किंवदंती है!" },
+            laythe: { name: "Laythe", desc: "सांस लेने योग्य लेकिन ठंडे/रेडियोधर्मी वायुमंडल वाला समुद्री चंद्रमा। सबसे पृथ्वी जैसा!", funFact: "🌊 Vall और Tylo के साथ 1:2:4 लाप्लास अनुनाद का हिस्सा!" },
+            vall: { name: "Vall", desc: "सुंदर नीली बर्फ की गेंद। चिकनी जमी सतह लैंडिंग आसान बनाती है।", funFact: "❄️ महान 1:2:4 लाप्लास कक्षीय अनुनाद का हिस्सा!" },
+            tylo: { name: "Tylo", desc: "Kerbin गुरुत्वाकर्षण लेकिन बिना वायुमंडल वाला विशाल चट्टानी चंद्रमा। सबसे कठिन लैंडिंग!", funFact: "💪 यहाँ उतरना KSP की सबसे कठिन चुनौतियों में से एक है!" },
+            bop: { name: "Bop", desc: "मृत Kraken ईस्टर एग वाला भूरा उबड़-खाबड़ पकड़ा गया क्षुद्रग्रह।", funFact: "🦑 स्पेस Kraken का शव उत्तरी ध्रुव के पास नुकीला है!" },
+            pol: { name: "Pol", desc: "पराग कण जैसा पीला नुकीला चंद्रमा। अजीब चट्टान संरचनाएं।", funFact: "🌵 सतह अजीब पीली नुकीली चट्टानों से ढकी - कैक्टस जैसी!" },
+            eeloo: { name: "Eeloo", desc: "बृहस्पति के यूरोपा जैसी Tiger Stripes वाली दूरस्थ बर्फ दुनिया।", funFact: "📡 दूसरे गैस दानव का चंद्रमा होना था जो कभी नहीं जोड़ा गया!" }
         }
     }
 };

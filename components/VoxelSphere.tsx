@@ -65,6 +65,74 @@ export function VoxelSphere({ radius, color, resolution = 32, type = 'rocky', ca
                                 voxelColor = cloudColor;
                             }
 
+                        } else if (type === 'kerbin') {
+                            // Kerbin - KSP's Earth analog
+                            const kerbinOcean = new THREE.Color("#0077BE"); // Deep ocean blue
+                            const kerbinLand = new THREE.Color("#228B22"); // Forest green
+                            const kerbinDesert = new THREE.Color("#C2B280"); // Khaki/desert
+                            const kerbinMountain = new THREE.Color("#8B7355"); // Brown mountains
+                            const kerbinCloud = new THREE.Color("#FFFFFF"); // Clouds
+                            const kerbinIce = new THREE.Color("#F0FFFF"); // Polar ice
+
+                            const n = noise(nx, ny, nz);
+                            const n2 = noise(nx * 2, ny * 2, nz * 2);
+
+                            // Base terrain
+                            if (n < -0.15) {
+                                voxelColor = kerbinOcean; // Oceans (about 60%)
+                            } else if (n < 0.2) {
+                                voxelColor = kerbinLand; // Green continents
+                            } else if (n < 0.4) {
+                                voxelColor = kerbinDesert; // Desert/grassland
+                            } else {
+                                voxelColor = kerbinMountain; // Mountains
+                            }
+
+                            // Polar ice caps (white)
+                            if (Math.abs(y) > halfRes * 0.82) {
+                                voxelColor = kerbinIce;
+                            }
+
+                            // Scattered clouds (white patches)
+                            if (Math.random() > 0.94 && n2 > -0.3) {
+                                voxelColor = kerbinCloud;
+                            }
+
+                        } else if (type === 'duna') {
+                            // Duna - KSP's Mars analog with prominent ice caps
+                            const dunaRust = new THREE.Color(color); // Base rust color
+                            const dunaDark = new THREE.Color(color).offsetHSL(0, 0, -0.15); // Darker regions
+                            const dunaLight = new THREE.Color(color).offsetHSL(0.02, -0.1, 0.1); // Lighter sand
+                            const dunaCrater = new THREE.Color("#8B4513"); // Dark crater floors
+                            const dunaIce = new THREE.Color("#FFFFFF"); // Bright white polar ice
+                            const dunaIceEdge = new THREE.Color("#E8E8E8"); // Ice edge
+
+                            const n = noise(nx, ny, nz);
+                            const n2 = noise(nx * 3, ny * 3, nz * 3);
+
+                            // Base Duna terrain
+                            if (n > 0.5) {
+                                voxelColor = dunaCrater; // Crater-like dark spots
+                            } else if (n > 0.1) {
+                                voxelColor = dunaDark; // Darker rust
+                            } else if (n > -0.2) {
+                                voxelColor = dunaRust; // Base color
+                            } else {
+                                voxelColor = dunaLight; // Lighter areas
+                            }
+
+                            // Prominent white polar ice caps (larger than Earth)
+                            const polarY = Math.abs(y) / halfRes;
+                            if (polarY > 0.75) {
+                                // Solid ice at the very poles
+                                voxelColor = dunaIce;
+                            } else if (polarY > 0.65) {
+                                // Ice edge - white transitioning
+                                if (n2 > -0.2) {
+                                    voxelColor = dunaIceEdge;
+                                }
+                            }
+
                         } else if (type === 'gas-giant') {
                             // Banded noise
                             const bandNoise = Math.sin(y * 0.6 + Math.sin(x * 0.3)) + Math.random() * 0.2;

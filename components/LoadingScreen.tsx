@@ -12,6 +12,8 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
     const rotationRef = useRef(0);
 
     useEffect(() => {
+        // Use a mounted flag to properly handle cleanup and prevent stale state
+        let isMounted = true;
         const startTime = performance.now();
         const duration = 5000; // 5 seconds
         let animationFrameId: number;
@@ -28,6 +30,8 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
         };
 
         const animate = (currentTime: number) => {
+            if (!isMounted) return; // Stop if unmounted
+
             const elapsed = currentTime - startTime;
             const rawT = Math.min(elapsed / duration, 1);
 
@@ -57,13 +61,18 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
             if (rawT < 1) {
                 animationFrameId = requestAnimationFrame(animate);
             } else {
-                setTimeout(onComplete, 200); // Small pause at 100%
+                setTimeout(() => {
+                    if (isMounted) onComplete();
+                }, 200); // Small pause at 100%
             }
         };
 
         animationFrameId = requestAnimationFrame(animate);
 
-        return () => cancelAnimationFrame(animationFrameId);
+        return () => {
+            isMounted = false;
+            cancelAnimationFrame(animationFrameId);
+        };
     }, [onComplete]);
 
     return (

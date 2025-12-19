@@ -49,8 +49,10 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
 
     // Charge & Trajectory State
     const [isCharging, setIsCharging] = useState(false);
+    const isChargingRef = useRef(false); // Ref to avoid recreating listeners
     const chargeStartTimeRef = useRef<number>(0);
     const [trajectoryPoints, setTrajectoryPoints] = useState<THREE.Vector3[]>([]);
+    const [isTrajectoryDanger, setIsTrajectoryDanger] = useState(false);
 
     // Audio ref for explosion
     const explosionAudio = useRef<HTMLAudioElement | null>(null);
@@ -177,7 +179,8 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             if (event.repeat) return; // Ignore auto-repeat
 
             // Start Charging
-            if (!isCharging) {
+            if (!isChargingRef.current) {
+                isChargingRef.current = true;
                 setIsCharging(true);
                 chargeStartTimeRef.current = Date.now();
             }
@@ -188,7 +191,8 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             if (event.code !== 'Space') return;
 
             // Launch!
-            if (isCharging) {
+            if (isChargingRef.current) {
+                isChargingRef.current = false;
                 setIsCharging(false);
                 launchRocket();
             }
@@ -205,7 +209,8 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             if (!isActive) return;
             // On touch start, we start "charging" (showing trajectory)
             // We do NOT preventDefault to allow user to pan camera while aiming
-            if (!isCharging) {
+            if (!isChargingRef.current) {
+                isChargingRef.current = true;
                 setIsCharging(true);
                 chargeStartTimeRef.current = Date.now();
             }
@@ -213,7 +218,8 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
 
         const handleTouchEnd = (e: TouchEvent) => {
             if (!isActive) return;
-            if (isCharging) {
+            if (isChargingRef.current) {
+                isChargingRef.current = false;
                 setIsCharging(false);
                 // Only launch if it was a valid charge (e.g. not cancelled by a huge swipe if we wanted logic for that)
                 // For now, simplicity: Release finger = launch
@@ -230,7 +236,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             canvas.removeEventListener('touchstart', handleTouchStart);
             canvas.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [isActive, camera, pointer, raycaster, isCharging, getSimTime, setRockets, launchRocket, gl.domElement]);
+    }, [isActive, launchRocket, gl.domElement]);
 
     const explodeSatellite = (id: number, position: THREE.Vector3) => {
         setExplosions(prev => [...prev, { id: Math.random(), position: position.clone(), startTime: getSimTime() }]);
@@ -240,7 +246,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             if (rocket) {
                 setHistory(prevHistory => {
                     const newHistory = [...prevHistory, { ...rocket, score: rocket.score }];
-                    return newHistory.sort((a, b) => b.score - a.score).slice(0, 3);
+                    return newHistory.sort((a, b) => b.score - a.score).slice(0, 10);
                 });
             }
             return prev.filter(r => r.id !== id);
@@ -272,13 +278,26 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             // Using a fixed delta for prediction to ensure consistent curve regardless of framerate
             const simDelta = 0.016 * 2; // Simulate roughly 2x speed for preview
 
+            let collisionDetected = false;
             for (let i = 0; i < 300; i++) {
-                const collided = calculatePhysicsStep(simPos, simVel, simDelta, bodies);
+                let collided = calculatePhysicsStep(simPos, simVel, simDelta, bodies);
+                // Also check Black Hole collision for prediction if active
+                if (blackHole && blackHole.active) {
+                    const bhDist = simPos.distanceTo(blackHole.position);
+                    if (bhDist < blackHole.radius) {
+                        collided = true; // Treat absorption as collision/danger
+                    }
+                }
+
                 points.push(simPos.clone());
-                if (collided) break;
+                if (collided) {
+                    collisionDetected = true;
+                    break;
+                }
             }
 
             setTrajectoryPoints(points);
+            setIsTrajectoryDanger(collisionDetected);
         } else if (trajectoryPoints.length > 0) {
             setTrajectoryPoints([]);
         }
@@ -421,7 +440,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                 if (r.collision || r.reason === 'SIGNAL_LOST') {
                     setHistory(prev => {
                         const h = [...prev, { ...r, score: r.score }];
-                        return h.sort((a, b) => b.score - a.score).slice(0, 3);
+                        return h.sort((a, b) => b.score - a.score).slice(0, 10);
                     });
                 }
             });
@@ -449,8 +468,8 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             {trajectoryPoints.length > 1 && (
                 <Line
                     points={trajectoryPoints}
-                    color={trajectoryPoints.length > 150 ? "#FF4500" : "#4fd0e7"} // Change color if powerful/long
-                    lineWidth={2}
+                    color={isTrajectoryDanger ? "#FF3333" : "#33FF33"}
+                    lineWidth={3}
                     dashed={true}
                     dashScale={2}
                     dashSize={2}

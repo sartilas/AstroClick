@@ -22,6 +22,12 @@ export interface SolarSystemObject {
     ringColor?: string;
     tilt?: number; // Axial tilt in degrees
 
+    // Atmosphere properties
+    hasAtmosphere?: boolean;
+    atmosphereColor?: string; // Main atmosphere color (glow color)
+    atmosphereIntensity?: number; // 0-1, how thick/visible the atmosphere is
+    atmosphereType?: 'thin' | 'normal' | 'thick'; // Atmosphere thickness type
+
     // Educational content
     funFact: string;
     temperature: string;

@@ -1,0 +1,31 @@
+{
+    "name": "AstroClick - Exploration du Système Solaire 3D",
+    "short_name": "AstroClick",
+    "description": "Simulateur interactif 3D du système solaire en voxel. Explorez les planètes, découvrez des faits astronomiques et admirez les images de la NASA.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0b1026",
+    "theme_color": "#1a2350",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "education",
+        "entertainment",
+        "games"
+    ],
+    "lang": "fr",
+    "dir": "ltr"
+}

@@ -4,7 +4,11 @@ import { useRef, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export function RocketCursor() {
+interface RocketCursorProps {
+    isKSP?: boolean;
+}
+
+export function RocketCursor({ isKSP = false }: RocketCursorProps) {
     const rocketRef = useRef<THREE.Group>(null);
     const particlesRef = useRef<THREE.InstancedMesh>(null);
     const { camera, mouse } = useThree();
@@ -95,6 +99,146 @@ export function RocketCursor() {
         }
     });
 
+    // KSP Style Rocket - White multi-stage with side boosters
+    if (isKSP) {
+        return (
+            <>
+                <group ref={rocketRef}>
+                    {/* ===== MAIN CENTRAL STAGE ===== */}
+
+                    {/* Nose Cone / Fairing - Pointed top */}
+                    <mesh position={[0, 0.65, 0]} castShadow>
+                        <coneGeometry args={[0.12, 0.3, 16]} />
+                        <meshStandardMaterial color="#e8e8e8" metalness={0.4} roughness={0.3} />
+                    </mesh>
+
+                    {/* Command Pod - Rounded section */}
+                    <mesh position={[0, 0.42, 0]} castShadow>
+                        <sphereGeometry args={[0.14, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.6]} />
+                        <meshStandardMaterial color="#f0f0f0" metalness={0.5} roughness={0.25} />
+                    </mesh>
+
+                    {/* Upper Stage Body */}
+                    <mesh position={[0, 0.2, 0]} castShadow>
+                        <cylinderGeometry args={[0.14, 0.14, 0.35, 16]} />
+                        <meshStandardMaterial color="#e5e5e5" metalness={0.4} roughness={0.3} />
+                    </mesh>
+
+                    {/* Separation Band 1 */}
+                    <mesh position={[0, 0.02, 0]}>
+                        <cylinderGeometry args={[0.145, 0.145, 0.04, 16]} />
+                        <meshStandardMaterial color="#aaaaaa" metalness={0.6} roughness={0.3} />
+                    </mesh>
+
+                    {/* Mid Stage Body */}
+                    <mesh position={[0, -0.2, 0]} castShadow>
+                        <cylinderGeometry args={[0.14, 0.15, 0.4, 16]} />
+                        <meshStandardMaterial color="#f2f2f2" metalness={0.4} roughness={0.3} />
+                    </mesh>
+
+                    {/* Separation Band 2 */}
+                    <mesh position={[0, -0.42, 0]}>
+                        <cylinderGeometry args={[0.155, 0.155, 0.04, 16]} />
+                        <meshStandardMaterial color="#aaaaaa" metalness={0.6} roughness={0.3} />
+                    </mesh>
+
+                    {/* Lower Stage / Main Tank */}
+                    <mesh position={[0, -0.65, 0]} castShadow>
+                        <cylinderGeometry args={[0.15, 0.15, 0.42, 16]} />
+                        <meshStandardMaterial color="#e8e8e8" metalness={0.4} roughness={0.3} />
+                    </mesh>
+
+                    {/* Central Engine Bell */}
+                    <mesh position={[0, -0.92, 0]}>
+                        <cylinderGeometry args={[0.06, 0.1, 0.12, 12]} />
+                        <meshStandardMaterial color="#555555" metalness={0.7} roughness={0.3} />
+                    </mesh>
+
+                    {/* ===== SIDE BOOSTERS (x2) ===== */}
+                    {[1, -1].map((side, idx) => (
+                        <group key={idx} position={[side * 0.28, -0.35, 0]}>
+                            {/* Booster Nose Cone */}
+                            <mesh position={[0, 0.35, 0]}>
+                                <sphereGeometry args={[0.09, 12, 12, 0, Math.PI * 2, 0, Math.PI * 0.5]} />
+                                <meshStandardMaterial color="#e8e8e8" metalness={0.4} roughness={0.3} />
+                            </mesh>
+
+                            {/* Booster Body */}
+                            <mesh position={[0, 0, 0]} castShadow>
+                                <cylinderGeometry args={[0.09, 0.09, 0.65, 12]} />
+                                <meshStandardMaterial color="#f0f0f0" metalness={0.4} roughness={0.3} />
+                            </mesh>
+
+                            {/* Booster Separation Band */}
+                            <mesh position={[0, -0.25, 0]}>
+                                <cylinderGeometry args={[0.092, 0.092, 0.03, 12]} />
+                                <meshStandardMaterial color="#aaaaaa" metalness={0.6} roughness={0.3} />
+                            </mesh>
+
+                            {/* Booster Lower Tank */}
+                            <mesh position={[0, -0.42, 0]}>
+                                <cylinderGeometry args={[0.09, 0.085, 0.3, 12]} />
+                                <meshStandardMaterial color="#e5e5e5" metalness={0.4} roughness={0.3} />
+                            </mesh>
+
+                            {/* Booster Engine Nozzle */}
+                            <mesh position={[0, -0.6, 0]}>
+                                <cylinderGeometry args={[0.04, 0.07, 0.08, 10]} />
+                                <meshStandardMaterial color="#555555" metalness={0.7} roughness={0.3} />
+                            </mesh>
+
+                            {/* Booster Small Flame */}
+                            <mesh position={[0, -0.72, 0]} rotation={[Math.PI, 0, 0]}>
+                                <coneGeometry args={[0.05, 0.2, 8]} />
+                                <meshStandardMaterial
+                                    color="#ff8800"
+                                    emissive="#ff4400"
+                                    emissiveIntensity={1.5}
+                                    transparent
+                                    opacity={0.7}
+                                />
+                            </mesh>
+                        </group>
+                    ))}
+
+                    {/* ===== MAIN FINS (x4) ===== */}
+                    <group position={[0, -0.75, 0]}>
+                        {[0, Math.PI / 2, Math.PI, Math.PI * 1.5].map((angle, i) => (
+                            <group key={i} rotation={[0, angle, 0]}>
+                                <mesh position={[0.18, 0, 0]} rotation={[0, 0, -0.2]}>
+                                    <boxGeometry args={[0.12, 0.25, 0.02]} />
+                                    <meshStandardMaterial color="#d0d0d0" metalness={0.5} roughness={0.4} />
+                                </mesh>
+                            </group>
+                        ))}
+                    </group>
+
+                    {/* ===== MAIN ENGINE FLAME ===== */}
+                    <mesh ref={flameRef} position={[0, -1.1, 0]} rotation={[Math.PI, 0, 0]}>
+                        <coneGeometry args={[0.08, 0.35, 12]} />
+                        <meshStandardMaterial
+                            color="#ff6600"
+                            emissive="#ff3300"
+                            emissiveIntensity={2}
+                            transparent
+                            opacity={0.8}
+                        />
+                    </mesh>
+
+                    {/* Engine Flame Glow */}
+                    <pointLight position={[0, -1.1, 0]} color="#ffaa00" intensity={5} distance={4} decay={2} />
+                </group>
+
+                {/* Smoke Particles */}
+                <instancedMesh ref={particlesRef} args={[undefined, undefined, particleCount]}>
+                    <sphereGeometry args={[0.15, 8, 8]} />
+                    <meshStandardMaterial color="#cccccc" transparent opacity={0.5} depthWrite={false} emissive="#666666" />
+                </instancedMesh>
+            </>
+        );
+    }
+
+    // Default Solar System Rocket (Original design)
     return (
         <>
             <group ref={rocketRef}>
@@ -164,3 +308,4 @@ export function RocketCursor() {
         </>
     );
 }
+

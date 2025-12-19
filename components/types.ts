@@ -20,3 +20,5 @@ export interface Explosion {
 }
 
 export type LayerMode = 'none' | 'habitable' | 'gravity' | 'lagrange';
+
+export type SystemType = 'solar' | 'kerbol';

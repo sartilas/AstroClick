@@ -5,6 +5,7 @@ import { SolarSystemObject } from '@/data/solarSystemData';
 import { objectTranslations } from '@/data/objectTranslations';
 import { X, Thermometer, Ruler, Orbit, Info, Eclipse, Globe, Image as ImageIcon, BookOpen } from 'lucide-react';
 import { dictionary, Language } from '@/data/dictionary';
+import { SystemType } from './types';
 import { useNasaImage } from '@/hooks/useNasaImage';
 import Image from 'next/image';
 import { Canvas } from '@react-three/fiber';
@@ -25,8 +26,10 @@ const Object3DPreview = ({ data, onClose, lang }: { data: SolarSystemObject, onC
         customModelType = data.id as any;
     } else {
         if (data.type === 'star') type = 'star';
-        else if (['jupiter', 'saturn', 'uranus', 'neptune'].includes(data.id)) type = 'gas-giant';
+        else if (['jupiter', 'saturn', 'uranus', 'neptune', 'jool'].includes(data.id)) type = 'gas-giant';
         else if (data.id === 'earth') type = 'earth';
+        else if (data.id === 'kerbin') type = 'kerbin'; // KSP Earth analog
+        else if (data.id === 'duna') type = 'duna'; // KSP Mars analog with ice caps
     }
 
     const t = dictionary[lang];
@@ -35,18 +38,19 @@ const Object3DPreview = ({ data, onClose, lang }: { data: SolarSystemObject, onC
         <div className="h-64 mb-4 relative overflow-hidden bg-black/40 rounded-t-2xl border-b border-white/10">
             <div className="absolute inset-0 z-0">
                 <Canvas camera={{ position: [0, 0, 3.5], fov: 45 }} gl={{ antialias: true, alpha: true }}>
-                    <ambientLight intensity={0.8} />
-                    <pointLight position={[10, 10, 10]} intensity={1.5} />
-                    <pointLight position={[-10, -10, -5]} intensity={0.5} color="blue" />
+                    <ambientLight intensity={0.6} />
+                    <pointLight position={[10, 10, 10]} intensity={2} color="#ffffff" />
+                    <pointLight position={[-8, -5, -8]} intensity={0.8} color="#4a90e2" />
+                    <pointLight position={[0, 10, 0]} intensity={0.5} color="#ffd700" />
 
-                    <group rotation={[0.2, 0, 0]}>
+                    <group rotation={[0.25, 0, 0.1]}>
                         {isCustomModel ? (
                             <VoxelModel type={customModelType} scale={1} />
                         ) : (
                             <VoxelSphere
                                 radius={1}
                                 color={data.color}
-                                resolution={32}
+                                resolution={36}
                                 type={type}
                                 castShadow={false}
                             />
@@ -55,7 +59,7 @@ const Object3DPreview = ({ data, onClose, lang }: { data: SolarSystemObject, onC
 
                     <OrbitControls
                         autoRotate
-                        autoRotateSpeed={2}
+                        autoRotateSpeed={1.5}
                         enableZoom={false}
                         enablePan={false}
                         minPolarAngle={Math.PI / 4}
@@ -93,6 +97,7 @@ interface InfoCardProps {
     selectedObject: SolarSystemObject | null;
     onClose: () => void;
     lang: Language;
+    systemType?: SystemType;
 }
 
 const StatCard = ({ icon: Icon, label, value, colorClass }: { icon: any, label: string, value: string | number | undefined, colorClass: string }) => (
@@ -105,7 +110,7 @@ const StatCard = ({ icon: Icon, label, value, colorClass }: { icon: any, label: 
     </div>
 );
 
-export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
+export function InfoCard({ selectedObject, onClose, lang, systemType = 'solar' }: InfoCardProps) {
     // Determine query for NASA API
     const query = selectedObject ? (selectedObject.id === 'iss' ? 'International Space Station' : selectedObject.name) : '';
     const { images, loading: imageLoading, error: imageError } = useNasaImage(query);
@@ -126,8 +131,16 @@ export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
     const displayAvgDist = translation?.averageDistanceToEarth || data.averageDistanceToEarth;
     const displayOrbit = translation?.orbitalPeriod || data.orbitalPeriod;
 
-    // Wikipedia URL
-    const wikiUrl = `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(displayName)}`;
+    // For Kerbol system, show 'Distance to Kerbin' instead of 'Distance to Earth'
+    const distanceLabel = systemType === 'kerbol' ? (t.distanceKerbin || t.distanceEarth) : t.distanceEarth;
+
+    // Disable NASA gallery for Kerbol system (fictional objects)
+    const showNasaGallery = systemType === 'solar';
+
+    // Wikipedia URL - Only for real objects
+    const wikiUrl = systemType === 'solar'
+        ? `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(displayName)}`
+        : null;
 
     return (
         <AnimatePresence>
@@ -147,15 +160,17 @@ export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
                             <h2 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
                                 {displayName}
                             </h2>
-                            <a
-                                href={wikiUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-blue-300 transition-colors"
-                                title="Wikipedia"
-                            >
-                                <BookOpen size={20} />
-                            </a>
+                            {wikiUrl && (
+                                <a
+                                    href={wikiUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-blue-300 transition-colors"
+                                    title="Wikipedia"
+                                >
+                                    <BookOpen size={20} />
+                                </a>
+                            )}
                         </div>
                         <p className="text-lg text-gray-300 leading-relaxed font-light">
                             {displayDesc}
@@ -170,7 +185,7 @@ export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
                         <div className="bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-colors col-span-2">
                             <div className="flex items-center gap-2 text-cyan-300 mb-1">
                                 <Globe size={16} />
-                                <span className="text-xs font-bold uppercase">{t.distanceEarth}</span>
+                                <span className="text-xs font-bold uppercase">{distanceLabel}</span>
                             </div>
                             <span className="text-xl font-mono">{displayAvgDist || "N/A"}</span>
                         </div>
@@ -192,47 +207,49 @@ export function InfoCard({ selectedObject, onClose, lang }: InfoCardProps) {
                         </p>
                     </div>
 
-                    {/* NASA Gallery (4 images) */}
-                    <div className="space-y-2">
-                        <h3 className="text-gray-400 text-xs font-bold uppercase flex items-center gap-2">
-                            <ImageIcon size={14} /> {t.nasaGallery}
-                        </h3>
-                        <div className="grid grid-cols-2 gap-2">
-                            {imageLoading && (
-                                <div className="col-span-2 h-32 flex items-center justify-center text-gray-500 bg-white/5 rounded-xl">
-                                    <span className="animate-pulse">{t.loadingImages}</span>
-                                </div>
-                            )}
-                            {imageError && (
-                                <div className="col-span-2 h-32 flex items-center justify-center text-gray-500 text-sm p-4 text-center bg-white/5 rounded-xl">
-                                    {t.galleryUnavailable}
-                                </div>
-                            )}
-                            {!imageLoading && !imageError && images.map((img, idx) => (
-                                <a
-                                    key={idx}
-                                    href={`https://images.nasa.gov/details/${img.nasaId}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="aspect-square bg-black/30 rounded-xl overflow-hidden border border-white/10 relative group block cursor-pointer"
-                                    title="View on NASA.gov"
-                                >
-                                    <Image
-                                        src={img.url}
-                                        alt={`${displayName} ${idx + 1}`}
-                                        fill
-                                        sizes="(max-width: 768px) 50vw, 25vw"
-                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                        <div className="bg-black/50 p-2 rounded-full text-white/80 backdrop-blur-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                                        </div>
+                    {/* NASA Gallery (4 images) - Only for Solar System objects */}
+                    {showNasaGallery && (
+                        <div className="space-y-2">
+                            <h3 className="text-gray-400 text-xs font-bold uppercase flex items-center gap-2">
+                                <ImageIcon size={14} /> {t.nasaGallery}
+                            </h3>
+                            <div className="grid grid-cols-2 gap-2">
+                                {imageLoading && (
+                                    <div className="col-span-2 h-32 flex items-center justify-center text-gray-500 bg-white/5 rounded-xl">
+                                        <span className="animate-pulse">{t.loadingImages}</span>
                                     </div>
-                                </a>
-                            ))}
+                                )}
+                                {imageError && (
+                                    <div className="col-span-2 h-32 flex items-center justify-center text-gray-500 text-sm p-4 text-center bg-white/5 rounded-xl">
+                                        {t.galleryUnavailable}
+                                    </div>
+                                )}
+                                {!imageLoading && !imageError && images.map((img, idx) => (
+                                    <a
+                                        key={idx}
+                                        href={`https://images.nasa.gov/details/${img.nasaId}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="aspect-square bg-black/30 rounded-xl overflow-hidden border border-white/10 relative group block cursor-pointer"
+                                        title="View on NASA.gov"
+                                    >
+                                        <Image
+                                            src={img.url}
+                                            alt={`${displayName} ${idx + 1}`}
+                                            fill
+                                            sizes="(max-width: 768px) 50vw, 25vw"
+                                            className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                            <div className="bg-black/50 p-2 rounded-full text-white/80 backdrop-blur-sm">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                                            </div>
+                                        </div>
+                                    </a>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Action Button */}
                     <button onClick={onClose} className="w-full py-3 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">

@@ -7,12 +7,14 @@ import * as THREE from 'three';
 import { SolarSystemObject } from '@/data/solarSystemData';
 import { VoxelSphere } from './VoxelSphere';
 import { VoxelRing } from './VoxelRing';
+import { Atmosphere, ThickAtmosphere, ThinAtmosphere } from './Atmosphere';
 import { dictionary, Language } from '@/data/dictionary';
 import { objectTranslations } from '@/data/objectTranslations';
 
 interface CelestialBodyProps {
     data: SolarSystemObject;
     onSelect: (data: SolarSystemObject) => void;
+    onDoubleClick?: (data: SolarSystemObject) => void;
     isPaused: boolean;
     orbitMode: 'simplified' | 'real';
     satellites?: SolarSystemObject[];
@@ -22,7 +24,7 @@ interface CelestialBodyProps {
     positionRef?: React.MutableRefObject<Record<string, THREE.Vector3>>;
 }
 
-export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites, timeScale = 1, lang, eaten, positionRef }: CelestialBodyProps) {
+export function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMode, satellites, timeScale = 1, lang, eaten, positionRef }: CelestialBodyProps) {
     const bodyGroupRef = useRef<THREE.Group>(null);
     const groupRef = useRef<THREE.Group>(null);
     const [hovered, setHovered] = useState(false);
@@ -109,6 +111,13 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
         onSelect(data);
     };
 
+    const handleDoubleClick = (e: any) => {
+        e.stopPropagation();
+        if (onDoubleClick) {
+            onDoubleClick(data);
+        }
+    };
+
     const orbitPoints = useMemo(() => {
         const points = [];
         const segments = 64;
@@ -138,7 +147,9 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
     // Determine Planet Type for Voxel Generation
     const planetType = useMemo(() => {
         if (data.id === 'earth') return 'earth';
-        if (['jupiter', 'saturn', 'uranus', 'neptune'].includes(data.id)) return 'gas-giant';
+        if (data.id === 'kerbin') return 'kerbin'; // KSP Earth analog with oceans/continents/clouds
+        if (data.id === 'duna') return 'duna'; // KSP Mars analog with ice caps
+        if (['jupiter', 'saturn', 'uranus', 'neptune', 'jool'].includes(data.id)) return 'gas-giant';
         if (data.id === 'moon') return 'rocky'; // Use rocky for Moon
         return 'rocky';
     }, [data.id]);
@@ -194,6 +205,7 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
                 <group
                     ref={bodyGroupRef}
                     onClick={handleClick}
+                    onDoubleClick={handleDoubleClick}
                     onPointerOver={() => setHovered(true)}
                     onPointerOut={() => setHovered(false)}
                 >
@@ -204,6 +216,42 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
                         resolution={voxelResolution}
                         type={planetType}
                     />
+
+                    {/* Atmosphere Effect */}
+                    {data.hasAtmosphere && data.atmosphereColor && (
+                        <>
+                            {data.atmosphereType === 'thick' && (
+                                <ThickAtmosphere
+                                    radius={scaledSize}
+                                    color={data.atmosphereColor}
+                                    intensity={data.atmosphereIntensity || 0.7}
+                                />
+                            )}
+                            {data.atmosphereType === 'thin' && (
+                                <ThinAtmosphere
+                                    radius={scaledSize}
+                                    color={data.atmosphereColor}
+                                    intensity={data.atmosphereIntensity || 0.3}
+                                />
+                            )}
+                            {data.atmosphereType === 'normal' && (
+                                <Atmosphere
+                                    radius={scaledSize}
+                                    color={data.atmosphereColor}
+                                    intensity={data.atmosphereIntensity || 0.5}
+                                    scale={1.12}
+                                />
+                            )}
+                            {/* Default atmosphere if no type specified */}
+                            {!data.atmosphereType && (
+                                <Atmosphere
+                                    radius={scaledSize}
+                                    color={data.atmosphereColor}
+                                    intensity={data.atmosphereIntensity || 0.4}
+                                />
+                            )}
+                        </>
+                    )}
                 </group>
 
                 {data.hasRings && data.ringColor && (
@@ -224,6 +272,7 @@ export function CelestialBody({ data, onSelect, isPaused, orbitMode, satellites,
                         key={sat.id}
                         data={sat}
                         onSelect={onSelect}
+                        onDoubleClick={onDoubleClick}
                         isPaused={isPaused}
                         orbitMode={orbitMode}
                         timeScale={timeScale}
