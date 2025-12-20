@@ -159,6 +159,9 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const umamiUrl = process.env.NEXT_PUBLIC_UMAMI_URL;
+    const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+
     return (
         <html lang="fr" suppressHydrationWarning>
             <head>
@@ -172,6 +175,15 @@ export default function RootLayout({
                 <link rel="dns-prefetch" href="https://images-assets.nasa.gov" />
                 {/* Canonical URL */}
                 <link rel="canonical" href={siteUrl} />
+
+                {/* Umami Analytics - Variables from .env.local (not committed to Git) */}
+                {umamiUrl && umamiWebsiteId && (
+                    <script
+                        defer
+                        src={umamiUrl}
+                        data-website-id={umamiWebsiteId}
+                    />
+                )}
             </head>
             <body>{children}</body>
         </html>
