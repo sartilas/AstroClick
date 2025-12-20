@@ -157,7 +157,7 @@ export function InfoCard({ selectedObject, onClose, lang, systemType = 'solar' }
                     {/* Header */}
                     <div>
                         <div className="flex justify-between items-start mb-2">
-                            <h2 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                            <h2 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400" translate="no">
                                 {displayName}
                             </h2>
                             {wikiUrl && (

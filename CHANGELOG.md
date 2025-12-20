@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.1] - 2025-12-20
+
+### Fixed
+- **Traductions KSP**: Ajout des traductions complètes pour tous les corps célestes du système Kerbol (FR, EN, ES, ZH, HI).
+- **Bug "Mars" → "March"**: Correction de la traduction automatique du navigateur qui transformait "Mars" en "March" (attribut `translate="no"`).
+- **Bug "Vall" → "Valley"**: Correction du label incorrect sur la lune Vall (KSP).
+- **Collision Minmus/Gilly**: Rééquilibrage des distances orbitales dans le système Kerbol pour éviter les chevauchements visuels.
+
+### Changed
+- **Performance**: Réduction du temps de chargement de 5s à 1.5s.
+- **UI**: Suppression des badges "SEO Optimisé" et "PWA Ready" du modal À propos.
+
 ## [1.3.0] - 2025-12-20
 
 ### Added

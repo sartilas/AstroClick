@@ -47,7 +47,7 @@ export default function Home() {
         // Hide instructions after 5 seconds
         const timer = setTimeout(() => {
             setShowInstructions(false);
-        }, 5000);
+        }, 3000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -176,7 +176,7 @@ export default function Home() {
                             AstroClick
                         </h2>
                         <p className="text-gray-500 text-center text-xs font-mono mb-6 uppercase tracking-widest">
-                            v1.3.0 • Open Source
+                            v1.3.1 • Open Source
                         </p>
 
                         <div className="space-y-4 text-gray-300 text-sm leading-relaxed text-center">
@@ -189,15 +189,7 @@ export default function Home() {
                                 <span className="text-purple-400 font-bold"> Claude 4.5</span>.
                             </p>
 
-                            {/* SEO & Accessibility Badge */}
-                            <div className="flex justify-center gap-2 my-3">
-                                <span className="bg-green-600/20 text-green-400 text-[10px] px-2 py-1 rounded-full border border-green-500/30 font-mono">
-                                    🔍 SEO Optimisé
-                                </span>
-                                <span className="bg-blue-600/20 text-blue-400 text-[10px] px-2 py-1 rounded-full border border-blue-500/30 font-mono">
-                                    📱 PWA Ready
-                                </span>
-                            </div>
+
 
                             <p className="text-xs text-yellow-500/80 italic mt-2 animate-pulse">
                                 Psst... Cliquez 3 fois sur le logo pour une surprise cosmique !

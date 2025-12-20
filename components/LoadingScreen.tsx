@@ -15,7 +15,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
         // Use a mounted flag to properly handle cleanup and prevent stale state
         let isMounted = true;
         const startTime = performance.now();
-        const duration = 5000; // 5 seconds
+        const duration = 1500; // 1.5 seconds (reduced from 5s)
         let animationFrameId: number;
 
         const easeInOutCubic = (x: number): number => {

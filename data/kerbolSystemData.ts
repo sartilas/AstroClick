@@ -103,7 +103,7 @@ export const kerbolSystemData: SolarSystemObject[] = [
         size: 1,
         scientificRadius: 600, // km
         scientificDistance: 13599840, // km (1 Kerbin AU)
-        distance: 17,
+        distance: 19,
         orbitSpeed: 1.0,
         rotationSpeed: 0.02,
         funFact: '🏠 Easter Egg: Kerbin is full of secrets! KSC 2 (an abandoned space center), black monoliths (2001 Space Odyssey reference), and developer memorials!',
@@ -172,7 +172,7 @@ export const kerbolSystemData: SolarSystemObject[] = [
         size: 0.55,
         scientificRadius: 320, // km
         scientificDistance: 20726155, // km
-        distance: 26,
+        distance: 29,
         orbitSpeed: 0.75,
         rotationSpeed: 0.018,
         funFact: '👽 Easter Egg: A giant Kerbal Face rock formation (Mars Face reference) + a pyramid emitting SSTV signals that decode to a Soyuz spacecraft image!',
@@ -219,7 +219,7 @@ export const kerbolSystemData: SolarSystemObject[] = [
         size: 0.22,
         scientificRadius: 138, // km
         scientificDistance: 40839348, // km
-        distance: 42,
+        distance: 45,
         orbitSpeed: 0.45,
         rotationSpeed: 0.012,
         funFact: '🤔 Easter Egg: "Dres doesn\'t exist" - A running community joke because nobody ever visits! It has a massive canyon scar across its surface.',
@@ -240,7 +240,7 @@ export const kerbolSystemData: SolarSystemObject[] = [
         size: 3.2,
         scientificRadius: 6000, // km
         scientificDistance: 68773560, // km
-        distance: 60,
+        distance: 65,
         orbitSpeed: 0.25,
         rotationSpeed: 0.04,
         funFact: '☠️ Easter Egg: Descending too deep into Jool\'s atmosphere instantly destroys your spacecraft! The "Jool 5" challenge (landing on all 5 moons) is legendary.',
@@ -379,7 +379,7 @@ export const kerbolSystemData: SolarSystemObject[] = [
         size: 0.28,
         scientificRadius: 210, // km
         scientificDistance: 90118820, // km
-        distance: 85,
+        distance: 95,
         orbitSpeed: 0.12,
         rotationSpeed: 0.008,
         funFact: '📡 Easter Egg: Originally planned as a moon of a second gas giant (never added). Its "Tiger Stripes" are like Europa. Signal delay to Kerbin is extreme!',

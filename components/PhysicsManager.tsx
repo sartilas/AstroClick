@@ -254,8 +254,8 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
     };
 
     useFrame((state, delta) => {
-        // --- 1. TRAJECTORY PREDICTION (If Charging) ---
-        if (isCharging) {
+        // --- 1. TRAJECTORY PREDICTION (Always show when mode is active) ---
+        if (isActive) {
             raycaster.setFromCamera(pointer, camera);
             const origin = raycaster.ray.origin.clone();
             const direction = raycaster.ray.direction.clone();

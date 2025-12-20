@@ -580,5 +580,125 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
         es: { name: "ISS", description: "Un laboratorio gigante.", funFact: "¡16 amaneceres al día!", temperature: "21°C", realDistance: "408 km", averageDistanceToEarth: "408 km", orbitalPeriod: "93 min" },
         zh: { name: "国际空间站", description: "太空中的巨大实验室。", funFact: "宇航员每天看到16次日出！", temperature: "21°C", realDistance: "408 公里", averageDistanceToEarth: "408 公里", orbitalPeriod: "93 分钟" },
         hi: { name: "आईएसएस", description: "अंतरिक्ष में एक विशाल प्रयोगशाला।", funFact: "अंतरिक्ष यात्री दिन में 16 सूर्योदय देखते हैं!", temperature: "21°C", realDistance: "408 किमी", averageDistanceToEarth: "408 किमी", orbitalPeriod: "93 मिनट" }
+    },
+    // KSP KERBAL SYSTEM
+    'kerbol': {
+        en: { name: "Kerbol", description: "The central star of the Kerbal system.", funFact: "It is much smaller than our Sun but just as bright!", temperature: "5,840 K", realDistance: "Center", averageDistanceToEarth: "13.6 million km", orbitalPeriod: "N/A" },
+        fr: { name: "Kerbol", description: "L'étoile centrale du système Kerbal.", funFact: "Elle est bien plus petite que notre Soleil mais tout aussi brillante !", temperature: "5 840 K", realDistance: "Centre", averageDistanceToEarth: "13,6 millions de km", orbitalPeriod: "N/A" },
+        es: { name: "Kerbol", description: "La estrella central del sistema Kerbal.", funFact: "¡Es mucho más pequeña que nuestro Sol pero igual de brillante!", temperature: "5.840 K", realDistance: "Centro", averageDistanceToEarth: "13,6 millones de km", orbitalPeriod: "N/A" },
+        zh: { name: "Kerbol", description: "Kerbal 星系的中心恒星。", funFact: "它比我们的太阳小得多，但同样明亮！", temperature: "5,840 K", realDistance: "中心", averageDistanceToEarth: "1360 万公里", orbitalPeriod: "无" },
+        hi: { name: "करबोल", description: "करबल प्रणाली का केंद्रीय तारा।", funFact: "यह हमारे सूर्य से बहुत छोटा है लेकिन उतना ही चमकीला है!", temperature: "5,840 K", realDistance: "केंद्र", averageDistanceToEarth: "13.6 मिलियन किमी", orbitalPeriod: "लागू नहीं" }
+    },
+    'moho': {
+        en: { name: "Moho", description: "The innermost planet of the Kerbol system.", funFact: "It has no atmosphere and is very difficult to reach!", temperature: "400°C", realDistance: "5.2 million km", averageDistanceToEarth: "8.4 million km", orbitalPeriod: "102 days" },
+        fr: { name: "Moho", description: "La planète la plus proche de Kerbol.", funFact: "Elle n'a pas d'atmosphère et est très difficile à atteindre !", temperature: "400°C", realDistance: "5,2 millions de km", averageDistanceToEarth: "8,4 millions de km", orbitalPeriod: "102 jours" },
+        es: { name: "Moho", description: "El planeta más interno del sistema Kerbal.", funFact: "¡No tiene atmósfera और it is very difficult to reach!", temperature: "400°C", realDistance: "5,2 millones de km", averageDistanceToEarth: "8,4 millones de km", orbitalPeriod: "102 días" },
+        zh: { name: "Moho", description: "Kerbol 星系最内层的行星。", funFact: "它没有大气层，非常难以到达！", temperature: "400°C", realDistance: "520 万公里", averageDistanceToEarth: "840 万公里", orbitalPeriod: "102 天" },
+        hi: { name: "मोहो", description: "करबोल प्रणाली का सबसे आंतरिक ग्रह।", funFact: "यहाँ कोई वायुमंडल नहीं है और यहाँ पहुँचना बहुत कठिन है!", temperature: "400°C", realDistance: "5.2 मिलियन किमी", averageDistanceToEarth: "8.4 मिलियन किमी", orbitalPeriod: "102 दिन" }
+    },
+    'eve': {
+        en: { name: "Eve", description: "The purple sister planet of Kerbin.", funFact: "Its atmosphere is so thick that landing is easy, but returning is nearly impossible!", temperature: "150°C", realDistance: "9.8 million km", averageDistanceToEarth: "3.7 million km", orbitalPeriod: "261 days" },
+        fr: { name: "Eve", description: "La sœur pourpre de Kerbin.", funFact: "Son atmosphère est si dense que l'atterrissage est facile, mais en repartir est presque impossible !", temperature: "150°C", realDistance: "9,8 millions de km", averageDistanceToEarth: "3,7 millions de km", orbitalPeriod: "261 jours" },
+        es: { name: "Eve", description: "El planeta hermano púrpura de Kerbin.", funFact: "¡Su atmósfera es tan densa que aterrizar es fácil, pero regresar es casi imposible!", temperature: "150°C", realDistance: "9,8 millones de km", averageDistanceToEarth: "3,7 millones de km", orbitalPeriod: "261 días" },
+        zh: { name: "Eve", description: "Kerbin 的紫色姊妹行星。", funFact: "它的大气层非常厚，着陆很容易，但返回几乎是不可能的！", temperature: "150°C", realDistance: "980 万公里", averageDistanceToEarth: "370 万公里", orbitalPeriod: "261 天" },
+        hi: { name: "ईव", description: "करबिन का बैंगनी सिस्टर ग्रह।", funFact: "इसका वायुमंडल इतना घना है कि उतरना आसान है, लेकिन वापस आना लगभग असंभव है!", temperature: "150°C", realDistance: "9.8 मिलियन किमी", averageDistanceToEarth: "3.7 मिलियन किमी", orbitalPeriod: "261 दिन" }
+    },
+    'gilly': {
+        en: { name: "Gilly", description: "A tiny captured asteroid orbiting Eve.", funFact: "Its gravity is so low you can jump into orbit!", temperature: "Cold", realDistance: "31,500 km from Eve", averageDistanceToEarth: "3.7 million km", orbitalPeriod: "7 days" },
+        fr: { name: "Gilly", description: "Un minuscule astéroïde capturé en orbite d'Eve.", funFact: "Sa gravité est si faible qu'on peut se mettre en orbite juste en sautant !", temperature: "Froid", realDistance: "31 500 km d'Eve", averageDistanceToEarth: "3,7 millions de km", orbitalPeriod: "7 jours" },
+        es: { name: "Gilly", description: "Un diminuto asteroide capturado que orbita alrededor de Eve.", funFact: "¡Su gravedad es tan baja que puedes saltar a la órbita!", temperature: "Frío", realDistance: "31.500 km de Eve", averageDistanceToEarth: "3,7 millones de km", orbitalPeriod: "7 días" },
+        zh: { name: "Gilly", description: "一颗围绕 Eve 运行的微小捕获小行星。", funFact: "它的重力非常低，你可以跳进轨道！", temperature: "寒冷", realDistance: "距 Eve 31,500 公里", averageDistanceToEarth: "370 万公里", orbitalPeriod: "7 天" },
+        hi: { name: "गिली", description: "ईव की परिक्रमा करने वाला एक छोटा पकड़ा गया क्षुद्रग्रह।", funFact: "इसका गुरुत्वाकर्षण इतना कम है कि आप कूदकर कक्षा में पहुँच सकते हैं!", temperature: "ठंडा", realDistance: "ईव से 31,500 किमी", averageDistanceToEarth: "3.7 मिलियन किमी", orbitalPeriod: "7 दिन" }
+    },
+    'kerbin': {
+        en: { name: "Kerbin", description: "The home of the Kerbals.", funFact: "It is the only planet with breathable oxygen and life!", temperature: "15°C", realDistance: "13.6 million km", averageDistanceToEarth: "0 km", orbitalPeriod: "426 days" },
+        fr: { name: "Kerbin", description: "La maison des Kerbals.", funFact: "C'est la seule planète avec de l'oxygène respirable et de la vie !", temperature: "15°C", realDistance: "13,6 millions de km", averageDistanceToEarth: "0 km", orbitalPeriod: "426 jours" },
+        es: { name: "Kerbin", description: "El hogar de los Kerbals.", funFact: "¡Es el único planeta con oxígeno respirable y vida!", temperature: "15°C", realDistance: "13,6 millones de km", averageDistanceToEarth: "0 km", orbitalPeriod: "426 días" },
+        zh: { name: "Kerbin", description: "Kerbal 的家园。", funFact: "它是唯一一颗拥有可呼吸氧气和生命的行星！", temperature: "15°C", realDistance: "1360 万公里", averageDistanceToEarth: "0 公里", orbitalPeriod: "426 天" },
+        hi: { name: "करबिन", description: "करबल्स का घर।", funFact: "यह एकमात्र ग्रह है जहाँ सांस लेने योग्य ऑक्सीजन और जीवन है!", temperature: "15°C", realDistance: "13.6 मिलियन किमी", averageDistanceToEarth: "0 किमी", orbitalPeriod: "426 दिन" }
+    },
+    'the-mun': {
+        en: { name: "The Mun", description: "Kerbin's closest natural satellite.", funFact: "It is heavily cratered and has many secret monoliths.", temperature: "-40°C", realDistance: "12,000 km from Kerbin", averageDistanceToEarth: "12,000 km", orbitalPeriod: "6.5 days" },
+        fr: { name: "La Mun", description: "Le satellite naturel le plus proche de Kerbin.", funFact: "Elle est couverte de cratères et cache de nombreux monolithes secrets.", temperature: "-40°C", realDistance: "12 000 km de Kerbin", averageDistanceToEarth: "12 000 km", orbitalPeriod: "6,5 jours" },
+        es: { name: "La Mun", description: "El satélite natural más cercano a Kerbin.", funFact: "Está muy craterizado y tiene muchos monolitos secretos.", temperature: "-40°C", realDistance: "12.000 km de Kerbin", averageDistanceToEarth: "12.000 km", orbitalPeriod: "6,5 días" },
+        zh: { name: "The Mun", description: "距离 Kerbin 最近的天然卫星。", funFact: "它布满了陨石坑，并有许多秘密的独石。", temperature: "-40°C", realDistance: "距 Kerbin 12,000 公里", averageDistanceToEarth: "12,000 公里", orbitalPeriod: "6.5 天" },
+        hi: { name: "द मुन", description: "करबिन का सबसे करीबी प्राकृतिक उपग्रह।", funFact: "इसमें बहुत सारे गड्ढे हैं और कई गुप्त मोनोलिथ हैं।", temperature: "-40°C", realDistance: "करबिन से 12,000 किमी", averageDistanceToEarth: "12,000 किमी", orbitalPeriod: "6.5 दिन" }
+    },
+    'minmus': {
+        en: { name: "Minmus", description: "A small icy moon with a minty color.", funFact: "Lore says it's made of frozen dessert (mint ice cream)!", temperature: "-80°C", realDistance: "47,000 km from Kerbin", averageDistanceToEarth: "47,000 km", orbitalPeriod: "47 days" },
+        fr: { name: "Minmus", description: "Une petite lune glacée de couleur menthe.", funFact: "La légende dit qu'elle est faite de dessert glacé (glace à la menthe) !", temperature: "-80°C", realDistance: "47 000 km de Kerbin", averageDistanceToEarth: "47 000 km", orbitalPeriod: "47 jours" },
+        es: { name: "Minmus", description: "Una pequeña luna helada con un color mentolado.", funFact: "¡La leyenda dice que está hecha de postre helado (helado de menta)!", temperature: "-80°C", realDistance: "47.000 km de Kerbin", averageDistanceToEarth: "47.000 km", orbitalPeriod: "47 días" },
+        zh: { name: "Minmus", description: "一颗带有薄荷色的小型冰冷卫星。", funFact: "传说它是由冷冻甜点（薄荷冰淇淋）制成的！", temperature: "-80°C", realDistance: "距 Kerbin 47,000 公里", averageDistanceToEarth: "47,000 公里", orbitalPeriod: "47 天" },
+        hi: { name: "मिनमस", description: "पुदीने के रंग का एक छोटा बर्फीला चंद्रमा।", funFact: "किंवदंती है कि यह फ्रोजन मिठाई (मिंट आइसक्रीम) से बना है!", temperature: "-80°C", realDistance: "करबिन से 47,000 किमी", averageDistanceToEarth: "47,000 किमी", orbitalPeriod: "47 दिन" }
+    },
+    'duna': {
+        en: { name: "Duna", description: "The red planet of the Kerbol system.", funFact: "It has a giant face rock formation on its surface!", temperature: "-40°C", realDistance: "20.7 million km", averageDistanceToEarth: "7.1 million km", orbitalPeriod: "801 days" },
+        fr: { name: "Duna", description: "La planète rouge du système Kerbol.", funFact: "Elle possède une formation rocheuse géante en forme de visage !", temperature: "-40°C", realDistance: "20,7 millions de km", averageDistanceToEarth: "7,1 millions de km", orbitalPeriod: "801 jours" },
+        es: { name: "Duna", description: "El planeta rojo del sistema Kerbal.", funFact: "¡Tiene una formación rocosa de cara gigante en su superficie!", temperature: "-40°C", realDistance: "20,7 millones de km", averageDistanceToEarth: "7,1 millones de km", orbitalPeriod: "801 días" },
+        zh: { name: "Duna", description: "Kerbol 星系的红色行星。", funFact: "它的表面有一个巨大的脸形岩石层！", temperature: "-40°C", realDistance: "2070 万公里", averageDistanceToEarth: "710 万公里", orbitalPeriod: "801 天" },
+        hi: { name: "डूना", description: "करबोल प्रणाली का लाल ग्रह।", funFact: "इसकी सतह पर एक विशाल चेहरे जैसी चट्टान की संरचना है!", temperature: "-40°C", realDistance: "20.7 मिलियन किमी", averageDistanceToEarth: "7.1 मिलियन किमी", orbitalPeriod: "801 दिन" }
+    },
+    'ike': {
+        en: { name: "Ike", description: "Duna's large, tidally locked moon.", funFact: "Ike is always watching Duna from the same spot!", temperature: "-60°C", realDistance: "3,200 km from Duna", averageDistanceToEarth: "7.1 million km", orbitalPeriod: "3 days" },
+        fr: { name: "Ike", description: "La grande lune de Duna, verrouillée par les marées.", funFact: "Ike surveille toujours Duna depuis le même endroit !", temperature: "-60°C", realDistance: "3 200 km de Duna", averageDistanceToEarth: "7,1 millions de km", orbitalPeriod: "3 jours" },
+        es: { name: "Ike", description: "La gran luna de Duna, bloqueada por las mareas.", funFact: "¡Ike siempre está mirando a Duna desde el mismo lugar!", temperature: "-60°C", realDistance: "3.200 km de Duna", averageDistanceToEarth: "7,1 millones de km", orbitalPeriod: "3 días" },
+        zh: { name: "Ike", description: "Duna 的大型潮汐锁定卫星。", funFact: "Ike 总是从同一个地方注视着 Duna！", temperature: "-60°C", realDistance: "距 Duna 3,200 公里", averageDistanceToEarth: "710 万公里", orbitalPeriod: "3 天" },
+        hi: { name: "आइक", description: "डूना का बड़ा, ज्वारीय रूप से लॉक चंद्रमा।", funFact: "आइक हमेशा एक ही जगह से डूना को देख रहा होता है!", temperature: "-60°C", realDistance: "डूना से 3,200 किमी", averageDistanceToEarth: "7.1 मिलियन किमी", orbitalPeriod: "3 दिन" }
+    },
+    'dres': {
+        en: { name: "Dres", description: "A lonely dwarf planet in the asteroid belt.", funFact: "It has a massive canyon and is often forgotten by explorers.", temperature: "-150°C", realDistance: "40.8 million km", averageDistanceToEarth: "27.2 million km", orbitalPeriod: "2206 days" },
+        fr: { name: "Dres", description: "Une planète naine isolée dans la ceinture d'astéroïdes.", funFact: "Elle possède un canyon massif et est souvent oubliée par les explorateurs.", temperature: "-150°C", realDistance: "40,8 millions de km", averageDistanceToEarth: "27,2 millions de km", orbitalPeriod: "2206 jours" },
+        es: { name: "Dres", description: "Un planeta enano solitario en el cinturón de asteroides.", funFact: "Tiene un cañón enorme और explorers lo olvidan a menudo.", temperature: "-150°C", realDistance: "40,8 millones de km", averageDistanceToEarth: "27,2 millones de km", orbitalPeriod: "2206 días" },
+        zh: { name: "Dres", description: "小行星带中一颗孤独的矮行星。", funFact: "它有一个巨大的峡谷，经常被探险家遗忘。", temperature: "-150°C", realDistance: "4080 万公里", averageDistanceToEarth: "2720 万公里", orbitalPeriod: "2206 天" },
+        hi: { name: "ड्रेस", description: "क्षुद्रग्रह बेल्ट में एक अकेला बौना ग्रह।", funFact: "इसमें एक विशाल घाटी है और अक्सर खोजकर्ता इसे भूल जाते हैं।", temperature: "-150°C", realDistance: "40.8 मिलियन किमी", averageDistanceToEarth: "27.2 मिलियन किमी", orbitalPeriod: "2206 दिन" }
+    },
+    'jool': {
+        en: { name: "Jool", description: "A massive green gas giant.", funFact: "It has five distinct moons and a crushing atmosphere!", temperature: "-100°C", realDistance: "68.7 million km", averageDistanceToEarth: "55.1 million km", orbitalPeriod: "4853 days" },
+        fr: { name: "Jool", description: "Une géante gazeuse verte massive.", funFact: "Elle possède cinq lunes distinctes et une atmosphère écrasante !", temperature: "-100°C", realDistance: "68,7 millions de km", averageDistanceToEarth: "55,1 millions de km", orbitalPeriod: "4853 jours" },
+        es: { name: "Jool", description: "Un gigante gaseoso verde masivo.", funFact: "¡Tiene cinco lunas distintas y una atmósfera aplastante!", temperature: "-100°C", realDistance: "68,7 millones de km", averageDistanceToEarth: "55,1 millones de km", orbitalPeriod: "4853 días" },
+        zh: { name: "Jool", description: "一颗巨大的绿色气态巨行星。", funFact: "它有五颗不同的卫星和压抑的大气层！", temperature: "-100°C", realDistance: "6870 万公里", averageDistanceToEarth: "5510 万公里", orbitalPeriod: "4853 天" },
+        hi: { name: "जूल", description: "एक विशाल हरे रंग का गैस दानव।", funFact: "इसके पांच अलग-अलग चंद्रमा और एक कुचलने वाला वायुमंडल है!", temperature: "-100°C", realDistance: "68.7 मिलियन किमी", averageDistanceToEarth: "55.1 मिलियन किमी", orbitalPeriod: "4853 दिन" }
+    },
+    'laythe': {
+        en: { name: "Laythe", description: "An oceanic moon in resonance with Jool.", funFact: "It has liquid water and a cold but breathable atmosphere!", temperature: "-10°C", realDistance: "27,184 km from Jool", averageDistanceToEarth: "55.1 million km", orbitalPeriod: "3 days" },
+        fr: { name: "Laythe", description: "Une lune océanique en résonance avec Jool.", funFact: "Elle possède de l'eau liquide et une atmosphère froide mais respirable !", temperature: "-10°C", realDistance: "27 184 km de Jool", averageDistanceToEarth: "55,1 millions de km", orbitalPeriod: "3 jours" },
+        es: { name: "Laythe", description: "Una luna oceánica en resonancia con Jool.", funFact: "¡Tiene agua líquida y una atmósfera fría pero respirable!", temperature: "-10°C", realDistance: "27.184 km de Jool", averageDistanceToEarth: "55,1 millones de km", orbitalPeriod: "3 días" },
+        zh: { name: "Laythe", description: "一颗与 Jool 共振的海洋卫星。", funFact: "它有液态水和寒冷但可呼吸的大气层！", temperature: "-10°C", realDistance: "距 Jool 27,184 公里", averageDistanceToEarth: "5510 万公里", orbitalPeriod: "3 天" },
+        hi: { name: "लेथे", description: "जूल के साथ प्रतिध्वनि में एक महासागरीय चंद्रमा।", funFact: "इसमें तरल पानी और एक ठंडा लेकिन सांस लेने योग्य वायुमंडल है!", temperature: "-10°C", realDistance: "जूल से 27,184 किमी", averageDistanceToEarth: "55.1 मिलियन किमी", orbitalPeriod: "3 दिन" }
+    },
+    'vall': {
+        en: { name: "Vall", description: "A blue ice ball orbiting Jool.", funFact: "Its surface is part of a complex 1:2:4 Laplace resonance.", temperature: "-120°C", realDistance: "43,152 km from Jool", averageDistanceToEarth: "55.1 million km", orbitalPeriod: "6 days" },
+        fr: { name: "Vall", description: "Une boule de glace bleue en orbite de Jool.", funFact: "Sa surface fait partie d'une résonance de Laplace complexe 1:2:4.", temperature: "-120°C", realDistance: "43 152 km de Jool", averageDistanceToEarth: "55,1 millions de km", orbitalPeriod: "6 jours" },
+        es: { name: "Vall", description: "Una bola de hielo azul que orbita Jool.", funFact: "Su superficie es parte de una resonancia de Laplace compleja 1:2:4.", temperature: "-120°C", realDistance: "43.152 km de Jool", averageDistanceToEarth: "55,1 millones de km", orbitalPeriod: "6 días" },
+        zh: { name: "Vall", description: "一颗围绕 Jool 运行的蓝色冰球。", funFact: "它的表面是复杂的 1:2:4 拉普拉斯共振的一部分。", temperature: "-120°C", realDistance: "距 Jool 43,152 公里", averageDistanceToEarth: "5510 万公里", orbitalPeriod: "6 天" },
+        hi: { name: "वाल", description: "जूल की परिक्रमा करने वाला एक नीला बर्फ का गोला।", funFact: "इसकी सतह एक जटिल 1:2:4 लाप्लास प्रतिध्वनि का हिस्सा है।", temperature: "-120°C", realDistance: "जूल से 43,152 किमी", averageDistanceToEarth: "55.1 मिलियन किमी", orbitalPeriod: "6 दिन" }
+    },
+    'tylo': {
+        en: { name: "Tylo", description: "The largest moon of Jool with high gravity.", funFact: "It has NO atmosphere, making landing extremely difficult.", temperature: "-90°C", realDistance: "68,500 km from Jool", averageDistanceToEarth: "55.1 million km", orbitalPeriod: "12 days" },
+        fr: { name: "Tylo", description: "La plus grande lune de Jool avec une forte gravité.", funFact: "Elle n'a AUCUNE atmosphère, ce qui rend l'atterrissage extrêmement difficile.", temperature: "-90°C", realDistance: "68 500 km de Jool", averageDistanceToEarth: "55,1 millions de km", orbitalPeriod: "12 jours" },
+        es: { name: "Tylo", description: "La luna más grande de Jool con alta gravedad.", funFact: "No tiene atmósfera, lo que hace que el aterrizaje sea extremadamente difícil.", temperature: "-90°C", realDistance: "68.500 km de Jool", averageDistanceToEarth: "55,1 millones de km", orbitalPeriod: "12 días" },
+        zh: { name: "Tylo", description: "Jool 最大的卫星，具有高重力。", funFact: "它没有大气层，使得着陆极其困难。", temperature: "-90°C", realDistance: "距 Jool 68,500 公里", averageDistanceToEarth: "5510 万公里", orbitalPeriod: "12 天" },
+        hi: { name: "टाइलो", description: "उच्च गुरुत्वाकर्षण वाला जूल का सबसे बड़ा चंद्रमा।", funFact: "यहाँ कोई वायुमंडल नहीं है, जिससे लैंडिंग अत्यंत कठिन हो जाती है।", temperature: "-90°C", realDistance: "जूल से 68,500 किमी", averageDistanceToEarth: "55.1 मिलियन किमी", orbitalPeriod: "12 दिन" }
+    },
+    'bop': {
+        en: { name: "Bop", description: "A small, lumpy moon of Jool.", funFact: "It is the final resting place of the legendary Dead Kraken!", temperature: "-150°C", realDistance: "128,500 km from Jool", averageDistanceToEarth: "55.1 million km", orbitalPeriod: "38 days" },
+        fr: { name: "Bop", description: "Une petite lune bosselée de Jool.", funFact: "C'est la dernière demeure du légendaire Kraken Mort !", temperature: "-150°C", realDistance: "128 500 km de Jool", averageDistanceToEarth: "55,1 millions de km", orbitalPeriod: "38 jours" },
+        es: { name: "Bop", description: "Una lune pequeña y rugosa de Jool.", funFact: "¡Es el lugar de descanso final del legendario Kraken Muerto!", temperature: "-150°C", realDistance: "128.500 km de Jool", averageDistanceToEarth: "55,1 millones de km", orbitalPeriod: "38 días" },
+        zh: { name: "Bop", description: "Jool 的一颗微小、崎岖的卫星。", funFact: "它是传说中死去的 Kraken 的最后安息之地！", temperature: "-150°C", realDistance: "距 Jool 128,500 公里", averageDistanceToEarth: "5510 万公里", orbitalPeriod: "38 天" },
+        hi: { name: "बॉप", description: "जूल का एक छोटा, गांठदार चंद्रमा।", funFact: "यह महान मरे हुए क्रैकन का अंतिम विश्राम स्थल है!", temperature: "-150°C", realDistance: "जूल से 128,500 किमी", averageDistanceToEarth: "55.1 मिलियन किमी", orbitalPeriod: "38 दिन" }
+    },
+    'pol': {
+        en: { name: "Pol", description: "The smallest moon of Jool, resembling pollen.", funFact: "Its surface is covered in strange, yellow spiky formations.", temperature: "-160°C", realDistance: "179,890 km from Jool", averageDistanceToEarth: "55.1 million km", orbitalPeriod: "66 days" },
+        fr: { name: "Pol", description: "La plus petite lune de Jool, ressemblant à du pollen.", funFact: "Sa surface est couverte d'étranges formations jaunes pointues.", temperature: "-160°C", realDistance: "179 890 km de Jool", averageDistanceToEarth: "55,1 millions de km", orbitalPeriod: "66 jours" },
+        es: { name: "Pol", description: "La luna más pequeña de Jool, que parece polen.", funFact: "Su superficie está cubierta de extrañas formaciones amarillas puntiagudas.", temperature: "-160°C", realDistance: "179.890 km de Jool", averageDistanceToEarth: "55,1 millones de km", orbitalPeriod: "66 días" },
+        zh: { name: "Pol", description: "Jool 最小的卫星，形似花粉。", funFact: "它的表面覆盖着奇怪的黄色尖峰层。", temperature: "-160°C", realDistance: "距 Jool 179,890 公里", averageDistanceToEarth: "5510 万公里", orbitalPeriod: "66 天" },
+        hi: { name: "पोल", description: "जूल का सबसे छोटा चंद्रमा, जो पराग जैसा दिखता है।", funFact: "इसकी सतह अजीबोगरीब, पीली नुकीली संरचनाओं से ढकी हुई है।", temperature: "-160°C", realDistance: "जूल से 179,890 किमी", averageDistanceToEarth: "55.1 मिलियन किमी", orbitalPeriod: "66 दिन" }
+    },
+    'eeloo': {
+        en: { name: "Eeloo", description: "A distant, icy dwarf planet.", funFact: "It is the furthest reach of the Kerbol system and very cold!", temperature: "-210°C", realDistance: "90.1 million km", averageDistanceToEarth: "76.5 million km", orbitalPeriod: "7257 days" },
+        fr: { name: "Eeloo", description: "Une planète naine glacée et lointaine.", funFact: "C'est le point le plus éloigné du système Kerbol et il y fait très froid !", temperature: "-210°C", realDistance: "90,1 millions de km", averageDistanceToEarth: "76,5 millions de km", orbitalPeriod: "7257 jours" },
+        es: { name: "Eeloo", description: "Un planeta enano helado y distante.", funFact: "¡Es el punto más alejado del sistema Kerbal y hace mucho frío!", temperature: "-210°C", realDistance: "90,1 millones de km", averageDistanceToEarth: "76,5 millones de km", orbitalPeriod: "7257 días" },
+        zh: { name: "Eeloo", description: "一颗遥远的冰冷矮行星。", funFact: "它是 Kerbol 星系的最远端，非常寒冷！", temperature: "-210°C", realDistance: "9010 万公里", averageDistanceToEarth: "7650 万公里", orbitalPeriod: "7257 天" },
+        hi: { name: "ईलू", description: "एक दूरस्थ, बर्फीला बौना ग्रह।", funFact: "यह करबोल प्रणाली की सबसे दूर की पहुँच है और बहुत ठंडा है!", temperature: "-210°C", realDistance: "90.1 मिलियन किमी", averageDistanceToEarth: "76.5 मिलियन किमी", orbitalPeriod: "7257 दिन" }
     }
 };
