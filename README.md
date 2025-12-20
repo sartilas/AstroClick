@@ -7,6 +7,10 @@
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![Three.js](https://img.shields.io/badge/Three.js-R3F-orange)
 
+<p align="center">
+  <img src="demo.gif" alt="AstroClick Demo" width="800" />
+</p>
+
 ## 🌌 À Propos
 
 **AstroClick** est une expérience web éducative qui revisite l'astronomie avec une esthétique pixel-art unique. Conçu pour les curieux de tous âges, ce simulateur interactif permet de voyager de Mercure à Neptune, d'apprendre des faits surprenants et d'accéder à une galerie d'images officielles, dédiée au savoir.
