@@ -21,6 +21,15 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
 
+# Build arguments for NEXT_PUBLIC_* variables (required at build time)
+# These are passed via: docker build --build-arg NEXT_PUBLIC_UMAMI_URL=... --build-arg NEXT_PUBLIC_UMAMI_WEBSITE_ID=...
+ARG NEXT_PUBLIC_UMAMI_URL
+ARG NEXT_PUBLIC_UMAMI_WEBSITE_ID
+
+# Convert ARGs to ENVs for the build process
+ENV NEXT_PUBLIC_UMAMI_URL=$NEXT_PUBLIC_UMAMI_URL
+ENV NEXT_PUBLIC_UMAMI_WEBSITE_ID=$NEXT_PUBLIC_UMAMI_WEBSITE_ID
+
 RUN npm run build
 
 # Production image, copy all the files and run next
