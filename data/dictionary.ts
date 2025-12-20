@@ -37,6 +37,7 @@ export const dictionary: Record<Language, any> = {
         solarSystem: "Solar",
         kerbolSystem: "Kerbol (KSP)",
         distanceKerbin: "Avg Dist. to Kerbin",
+        contact: "Questions or suggestions? Contact us:",
         objects: {
             sun: { name: "Sun", desc: "The star at the center of our Solar System. It provides light and energy to all planets.", funFact: "The Sun accounts for 99.86% of the mass in the solar system!" },
             mercury: { name: "Mercury", desc: "The smallest planet and closest to the Sun. Its surface is covered with craters like our Moon!", funFact: "Mercury is the fastest planet, zooming around the Sun in just 88 Earth days!" },
@@ -112,6 +113,7 @@ export const dictionary: Record<Language, any> = {
         solarSystem: "Système Solaire",
         kerbolSystem: "Kerbol (KSP)",
         distanceKerbin: "Distance moyenne de Kerbin",
+        contact: "Une question ou suggestion ? Contactez-nous :",
         objects: {
             sun: {
                 name: "Soleil",
@@ -322,6 +324,7 @@ export const dictionary: Record<Language, any> = {
         solarSystem: "太阳系",
         kerbolSystem: "Kerbol (KSP)",
         distanceKerbin: "到Kerbin距离",
+        contact: "有问题或建议？联系我们：",
         objects: {
             sun: { name: "太阳", desc: "位于我们太阳系中心的恒星。它为所有行星提供光和能量。", funFact: "太阳占整个太阳系质量的99.86%！" },
             mercury: { name: "水星", desc: "最小的行星，最接近太阳。表面像月球一样布满陨石坑！", funFact: "水星是公转最快的行星，只需88个地球日就能绕太阳一圈！" },
@@ -396,6 +399,7 @@ export const dictionary: Record<Language, any> = {
         solarSystem: "Solar",
         kerbolSystem: "Kerbol (KSP)",
         distanceKerbin: "Dist. a Kerbin",
+        contact: "¿Preguntas o sugerencias? Contáctanos:",
         objects: {
             sun: { name: "Sol", desc: "La estrella en el centro de nuestro sistema. Proporciona luz y energía a todos los planetas.", funFact: "¡El Sol representa el 99.86% de la masa del sistema solar!" },
             mercury: { name: "Mercurio", desc: "El planeta más pequeño y cercano al Sol. ¡Su superficie está cubierta de cráteres como nuestra Luna!", funFact: "¡Mercurio es el planeta más rápido, orbita el Sol en solo 88 días terrestres!" },
@@ -470,6 +474,7 @@ export const dictionary: Record<Language, any> = {
         solarSystem: "सौर",
         kerbolSystem: "Kerbol (KSP)",
         distanceKerbin: "Kerbin से दूरी",
+        contact: "कोई प्रश्न या सुझाव? हमसे संपर्क करें:",
         objects: {
             sun: { name: "सूर्य", desc: "हमारे सौर मंडल के केंद्र में स्थित तारा। यह सभी ग्रहों को प्रकाश और ऊर्जा प्रदान करता है।", funFact: "सूर्य सौर मंडल के द्रव्यमान का 99.86% है!" },
             mercury: { name: "बुध", desc: "सबसे छोटा और सूर्य के सबसे निकटतम ग्रह। इसकी सतह चंद्रमा की तरह क्रेटर से ढकी है!", funFact: "बुध सबसे तेज ग्रह है, यह केवल 88 दिनों में सूर्य का चक्कर लगा लेता है!" },

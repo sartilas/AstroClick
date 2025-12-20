@@ -216,6 +216,15 @@ export default function Home() {
                                     <Globe size={12} />
                                     astroclick.org
                                 </a>
+                                <p className="text-xs text-gray-400 mt-2">
+                                    {t.contact}
+                                </p>
+                                <a
+                                    href="mailto:astroclick.project@gmail.com"
+                                    className="text-cyan-400 hover:text-cyan-300 text-xs font-mono transition-colors"
+                                >
+                                    astroclick.project@gmail.com
+                                </a>
                             </div>
                         </div>
                     </div>
