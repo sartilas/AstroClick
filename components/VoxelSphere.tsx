@@ -8,6 +8,7 @@ interface VoxelSphereProps {
     color: string;
     resolution?: number; // Voxel grid density
     type?: string; // 'earth', 'gas-giant', 'rocky', 'star'
+    lowDetail?: boolean; // Use simpler rendering for performance
 }
 
 // Simple pseudo-random noise function
@@ -39,8 +40,8 @@ export function VoxelSphere({ radius, color, resolution = 32, type = 'rocky', ca
                 for (let z = -halfRes; z < halfRes; z++) {
                     const dist = Math.sqrt(x * x + y * y + z * z);
 
-                    // Sphere shell check (hollow)
-                    if (dist <= halfRes && dist > halfRes - 2.0) {
+                    // Sphere shell check (hollow) - thinner shell for performance
+                    if (dist <= halfRes && dist > halfRes - 1.5) {
                         tempPositions.push({ x, y, z });
 
                         // --- PROCEDURAL COLOR GENERATION ---

@@ -18,8 +18,8 @@ export function RocketCursor({ isKSP = false }: RocketCursorProps) {
     const targetQuaternion = useRef(new THREE.Quaternion());
     const upVector = useMemo(() => new THREE.Vector3(0, 1, 0), []); // Rocket nose points Y+
 
-    // Particle system (smoke)
-    const particleCount = 40;
+    // Particle system (smoke) - reduced count for performance
+    const particleCount = 20;
     const tempObject = new THREE.Object3D();
     const particles = useMemo(() => {
         return new Array(particleCount).fill(0).map(() => ({

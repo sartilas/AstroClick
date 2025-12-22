@@ -6,7 +6,7 @@ import { InfoCard } from '@/components/InfoCard';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import Image from 'next/image';
 import { SolarSystemObject } from '@/data/solarSystemData';
-import { Moon, Sun, Minimize2, Maximize2, Ruler, Orbit, Rocket, Music, VolumeX, Volume2, Info, X, Eye, EyeOff, Layers, Ban, Leaf, Magnet, Network, RotateCcw, ChevronUp, ChevronDown, Languages, Globe } from 'lucide-react';
+import { Moon, Sun, Minimize2, Maximize2, Ruler, Orbit, Rocket, Music, VolumeX, Volume2, Info, X, Eye, EyeOff, Layers, Ban, Leaf, Magnet, Network, RotateCcw, ChevronUp, ChevronDown, Languages, Globe, Mail } from 'lucide-react';
 import { LayerMode, SystemType } from '@/components/types';
 
 import { dictionary, Language } from '@/data/dictionary';
@@ -176,7 +176,7 @@ export default function Home() {
                             AstroClick
                         </h2>
                         <p className="text-gray-500 text-center text-xs font-mono mb-6 uppercase tracking-widest">
-                            v1.3.1 • Open Source
+                            v1.3.2 • Open Source
                         </p>
 
                         <div className="space-y-4 text-gray-300 text-sm leading-relaxed text-center">
@@ -221,8 +221,9 @@ export default function Home() {
                                 </p>
                                 <a
                                     href="mailto:astroclick.project@gmail.com"
-                                    className="text-cyan-400 hover:text-cyan-300 text-xs font-mono transition-colors"
+                                    className="text-cyan-400 hover:text-cyan-300 text-xs font-mono flex items-center gap-1 transition-colors"
                                 >
+                                    <Mail size={12} />
                                     astroclick.project@gmail.com
                                 </a>
                             </div>

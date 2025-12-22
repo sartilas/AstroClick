@@ -154,7 +154,8 @@ export function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMo
         return 'rocky';
     }, [data.id]);
 
-    const voxelResolution = Math.max(16, Math.min(48, Math.floor(scaledSize * 15)));
+    // Reduced voxel resolution for better performance (max 28 instead of 48)
+    const voxelResolution = Math.max(12, Math.min(28, Math.floor(scaledSize * 10)));
 
     const showOrbit = useMemo(() => {
         if (orbitMode === 'simplified') return true;

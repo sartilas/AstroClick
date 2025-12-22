@@ -1,7 +1,7 @@
 'use client';
 
 import { useFrame, useThree } from '@react-three/fiber';
-import { useRef, useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { Rocket, Explosion } from './types';
 import { Trail, Text, Line } from '@react-three/drei';
@@ -253,9 +253,21 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
         });
     };
 
+    // Throttle trajectory updates
+    const lastTrajectoryUpdate = useRef(0);
+    const TRAJECTORY_THROTTLE_MS = 60; // Update trajectory every 60ms instead of every frame
+
+    // Cache body positions to avoid repeated scene lookups
+    const cachedBodyPositions = useRef<Map<string, THREE.Vector3>>(new Map());
+
     useFrame((state, delta) => {
-        // --- 1. TRAJECTORY PREDICTION (Always show when mode is active) ---
-        if (isActive) {
+        // --- 1. TRAJECTORY PREDICTION (Throttled for performance) ---
+        const now = performance.now();
+        const shouldUpdateTrajectory = now - lastTrajectoryUpdate.current > TRAJECTORY_THROTTLE_MS;
+
+        if (isActive && shouldUpdateTrajectory) {
+            lastTrajectoryUpdate.current = now;
+
             raycaster.setFromCamera(pointer, camera);
             const origin = raycaster.ray.origin.clone();
             const direction = raycaster.ray.direction.clone();
@@ -267,30 +279,63 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             const simPos = startPos.clone();
             const simVel = startVel.clone();
 
-            // Physics Bodies for Simulation
-            const bodies = solarSystemData.map(d => ({
-                id: d.id,
-                mass: d.id === 'sun' ? 2000 : (d.size * 200),
-                radius: d.id === 'sun' ? 5 : (d.size * 1.5)
-            }));
+            // Physics Bodies for Simulation - cache positions once per trajectory update
+            const bodies = solarSystemData.map(d => {
+                const obj = scene.getObjectByName(`celestial-${d.id}`);
+                if (obj) {
+                    cachedBodyPositions.current.set(d.id, obj.position.clone());
+                }
+                return {
+                    id: d.id,
+                    mass: d.id === 'sun' ? 2000 : (d.size * 200),
+                    radius: d.id === 'sun' ? 5 : (d.size * 1.5),
+                    position: cachedBodyPositions.current.get(d.id)
+                };
+            });
 
-            // Simulate 100 steps into future
-            // Using a fixed delta for prediction to ensure consistent curve regardless of framerate
-            const simDelta = 0.016 * 2; // Simulate roughly 2x speed for preview
+            // Reduced from 300 to 100 iterations for better performance
+            const simDelta = 0.016 * 3; // Increased step size to compensate for fewer iterations
 
             let collisionDetected = false;
-            for (let i = 0; i < 300; i++) {
-                let collided = calculatePhysicsStep(simPos, simVel, simDelta, bodies);
-                // Also check Black Hole collision for prediction if active
-                if (blackHole && blackHole.active) {
-                    const bhDist = simPos.distanceTo(blackHole.position);
-                    if (bhDist < blackHole.radius) {
-                        collided = true; // Treat absorption as collision/danger
+            for (let i = 0; i < 100; i++) {
+                // Inline physics calculation to use cached positions
+                const force = new THREE.Vector3(0, 0, 0);
+                let hasCollided = false;
+
+                for (const bodyData of bodies) {
+                    const bodyPos = bodyData.position;
+                    if (bodyPos) {
+                        const distSq = simPos.distanceToSquared(bodyPos);
+                        const dist = Math.sqrt(distSq);
+
+                        if (dist < (bodyData.radius + 0.5)) {
+                            hasCollided = true;
+                            break;
+                        }
+
+                        if (dist > bodyData.radius) {
+                            const dir = bodyPos.clone().sub(simPos).normalize();
+                            const fVal = (G * bodyData.mass) / distSq;
+                            force.add(dir.multiplyScalar(fVal));
+                        }
                     }
                 }
 
+                // Also check Black Hole collision for prediction if active
+                if (!hasCollided && blackHole && blackHole.active) {
+                    const bhDist = simPos.distanceTo(blackHole.position);
+                    if (bhDist < blackHole.radius) {
+                        hasCollided = true;
+                    }
+                }
+
+                if (!hasCollided) {
+                    simVel.add(force.multiplyScalar(simDelta));
+                    simPos.add(simVel.clone().multiplyScalar(simDelta));
+                }
+
                 points.push(simPos.clone());
-                if (collided) {
+                if (hasCollided) {
                     collisionDetected = true;
                     break;
                 }
@@ -298,7 +343,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
 
             setTrajectoryPoints(points);
             setIsTrajectoryDanger(collisionDetected);
-        } else if (trajectoryPoints.length > 0) {
+        } else if (!isActive && trajectoryPoints.length > 0) {
             setTrajectoryPoints([]);
         }
 
@@ -313,7 +358,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
         if (timeScale === 0) return;
 
         rocketsRef.current = rockets;
-        const now = getSimTime();
+        const simTime = getSimTime();
         let activeRockets: Rocket[] = [];
 
         // Attractor vars
@@ -323,7 +368,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
         const attractorPos = cursorOrigin.add(cursorDir.multiplyScalar(ATTRACTOR_DISTANCE));
 
         if (explosions.length > 0) {
-            setExplosions(prev => prev.filter(e => now - e.startTime < 1000));
+            setExplosions(prev => prev.filter(e => simTime - e.startTime < 1000));
         }
 
         if (rockets.length === 0) return;
@@ -341,11 +386,11 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             const distanceMoved = velocity.length() * scaledDelta;
             rocket.score += distanceMoved * 100;
 
-            if (distanceMoved > 0.0001) rocket.lastMoveTime = now;
+            if (distanceMoved > 0.0001) rocket.lastMoveTime = simTime;
 
             // --- DESTRUCTION LIMITS ---
             // 1. Timeout (Stopped moving)
-            if (now - rocket.lastMoveTime > 8000) {
+            if (simTime - rocket.lastMoveTime > 8000) {
                 activeRockets.push({ ...rocket, kill: true, reason: 'STOPPED' } as any);
                 return;
             }
@@ -387,7 +432,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             if (hasCollided) return;
 
             // Attractor (Only if enabled)
-            if (rocket.attractorEnabled && now - rocket.createdAt < 5000) {
+            if (rocket.attractorEnabled && simTime - rocket.createdAt < 5000) {
                 const distSq = rocket.position.distanceToSquared(attractorPos);
                 if (distSq < 2) {
                     rocket.attractorEnabled = false;
@@ -435,7 +480,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
 
         if (killed.length > 0) {
             killed.forEach((r: any) => {
-                setExplosions(prev => [...prev, { id: Math.random(), position: r.position.clone(), startTime: now }]);
+                setExplosions(prev => [...prev, { id: Math.random(), position: r.position.clone(), startTime: simTime }]);
                 playExplosionSound();
                 if (r.collision || r.reason === 'SIGNAL_LOST') {
                     setHistory(prev => {
@@ -482,10 +527,12 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
     );
 }
 
-function SatelliteMesh({ rocket, onClick, isPaused }: { rocket: Rocket; onClick: () => void; isPaused: boolean }) {
+// Memoized satellite mesh for better performance
+const SatelliteMesh = React.memo(function SatelliteMesh({ rocket, onClick, isPaused }: { rocket: Rocket; onClick: () => void; isPaused: boolean }) {
     const ref = useRef<THREE.Group>(null);
     const textRef = useRef<THREE.Group>(null);
     const [hovered, setHover] = useState(false);
+    const frameCount = useRef(0);
 
     useEffect(() => {
         document.body.style.cursor = hovered ? 'pointer' : 'auto';
@@ -499,8 +546,9 @@ function SatelliteMesh({ rocket, onClick, isPaused }: { rocket: Rocket; onClick:
                 ref.current.rotation.z += 0.005;
             }
         }
-        // Make text look at camera
-        if (textRef.current) {
+        // Throttle text lookAt to every 3rd frame for performance
+        frameCount.current++;
+        if (textRef.current && frameCount.current % 3 === 0) {
             textRef.current.lookAt(state.camera.position);
         }
     });
@@ -541,10 +589,10 @@ function SatelliteMesh({ rocket, onClick, isPaused }: { rocket: Rocket; onClick:
                 </Text>
             </group>
 
-            {/* Trail discret */}
+            {/* Trail - reduced length for better performance */}
             <Trail
-                width={1.2}
-                length={25}
+                width={1.0}
+                length={12}
                 color={new THREE.Color("#4fd0e7")}
                 attenuation={(t) => t * t}
             >
@@ -795,7 +843,7 @@ function SatelliteMesh({ rocket, onClick, isPaused }: { rocket: Rocket; onClick:
             </Trail>
         </group>
     );
-}
+});
 
 function ExplosionEffect({ position }: { position: THREE.Vector3 }) {
     // Simple explosion visualization using expanding spheres/particles

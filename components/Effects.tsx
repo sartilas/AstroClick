@@ -25,13 +25,13 @@ export const Effects = memo(({ sunRef, rtxMode }: EffectsProps) => {
                 <GodRays
                     sun={sunRef.current}
                     blendFunction={BlendFunction.SCREEN}
-                    samples={60}
-                    density={0.96}
-                    decay={0.9}
-                    weight={0.4}
-                    exposure={0.6}
+                    samples={30}
+                    density={0.93}
+                    decay={0.92}
+                    weight={0.35}
+                    exposure={0.55}
                     clampMax={1}
-                    blur={true}
+                    blur={false}
                 />
             ) as any}
         </EffectComposer>

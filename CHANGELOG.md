@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.2] - 2025-12-22
+
+### Changed
+- **Contact**: Ajout d'une icône Mail et uniformisation du style pour le lien de contact dans la fenêtre "À propos".
+- **Version**: Mise à jour du numéro de version.
+
 ## [1.3.1] - 2025-12-20
 
 ### Fixed
