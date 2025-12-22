@@ -74,6 +74,34 @@ export const dictionary: Record<Language, any> = {
             bop: { name: "Bop", desc: "A lumpy brown captured asteroid with the Dead Kraken Easter egg.", funFact: "🦑 The Space Kraken corpse is impaled near the North Pole!" },
             pol: { name: "Pol", desc: "Yellow spiky moon resembling a pollen grain. Strange rock formations.", funFact: "🌵 Surface covered in strange yellow spiky rocks - looks like a cactus!" },
             eeloo: { name: "Eeloo", desc: "A distant ice world with Tiger Stripes like Jupiter's moon Europa.", funFact: "📡 Was planned as a moon of a second gas giant that was never added!" }
+        },
+        alienShip: {
+            signalDetected: "Signal Detected",
+            fermiParadox: "Fermi Paradox"
+        },
+        drake: {
+            title: "Drake Equation Calculator",
+            description: "Estimate the number of active, communicative extraterrestrial civilizations in the Milky Way galaxy.",
+            variables: {
+                R: { name: "Star Formation Rate", desc: "Number of stars formed per year in our galaxy.", unit: "/ year" },
+                fp: { name: "Fraction with Planets", desc: "Percentage of stars that have planets.", unit: "" },
+                ne: { name: "Habitable Planets", desc: "Average number of planets that can potentially support life per star that has planets.", unit: "" },
+                fl: { name: "Fraction with Life", desc: "Percentage of those planets that actually develop life.", unit: "" },
+                fi: { name: "Fraction with Intelligence", desc: "Percentage of planets with life that develop intelligent civilizations.", unit: "" },
+                fc: { name: "Fraction with Communication", desc: "Percentage of civilizations that develop a technology that releases detectable signs into space.", unit: "" },
+                L: { name: "Duration (Years)", desc: "Length of time such civilizations release detectable signals.", unit: "years" }
+            },
+            presets: {
+                skeptical: "Skeptical",
+                scientific: "Scientific",
+                optimistic: "Optimistic"
+            },
+            result: {
+                detectableCivilizations: "Detectable Civilizations",
+                empty: "We are probably alone in the galaxy...",
+                lonely: "A few neighbors, but so far away we might never hear them.",
+                crowded: "The galaxy is teeming with life! Where is everybody?"
+            }
         }
     },
     fr: {
@@ -286,6 +314,34 @@ export const dictionary: Record<Language, any> = {
                 desc: "Un monde glacé aux confins du système. Sa surface blanche est marquée de crevasses brunes rappelant les « Tiger Stripes » d'Europe.",
                 funFact: "📡 Eeloo devait à l'origine être la lune d'une seconde géante gazeuse qui n'a jamais été ajoutée au jeu !"
             }
+        },
+        alienShip: {
+            signalDetected: "Signal Détecté",
+            fermiParadox: "Paradoxe de Fermi"
+        },
+        drake: {
+            title: "Calculateur de Drake",
+            description: "Estimez le nombre de civilisations extraterrestres actives et communicantes dans la Voie Lactée.",
+            variables: {
+                R: { name: "Taux de formation d'étoiles", desc: "Nombre d'étoiles qui se forment chaque année dans notre galaxie.", unit: "/ an" },
+                fp: { name: "Fraction avec planètes", desc: "Pourcentage d'étoiles qui possèdent des planètes.", unit: "" },
+                ne: { name: "Planètes habitables", desc: "Nombre moyen de planètes capables d'accueillir la vie par étoile.", unit: "" },
+                fl: { name: "Fraction avec la vie", desc: "Probabilité que la vie apparaisse sur une planète habitable.", unit: "" },
+                fi: { name: "Fraction intelligence", desc: "Probabilité que la vie évolue vers une intelligence.", unit: "" },
+                fc: { name: "Fraction communication", desc: "Probabilité de développer une technologie de communication détectable.", unit: "" },
+                L: { name: "Durée de vie (années)", desc: "Durée pendant laquelle une civilisation émet des signaux détectables.", unit: "ans" }
+            },
+            presets: {
+                skeptical: "Sceptique",
+                scientific: "Scientifique",
+                optimistic: "Optimiste"
+            },
+            result: {
+                detectableCivilizations: "Civilisations Détectables",
+                empty: "Nous sommes probablement seuls dans la galaxie...",
+                lonely: "Quelques voisins, mais si loin qu'on ne les entendra peut-être jamais.",
+                crowded: "La galaxie regorge de vie ! Où sont-ils tous ?"
+            }
         }
     },
     zh: {
@@ -361,6 +417,34 @@ export const dictionary: Record<Language, any> = {
             bop: { name: "Bop", desc: "一颗棕色凹凸不平的捕获小行星，有死Kraken彩蛋。", funFact: "🦑 太空Kraken的尸体被刺穿在北极附近！" },
             pol: { name: "Pol", desc: "黄色尖刺卫星，像花粉粒。奇怪的岩石构造。", funFact: "🌵 表面覆盖着奇怪的黄色尖刺岩石 - 像仙人掌！" },
             eeloo: { name: "Eeloo", desc: "遥远的冰雪世界，有像木星欧罗巴的虎纹。", funFact: "📡 原计划是第二颗从未添加的气态巨行星的卫星！" }
+        },
+        alienShip: {
+            signalDetected: "检测到信号",
+            fermiParadox: "费米悖论"
+        },
+        drake: {
+            title: "德雷克方程计算器",
+            description: "估算银河系中活跃的、可交流的外星文明数量。",
+            variables: {
+                R: { name: "恒星形成率", desc: "银河系每年形成的恒星数量。", unit: "/ 年" },
+                fp: { name: "恒星行星比例", desc: "拥有行星的恒星百分比。", unit: "" },
+                ne: { name: "宜居行星数", desc: "每颗恒星系统中可能支持生命的行星平均数量。", unit: "" },
+                fl: { name: "生命诞生率", desc: "实际演化出生命的宜居行星百分比。", unit: "" },
+                fi: { name: "智慧生命率", desc: "演化出智慧文明的生命行星百分比。", unit: "" },
+                fc: { name: "通讯技术率", desc: "发展出可被探测通讯技术的文明百分比。", unit: "" },
+                L: { name: "持续时间 (年)", desc: "文明向太空释放这一信号的时间长度。", unit: "年" }
+            },
+            presets: {
+                skeptical: "怀疑论",
+                scientific: "科学共识",
+                optimistic: "乐观"
+            },
+            result: {
+                detectableCivilizations: "可探测文明",
+                empty: "我们在银河系中可能很孤独...",
+                lonely: "有一些邻居，但太远了，我们可能永远听不到他们的声音。",
+                crowded: "银河系充满了生命！大家都在哪儿呢？"
+            }
         }
     },
     es: {
@@ -436,6 +520,34 @@ export const dictionary: Record<Language, any> = {
             bop: { name: "Bop", desc: "Un asteroide capturado marrón con el Easter egg del Kraken Muerto.", funFact: "🦑 ¡El cadáver del Kraken espacial está empalado cerca del Polo Norte!" },
             pol: { name: "Pol", desc: "Luna amarilla puntiaguda que parece un grano de polen. Formaciones rocosas extrañas.", funFact: "🌵 ¡Superficie cubierta de rocas amarillas puntiagudas - parece un cactus!" },
             eeloo: { name: "Eeloo", desc: "Un mundo de hielo distante con Tiger Stripes como la luna Europa de Júpiter.", funFact: "📡 ¡Estaba planeado como luna de un segundo gigante gaseoso que nunca se añadió!" }
+        },
+        alienShip: {
+            signalDetected: "Señal Detectada",
+            fermiParadox: "Paradoja de Fermi"
+        },
+        drake: {
+            title: "Calculadora de Drake",
+            description: "Estima el número de civilizaciones extraterrestres activas y comunicativas en la Vía Láctea.",
+            variables: {
+                R: { name: "Tasa de formación estelar", desc: "Número de estrellas formadas por año en nuestra galaxia.", unit: "/ año" },
+                fp: { name: "Fracción con planetas", desc: "Porcentaje de estrellas que tienen planetas.", unit: "" },
+                ne: { name: "Planetas habitables", desc: "Número promedio de planetas que pueden soportar vida por estrella.", unit: "" },
+                fl: { name: "Fracción con vida", desc: "Porcentaje de esos planetas donde realmente surge la vida.", unit: "" },
+                fi: { name: "Fracción con inteligencia", desc: "Porcentaje de planetas con vida que desarrollan civilizaciones inteligentes.", unit: "" },
+                fc: { name: "Fracción con comunicación", desc: "Porcentaje de civilizaciones que desarrollan tecnología detectable.", unit: "" },
+                L: { name: "Duración (Años)", desc: "Tiempo durante el cual dichas civilizaciones emiten señales detectables.", unit: "años" }
+            },
+            presets: {
+                skeptical: "Escéptico",
+                scientific: "Científico",
+                optimistic: "Optimista"
+            },
+            result: {
+                detectableCivilizations: "Civilizaciones Detectables",
+                empty: "Probablemente estamos solos en la galaxia...",
+                lonely: "Algunos vecinos, pero tan lejos que quizás nunca los escuchemos.",
+                crowded: "¡La galaxia está llena de vida! ¿Dónde están todos?"
+            }
         }
     },
     hi: {
@@ -511,6 +623,34 @@ export const dictionary: Record<Language, any> = {
             bop: { name: "Bop", desc: "मृत Kraken ईस्टर एग वाला भूरा उबड़-खाबड़ पकड़ा गया क्षुद्रग्रह।", funFact: "🦑 स्पेस Kraken का शव उत्तरी ध्रुव के पास नुकीला है!" },
             pol: { name: "Pol", desc: "पराग कण जैसा पीला नुकीला चंद्रमा। अजीब चट्टान संरचनाएं।", funFact: "🌵 सतह अजीब पीली नुकीली चट्टानों से ढकी - कैक्टस जैसी!" },
             eeloo: { name: "Eeloo", desc: "बृहस्पति के यूरोपा जैसी Tiger Stripes वाली दूरस्थ बर्फ दुनिया।", funFact: "📡 दूसरे गैस दानव का चंद्रमा होना था जो कभी नहीं जोड़ा गया!" }
+        },
+        alienShip: {
+            signalDetected: "सिग्नल मिला",
+            fermiParadox: "फर्मी विरोधाभास"
+        },
+        drake: {
+            title: "ड्रेक समीकरण कैलकुलेटर",
+            description: "आकाशगंगा में सक्रिय, संचारी अलौकिक सभ्यताओं की संख्या का अनुमान लगाएं।",
+            variables: {
+                R: { name: "तारा निर्माण दर", desc: "हमारी आकाशगंगा में प्रति वर्ष बनने वाले तारों की संख्या।", unit: "/ वर्ष" },
+                fp: { name: "ग्रहों वाले तारे", desc: "ग्रहों वाले तारों का प्रतिशत।", unit: "" },
+                ne: { name: "रहने योग्य ग्रह", desc: "प्रति तारा प्रणाली में जीवन का समर्थन करने वाले ग्रहों की औसत संख्या।", unit: "" },
+                fl: { name: "जीवन वाले ग्रह", desc: "उन रहने योग्य ग्रहों का प्रतिशत जहाँ वास्तव में जीवन विकसित होता है।", unit: "" },
+                fi: { name: "बुद्धिमान जीवन", desc: "जीवन वाले ग्रहों का प्रतिशत जो बुद्धिमान सभ्यताओं को विकसित करते हैं।", unit: "" },
+                fc: { name: "संचार सभ्यताएं", desc: "उन सभ्यताओं का प्रतिशत जो पता लगाने योग्य तकनीक विकसित करती हैं।", unit: "" },
+                L: { name: "अवधि (वर्ष)", desc: "वह समय अवधि जिसके दौरान ऐसी सभ्यताएं संकेत छोड़ती हैं।", unit: "वर्ष" }
+            },
+            presets: {
+                skeptical: "संशयवादी",
+                scientific: "वैज्ञानिक",
+                optimistic: "आशावादी"
+            },
+            result: {
+                detectableCivilizations: "पता लगाने योग्य सभ्यताएं",
+                empty: "हम शायद आकाशगंगा में अकेले हैं...",
+                lonely: "कुछ पड़ोसी, लेकिन इतनी दूर कि हम उन्हें कभी नहीं सुन पाएंगे।",
+                crowded: "आकाशगंगा जीवन से भरी है! सब लोग कहाँ हैं?"
+            }
         }
     }
 };

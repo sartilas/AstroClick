@@ -20,6 +20,8 @@ import { HabitableZoneLayer } from './layers/HabitableZoneLayer';
 import { GravityWellLayer } from './layers/GravityWellLayer';
 import { LagrangePointsLayer } from './layers/LagrangePointsLayer';
 import { BlackHoleEvent } from './BlackHoleEvent';
+import { AlienShip } from './AlienShip';
+import { FermiParadoxModal } from './FermiParadoxModal';
 
 
 
@@ -222,9 +224,10 @@ interface SceneProps extends SolarSystemProps {
     systemType: SystemType;
     focusTarget: string | null;
     setFocusTarget: React.Dispatch<React.SetStateAction<string | null>>;
+    onOpenFermi: () => void;
 }
 
-function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode, resetCameraTrigger, blackHoleActive, onBlackHoleComplete, systemType, focusTarget, setFocusTarget }: SceneProps) {
+function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode, resetCameraTrigger, blackHoleActive, onBlackHoleComplete, systemType, focusTarget, setFocusTarget, onOpenFermi }: SceneProps) {
     const sunRef = useRef<THREE.Mesh>(null);
 
     // Callback to clear focus (when user right-click drags)
@@ -300,6 +303,15 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                 />
             )}
 
+            {/* Alien Ship Easter Egg (Solar System Only) */}
+            {systemType === 'solar' && (
+                <AlienShip
+                    position={[120, 10, 80]}
+                    onOpen={onOpenFermi}
+                    lang={lang}
+                />
+            )}
+
             {/* LAYERS */}
             {layerMode === 'habitable' && <HabitableZoneLayer orbitMode={orbitMode} />}
             {layerMode === 'gravity' && <GravityWellLayer systemType={systemType} />}
@@ -358,11 +370,18 @@ export default function SolarSystem({ selectedObject, onSelectObject, orbitMode,
     const [rockets, setRockets] = useState<Rocket[]>([]);
     const [history, setHistory] = useState<Rocket[]>([]);
     const [focusTarget, setFocusTarget] = useState<string | null>(null);
+    const [fermiModalOpen, setFermiModalOpen] = useState(false);
 
 
     return (
         <div className="w-full h-screen relative">
             {isHudVisible && <Leaderboard rockets={rockets} history={history} />}
+
+            <FermiParadoxModal
+                isOpen={fermiModalOpen}
+                onClose={() => setFermiModalOpen(false)}
+                lang={lang}
+            />
 
 
             <Canvas
@@ -393,6 +412,7 @@ export default function SolarSystem({ selectedObject, onSelectObject, orbitMode,
                     systemType={systemType}
                     focusTarget={focusTarget}
                     setFocusTarget={setFocusTarget}
+                    onOpenFermi={() => setFermiModalOpen(true)}
                 />
             </Canvas>
         </div>
