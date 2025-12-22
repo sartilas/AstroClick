@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.3] - 2025-12-22
+
+### Fixed
+- **SEO Favicon**: Correction de la configuration des icônes pour Google (suppression des métadonnées conflictuelles).
+- **Robots.txt**: Autorisation du dossier `_next` pour permettre le crawl des assets par Googlebot.
+
 ## [1.3.2] - 2025-12-22
 
 ### Changed

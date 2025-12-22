@@ -107,14 +107,7 @@ export const metadata: Metadata = {
         },
     },
 
-    // Icônes et PWA
-    icons: {
-        icon: [
-            { url: "/logo.png", sizes: "32x32", type: "image/png" },
-            { url: "/logo.png", sizes: "192x192", type: "image/png" },
-        ],
-        apple: [{ url: "/logo.png", sizes: "180x180", type: "image/png" }],
-    },
+
     manifest: "/manifest.json",
 
     // Autres métadonnées
