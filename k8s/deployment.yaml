@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: astroclick-deployment
+  labels:
+    app: astroclick
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: astroclick
+  template:
+    metadata:
+      labels:
+        app: astroclick
+    spec:
+      containers:
+      - name: astroclick
+        image: astroclick:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        env:
+        - name: NODE_ENV
+          value: "production"
