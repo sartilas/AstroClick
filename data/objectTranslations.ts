@@ -201,6 +201,13 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
             orbitalPeriod: "365.25 दिन"
         }
     },
+    ceres: {
+        en: { name: "Ceres", description: "The largest object in the asteroid belt, classified as a dwarf planet.", funFact: "Ceres contains about a third of the total mass of the entire asteroid belt!", temperature: "-105°C", realDistance: "414 million km from the Sun", averageDistanceToEarth: "264 million km", orbitalPeriod: "4.6 years" },
+        fr: { name: "Cérès", description: "Le plus grand objet de la ceinture d'astéroïdes, classé comme planète naine.", funFact: "Cérès contient environ un tiers de la masse totale de la ceinture d'astéroïdes !", temperature: "-105°C", realDistance: "414 millions de km du Soleil", averageDistanceToEarth: "264 millions de km", orbitalPeriod: "4,6 ans" },
+        es: { name: "Ceres", description: "El objeto más grande del cinturón de asteroides.", funFact: "¡Contiene un tercio de la masa del cinturón!", temperature: "-105°C", realDistance: "414 millones km", averageDistanceToEarth: "264 millones km", orbitalPeriod: "4.6 años" },
+        zh: { name: "谷神星", description: "小行星带中最大的天体。", funFact: "它包含了整个小行星带总质量的三分之一！", temperature: "-105°C", realDistance: "4.14 亿公里", averageDistanceToEarth: "2.64 亿公里", orbitalPeriod: "4.6 年" },
+        hi: { name: "सेरेस", description: "क्षुद्रग्रह बेल्ट में सबसे बड़ी वस्तु।", funFact: "इसमें पूरे क्षुद्रग्रह बेल्ट के कुल द्रव्यमान का लगभग एक तिहाई हिस्सा है!", temperature: "-105°C", realDistance: "41.4 करोड़ किमी", averageDistanceToEarth: "26.4 करोड़ किमी", orbitalPeriod: "4.6 वर्ष" }
+    },
     moon: {
         en: {
             name: "Moon",
@@ -295,6 +302,20 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
             orbitalPeriod: "687 दिन"
         }
     },
+    phobos: {
+        en: { name: "Phobos", description: "The larger and closer of Mars' two moons.", funFact: "Phobos orbits Mars so fast that it rises in the west and sets in the east twice a day!", temperature: "-40°C", realDistance: "6,000 km from Mars", averageDistanceToEarth: "140 million km", orbitalPeriod: "8 hours" },
+        fr: { name: "Phobos", description: "La plus grande et la plus proche des deux lunes de Mars.", funFact: "Phobos orbite si vite qu'elle se lève à l'ouest et se couche à l'est deux fois par jour !", temperature: "-40°C", realDistance: "6 000 km de Mars", averageDistanceToEarth: "140 millions de km", orbitalPeriod: "8 heures" },
+        es: { name: "Fobos", description: "La luna más grande de Marte.", funFact: "¡Orbita Marte dos veces al día!", temperature: "-40°C", realDistance: "6.000 km", averageDistanceToEarth: "140 millones km", orbitalPeriod: "8 horas" },
+        zh: { name: "火卫一", description: "火星两颗卫星中较大较近的一颗。", funFact: "它绕火星运行非常快，每天西升东落两次！", temperature: "-40°C", realDistance: "6,000 公里", averageDistanceToEarth: "1.4 亿公里", orbitalPeriod: "8 小时" },
+        hi: { name: "फोबोस", description: "मंगल के दो चंद्रमाओं में से बड़ा।", funFact: "यह दिन में दो बार पश्चिम में उगता है!", temperature: "-40°C", realDistance: "6,000 किमी", averageDistanceToEarth: "14 करोड़ किमी", orbitalPeriod: "8 घंटे" }
+    },
+    deimos: {
+        en: { name: "Deimos", description: "The smaller and outer moon of Mars.", funFact: "It is so small and has such weak gravity that you could escape it by jumping a bike ramp!", temperature: "-40°C", realDistance: "23,460 km from Mars", averageDistanceToEarth: "140 million km", orbitalPeriod: "30 hours" },
+        fr: { name: "Déimos", description: "La plus petite lune de Mars.", funFact: "Sa gravité est si faible qu'on pourrait s'en échapper avec une rampe de vélo !", temperature: "-40°C", realDistance: "23 460 km de Mars", averageDistanceToEarth: "140 millions de km", orbitalPeriod: "30 heures" },
+        es: { name: "Deimos", description: "La luna más pequeña de Marte.", funFact: "¡Su gravedad es pequeñísima!", temperature: "-40°C", realDistance: "23.460 km", averageDistanceToEarth: "140 millones km", orbitalPeriod: "30 horas" },
+        zh: { name: "火卫二", description: "火星较小的外层卫星。", funFact: "重力非常小，骑自行车就能逃逸！", temperature: "-40°C", realDistance: "23,460 公里", averageDistanceToEarth: "1.4 亿公里", orbitalPeriod: "30 小时" },
+        hi: { name: "डीमोस", description: "मंगल का छोटा चंद्रमा।", funFact: "इसका गुरुत्वाकर्षण बहुत कम है!", temperature: "-40°C", realDistance: "23,460 किमी", averageDistanceToEarth: "14 करोड़ किमी", orbitalPeriod: "30 घंटे" }
+    },
     jupiter: {
         en: {
             name: "Jupiter",
@@ -341,6 +362,34 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
             averageDistanceToEarth: "62.8 करोड़ किमी",
             orbitalPeriod: "11.9 वर्ष"
         }
+    },
+    io: {
+        en: { name: "Io", description: "The most volcanically active body in the solar system.", funFact: "Io has hundreds of volcanoes that erupt lava fountains miles high!", temperature: "-143°C", realDistance: "421,700 km from Jupiter", averageDistanceToEarth: "628 million km", orbitalPeriod: "42 hours" },
+        fr: { name: "Io", description: "Le corps le plus volcaniquement actif du système solaire.", funFact: "Io a des centaines de volcans qui crachent de la lave à des kilomètres de hauteur !", temperature: "-143°C", realDistance: "421 700 km de Jupiter", averageDistanceToEarth: "628 millions de km", orbitalPeriod: "42 heures" },
+        es: { name: "Ío", description: "El cuerpo más volcánico del sistema solar.", funFact: "¡Tiene cientos de volcanes!", temperature: "-143°C", realDistance: "421.700 km", averageDistanceToEarth: "628 millones km", orbitalPeriod: "42 horas" },
+        zh: { name: "木卫一", description: "太阳系中火山活动最活跃的天体。", funFact: "它有数百座火山喷发！", temperature: "-143°C", realDistance: "421,700 公里", averageDistanceToEarth: "6.28 亿公里", orbitalPeriod: "42 小时" },
+        hi: { name: "आयो", description: "सौरमंडल में सबसे अधिक ज्वालामुखी सक्रिय पिंड।", funFact: "इसमें सैकड़ों ज्वालामुखी हैं!", temperature: "-143°C", realDistance: "421,700 किमी", averageDistanceToEarth: "62.8 करोड़ किमी", orbitalPeriod: "42 घंटे" }
+    },
+    europa: {
+        en: { name: "Europa", description: "An icy moon with a vast ocean beneath its crust.", funFact: "Scientists think Europa is one of the best places to look for alien life!", temperature: "-160°C", realDistance: "670,900 km from Jupiter", averageDistanceToEarth: "628 million km", orbitalPeriod: "3.5 days" },
+        fr: { name: "Europe", description: "Une lune glacée avec un vaste océan sous sa croûte.", funFact: "Les scientifiques pensent qu'Europe est l'un des meilleurs endroits pour chercher de la vie extraterrestre !", temperature: "-160°C", realDistance: "670 900 km de Jupiter", averageDistanceToEarth: "628 millions de km", orbitalPeriod: "3,5 jours" },
+        es: { name: "Europa", description: "Una luna helada con un océano subterráneo.", funFact: "¡Podría albergar vida!", temperature: "-160°C", realDistance: "670.900 km", averageDistanceToEarth: "628 millones km", orbitalPeriod: "3.5 días" },
+        zh: { name: "木卫二", description: "冰冻的卫星，冰层下有巨大的海洋。", funFact: "可能是寻找外星生命的最佳地点！", temperature: "-160°C", realDistance: "670,900 公里", averageDistanceToEarth: "6.28 亿公里", orbitalPeriod: "3.5 天" },
+        hi: { name: "यूरोपा", description: "बर्फ़ीला चंद्रमा जिसके नीचे एक विशाल महासागर है।", funFact: "यहाँ जीवन हो सकता है!", temperature: "-160°C", realDistance: "670,900 किमी", averageDistanceToEarth: "62.8 करोड़ किमी", orbitalPeriod: "3.5 दिन" }
+    },
+    ganymede: {
+        en: { name: "Ganymede", description: "The largest moon in the entire solar system.", funFact: "Ganymede is bigger than the planet Mercury and has its own magnetic field!", temperature: "-163°C", realDistance: "1 million km from Jupiter", averageDistanceToEarth: "628 million km", orbitalPeriod: "7 days" },
+        fr: { name: "Ganymède", description: "La plus grande lune de tout le système solaire.", funFact: "Ganymède est plus grande que Mercure et possède son propre champ magnétique !", temperature: "-163°C", realDistance: "1 million de km de Jupiter", averageDistanceToEarth: "628 millions de km", orbitalPeriod: "7 jours" },
+        es: { name: "Ganímedes", description: "La luna más grande del sistema solar.", funFact: "¡Es más grande que Mercurio!", temperature: "-163°C", realDistance: "1 millón km", averageDistanceToEarth: "628 millones km", orbitalPeriod: "7 días" },
+        zh: { name: "木卫三", description: "太阳系中最大的卫星。", funFact: "它比水星还大！", temperature: "-163°C", realDistance: "107 万公里", averageDistanceToEarth: "6.28 亿公里", orbitalPeriod: "7 天" },
+        hi: { name: "गेनीमेड", description: "सौरमंडल का सबसे बड़ा चंद्रमा।", funFact: "यह बुध ग्रह से भी बड़ा है!", temperature: "-163°C", realDistance: "10 लाख किमी", averageDistanceToEarth: "62.8 करोड़ किमी", orbitalPeriod: "7 दिन" }
+    },
+    callisto: {
+        en: { name: "Callisto", description: "The most heavily cratered object in the solar system.", funFact: "Callisto has been hit by so many asteroids that its surface is completely covered in ancient craters.", temperature: "-139°C", realDistance: "1.8 million km from Jupiter", averageDistanceToEarth: "628 million km", orbitalPeriod: "17 days" },
+        fr: { name: "Callisto", description: "L'objet le plus cratérisé du système solaire.", funFact: "Sa surface est une archive géologique de milliards d'années d'impacts !", temperature: "-139°C", realDistance: "1,8 million de km de Jupiter", averageDistanceToEarth: "628 millions de km", orbitalPeriod: "17 jours" },
+        es: { name: "Calisto", description: "El objeto con más cráteres del sistema solar.", funFact: "¡Su superficie está llena de impactos antiguos!", temperature: "-139°C", realDistance: "1.8 millones km", averageDistanceToEarth: "628 millones km", orbitalPeriod: "17 días" },
+        zh: { name: "木卫四", description: "太阳系中陨石坑最多的天体。", funFact: "表面完全被古老的陨石坑覆盖。", temperature: "-139°C", realDistance: "188 万公里", averageDistanceToEarth: "6.28 亿公里", orbitalPeriod: "17 天" },
+        hi: { name: "कैलिस्टो", description: "सौरमंडल में सबसे अधिक गड्ढों वाला पिंड।", funFact: "इसकी सतह पूरी तरह से प्राचीन गड्ढों से ढकी है।", temperature: "-139°C", realDistance: "18 लाख किमी", averageDistanceToEarth: "62.8 करोड़ किमी", orbitalPeriod: "17 दिन" }
     },
     saturn: {
         en: {
@@ -389,6 +438,20 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
             orbitalPeriod: "29.5 वर्ष"
         }
     },
+    titan: {
+        en: { name: "Titan", description: "Saturn's largest moon and the only moon with a thick atmosphere.", funFact: "Titan has lakes and rivers, but they are made of liquid methane instead of water!", temperature: "-179°C", realDistance: "1.2 million km from Saturn", averageDistanceToEarth: "1.2 billion km", orbitalPeriod: "16 days" },
+        fr: { name: "Titan", description: "La plus grande lune de Saturne, la seule avec une atmosphère épaisse.", funFact: "Titan a des lacs et des rivières, mais ils sont faits de méthane liquide, pas d'eau !", temperature: "-179°C", realDistance: "1,2 million de km de Saturne", averageDistanceToEarth: "1,2 milliard de km", orbitalPeriod: "16 jours" },
+        es: { name: "Titán", description: "La luna más grande de Saturno.", funFact: "¡Tiene ríos de metano líquido!", temperature: "-179°C", realDistance: "1.2 millones km", averageDistanceToEarth: "1.2 mil millones km", orbitalPeriod: "16 días" },
+        zh: { name: "土卫六", description: "土星最大的卫星，唯一拥有浓厚大气层的卫星。", funFact: "它有液态甲烷组成的湖泊和河流！", temperature: "-179°C", realDistance: "122 万公里", averageDistanceToEarth: "12 亿公里", orbitalPeriod: "16 天" },
+        hi: { name: "टाइटन", description: "शनि का सबसे बड़ा चंद्रमा।", funFact: "इसमें मीथेन की नदियाँ हैं!", temperature: "-179°C", realDistance: "12 लाख किमी", averageDistanceToEarth: "1.2 अरब किमी", orbitalPeriod: "16 दिन" }
+    },
+    enceladus: {
+        en: { name: "Enceladus", description: "An icy moon that shoots geysers of water into space.", funFact: "Some of the ice sprayed by Enceladus actually creates one of Saturn's rings (the E ring)!", temperature: "-198°C", realDistance: "238,000 km from Saturn", averageDistanceToEarth: "1.2 billion km", orbitalPeriod: "33 hours" },
+        fr: { name: "Encelade", description: "Une lune glacée qui projette des geysers d'eau dans l'espace.", funFact: "La glace crachée par Encelade crée en fait l'un des anneaux de Saturne (l'anneau E) !", temperature: "-198°C", realDistance: "238 000 km de Saturne", averageDistanceToEarth: "1,2 milliard de km", orbitalPeriod: "33 heures" },
+        es: { name: "Encélado", description: "Una luna helada con géiseres.", funFact: "¡Sus géiseres crean el anillo E de Saturno!", temperature: "-198°C", realDistance: "238.000 km", averageDistanceToEarth: "1.2 mil millones km", orbitalPeriod: "33 horas" },
+        zh: { name: "土卫二", description: "一颗向太空喷射水柱的冰冷卫星。", funFact: "它喷出的冰构成了土星的E环！", temperature: "-198°C", realDistance: "23.8 万公里", averageDistanceToEarth: "12 亿公里", orbitalPeriod: "33 小时" },
+        hi: { name: "एन्सेलैडस", description: "एक बर्फीला चंद्रमा जो गीजर छोड़ता है।", funFact: "इसके गीजर शनि का ई रिंग बनाते हैं!", temperature: "-198°C", realDistance: "238,000 किमी", averageDistanceToEarth: "1.2 अरब किमी", orbitalPeriod: "33 घंटे" }
+    },
     uranus: {
         en: {
             name: "Uranus",
@@ -435,6 +498,13 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
             averageDistanceToEarth: "2.5 अरब किमी",
             orbitalPeriod: "84 वर्ष"
         }
+    },
+    titania: {
+        en: { name: "Titania", description: "The largest moon of Uranus.", funFact: "It is named after the Queen of the Fairies from 'A Midsummer Night's Dream'.", temperature: "-203°C", realDistance: "436,000 km from Uranus", averageDistanceToEarth: "2.5 billion km", orbitalPeriod: "8.7 days" },
+        fr: { name: "Titania", description: "La plus grande lune d'Uranus.", funFact: "Elle est nommée d'après la Reine des Fées du 'Songe d'une nuit d'été'.", temperature: "-203°C", realDistance: "436 000 km d'Uranus", averageDistanceToEarth: "2,5 milliards de km", orbitalPeriod: "8,7 jours" },
+        es: { name: "Titania", description: "La luna más grande de Urano.", funFact: "Nombrada por la Reina de las Hadas.", temperature: "-203°C", realDistance: "436.000 km", averageDistanceToEarth: "2.5 mil millones km", orbitalPeriod: "8.7 días" },
+        zh: { name: "天卫三", description: "天王星最大的卫星。", funFact: "以《仲夏夜之梦》中的仙后命名。", temperature: "-203°C", realDistance: "43.6 万公里", averageDistanceToEarth: "25 亿公里", orbitalPeriod: "8.7 天" },
+        hi: { name: "टाइटेनिया", description: "अरुण का सबसे बड़ा चंद्रमा।", funFact: "परियों की रानी के नाम पर रखा गया नाम।", temperature: "-203°C", realDistance: "436,000 किमी", averageDistanceToEarth: "2.5 अरब किमी", orbitalPeriod: "8.7 दिन" }
     },
     neptune: {
         en: {
@@ -483,6 +553,13 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
             orbitalPeriod: "165 वर्ष"
         }
     },
+    triton: {
+        en: { name: "Triton", description: "Neptune's largest moon.", funFact: "Triton orbits backwards (retrograde)! It was likely a dwarf planet captured by Neptune's gravity.", temperature: "-235°C", realDistance: "354,800 km from Neptune", averageDistanceToEarth: "4.3 billion km", orbitalPeriod: "5.8 days" },
+        fr: { name: "Triton", description: "La plus grande lune de Neptune.", funFact: "Triton orbite à l'envers ! C'était probablement une planète naine capturée par la gravité de Neptune.", temperature: "-235°C", realDistance: "354 800 km de Neptune", averageDistanceToEarth: "4,3 milliards de km", orbitalPeriod: "5,8 jours" },
+        es: { name: "Tritón", description: "La luna más grande de Neptuno.", funFact: "¡Tritón orbita hacia atrás!", temperature: "-235°C", realDistance: "354.800 km", averageDistanceToEarth: "4.3 mil millones km", orbitalPeriod: "5.8 días" },
+        zh: { name: "海卫一", description: "海王星最大的卫星。", funFact: "它是逆行轨道的！很可能是被海王星捕获的矮行星。", temperature: "-235°C", realDistance: "35.48 万公里", averageDistanceToEarth: "43 亿公里", orbitalPeriod: "5.8 天" },
+        hi: { name: "ट्राइटन", description: "वरुण का सबसे बड़ा चंद्रमा।", funFact: "यह उल्टी दिशा में परिक्रमा करता है!", temperature: "-235°C", realDistance: "354,800 किमी", averageDistanceToEarth: "4.3 अरब किमी", orbitalPeriod: "5.8 दिन" }
+    },
     pluto: {
         en: {
             name: "Pluto",
@@ -530,9 +607,14 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
             orbitalPeriod: "248 वर्ष"
         }
     },
-    // Fallback for others using English logic or simpler translations if needed,
-    // but for now I'll just include the main ones requested.
-    // Eris, Makemake, Haumea, Webb, Hubble, ISS can be added.
+    charon: {
+        en: { name: "Charon", description: "Pluto's largest moon.", funFact: "Charon is so big compared to Pluto that they orbit a point in empty space between them!", temperature: "-220°C", realDistance: "19,600 km from Pluto", averageDistanceToEarth: "5 billion km", orbitalPeriod: "6.4 days" },
+        fr: { name: "Charon", description: "La plus grande lune de Pluton.", funFact: "Charon est si grande par rapport à Pluton qu'elles orbitent autour d'un point vide entre elles !", temperature: "-220°C", realDistance: "19 600 km de Pluton", averageDistanceToEarth: "5 milliards de km", orbitalPeriod: "6,4 jours" },
+        es: { name: "Caronte", description: "La luna más grande de Plutón.", funFact: "¡Es enorme comparada con Plutón!", temperature: "-220°C", realDistance: "19.600 km", averageDistanceToEarth: "5 mil millones km", orbitalPeriod: "6.4 días" },
+        zh: { name: "冥卫一", description: "冥王星最大的卫星。", funFact: "它相对于冥王星来说非常大，它们围绕着彼此之间的空间点运行！", temperature: "-220°C", realDistance: "19,600 公里", averageDistanceToEarth: "50 亿公里", orbitalPeriod: "6.4 天" },
+        hi: { name: "चारोन", description: "प्लूटो का सबसे बड़ा चंद्रमा।", funFact: "यह प्लूटो की तुलना में बहुत बड़ा है!", temperature: "-220°C", realDistance: "19,600 किमी", averageDistanceToEarth: "5 अरब किमी", orbitalPeriod: "6.4 दिन" }
+    },
+    // Dwarf planets beyond Pluto
     eris: {
         en: {
             name: "Eris",
@@ -543,7 +625,7 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
         fr: { name: "Éris", description: "Une des planètes naines les plus lointaines ! Nommée après la déesse grecque de la discorde.", funFact: "Éris a presque la même taille que Pluton ! Sa découverte a mené à la création de la catégorie 'planète naine'.", temperature: "-231°C", realDistance: "10,1 milliards de km", averageDistanceToEarth: "10 milliards de km", orbitalPeriod: "557 ans" },
         es: { name: "Eris", description: "¡Uno de los planetas enanos más lejanos!", funFact: "¡Casi del mismo tamaño que Plutón!", temperature: "-231°C", realDistance: "10.1 mil millones km", averageDistanceToEarth: "10 mil millones km", orbitalPeriod: "557 años" },
         zh: { name: "阋神星", description: "最遥远的矮行星之一！", funFact: "大小几乎和冥王星一样！", temperature: "-231°C", realDistance: "101 亿公里", averageDistanceToEarth: "100 亿公里", orbitalPeriod: "557 年" },
-        hi: { name: "eris", description: "सबसे दूर के बौने ग्रहों में से एक!", funFact: "लगभग प्लूटो के समान आकार!", temperature: "-231°C", realDistance: "10.1 अरब किमी", averageDistanceToEarth: "10 अरब किमी", orbitalPeriod: "557 वर्ष" }
+        hi: { name: "एरिस", description: "सबसे दूर के बौने ग्रहों में से एक!", funFact: "लगभग प्लूटो के समान आकार!", temperature: "-231°C", realDistance: "10.1 अरब किमी", averageDistanceToEarth: "10 अरब किमी", orbitalPeriod: "557 वर्ष" }
     },
     // Adding minimal translations for others to prevent errors, defaulting to simplified
     makemake: {
@@ -551,14 +633,14 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
         fr: { name: "Makemake", description: "Une mystérieuse planète naine du système solaire externe.", funFact: "Nommée d'après le dieu créateur du peuple Rapa Nui.", temperature: "-239°C", realDistance: "6,8 milliards de km", averageDistanceToEarth: "7 milliards de km", orbitalPeriod: "309 ans" },
         es: { name: "Makemake", description: "Un planeta enano misterioso.", funFact: "Nombrado por el dios creador Rapa Nui.", temperature: "-239°C", realDistance: "6.8 mil millones km", averageDistanceToEarth: "7 mil millones km", orbitalPeriod: "309 años" },
         zh: { name: "鸟神星", description: "外太阳系神秘的矮行星。", funFact: "以复活节岛拉帕努伊人的创造神命名。", temperature: "-239°C", realDistance: "68 亿公里", averageDistanceToEarth: "70 亿公里", orbitalPeriod: "309 年" },
-        hi: { name: "Makemake", description: "बाहरी सौरमंडल में एक रहस्यमय बौना ग्रह।", funFact: "रापा नुई लोगों के निर्माता देवता के नाम पर।", temperature: "-239°C", realDistance: "6.8 अरब किमी", averageDistanceToEarth: "7 अरब किमी", orbitalPeriod: "309 वर्ष" }
+        hi: { name: "मेकमेक", description: "बाहरी सौरमंडल में एक रहस्यमय बौना ग्रह।", funFact: "रापा नुई लोगों के निर्माता देवता के नाम पर।", temperature: "-239°C", realDistance: "6.8 अरब किमी", averageDistanceToEarth: "7 अरब किमी", orbitalPeriod: "309 वर्ष" }
     },
     haumea: {
         en: { name: "Haumea", description: "The egg-shaped dwarf planet!", funFact: "Haumea spins so fast it's shaped like a football!", temperature: "-223°C", realDistance: "6.5 billion km", averageDistanceToEarth: "6.4 billion km", orbitalPeriod: "284 years" },
         fr: { name: "Haumea", description: "La planète naine en forme d'œuf !", funFact: "Haumea tourne si vite qu'elle a la forme d'un ballon de rugby !", temperature: "-223°C", realDistance: "6,5 milliards de km", averageDistanceToEarth: "6,4 milliards de km", orbitalPeriod: "284 ans" },
         es: { name: "Haumea", description: "¡El planeta enano con forma de huevo!", funFact: "¡Gira tan rápido que parece un balón de fútbol!", temperature: "-223°C", realDistance: "6.5 mil millones km", averageDistanceToEarth: "6.4 mil millones km", orbitalPeriod: "284 años" },
         zh: { name: "妊神星", description: "蛋形的矮行星！", funFact: "自转太快所以形状像橄榄球！", temperature: "-223°C", realDistance: "65 亿公里", averageDistanceToEarth: "64 亿公里", orbitalPeriod: "284 年" },
-        hi: { name: "Haumea", description: "अंडे के आकार का बौना ग्रह!", funFact: "हौमिया इतना तेज घूमता है कि यह फुटबॉल जैसा दिखता है!", temperature: "-223°C", realDistance: "6.5 अरब किमी", averageDistanceToEarth: "6.4 अरब किमी", orbitalPeriod: "284 वर्ष" }
+        hi: { name: "हौमिया", description: "अंडे के आकार का बौना ग्रह!", funFact: "हौमिया इतना तेज घूमता है कि यह फुटबॉल जैसा दिखता है!", temperature: "-223°C", realDistance: "6.5 अरब किमी", averageDistanceToEarth: "6.4 अरब किमी", orbitalPeriod: "284 वर्ष" }
     },
     'james-webb': {
         en: { name: "James Webb Telescope", description: "The most powerful space telescope ever built!", funFact: "Seeing galaxies from 13 billion years ago!", temperature: "-233°C", realDistance: "1.5 million km", averageDistanceToEarth: "1.5 million km", orbitalPeriod: "6 months" },
@@ -592,7 +674,7 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
     'moho': {
         en: { name: "Moho", description: "The innermost planet of the Kerbol system.", funFact: "It has no atmosphere and is very difficult to reach!", temperature: "400°C", realDistance: "5.2 million km", averageDistanceToEarth: "8.4 million km", orbitalPeriod: "102 days" },
         fr: { name: "Moho", description: "La planète la plus proche de Kerbol.", funFact: "Elle n'a pas d'atmosphère et est très difficile à atteindre !", temperature: "400°C", realDistance: "5,2 millions de km", averageDistanceToEarth: "8,4 millions de km", orbitalPeriod: "102 jours" },
-        es: { name: "Moho", description: "El planeta más interno del sistema Kerbal.", funFact: "¡No tiene atmósfera और it is very difficult to reach!", temperature: "400°C", realDistance: "5,2 millones de km", averageDistanceToEarth: "8,4 millones de km", orbitalPeriod: "102 días" },
+        es: { name: "Moho", description: "El planeta más interno del sistema Kerbal.", funFact: "¡No tiene atmósfera y es muy difícil de alcanzar!", temperature: "400°C", realDistance: "5,2 millones de km", averageDistanceToEarth: "8,4 millones de km", orbitalPeriod: "102 días" },
         zh: { name: "Moho", description: "Kerbol 星系最内层的行星。", funFact: "它没有大气层，非常难以到达！", temperature: "400°C", realDistance: "520 万公里", averageDistanceToEarth: "840 万公里", orbitalPeriod: "102 天" },
         hi: { name: "मोहो", description: "करबोल प्रणाली का सबसे आंतरिक ग्रह।", funFact: "यहाँ कोई वायुमंडल नहीं है और यहाँ पहुँचना बहुत कठिन है!", temperature: "400°C", realDistance: "5.2 मिलियन किमी", averageDistanceToEarth: "8.4 मिलियन किमी", orbitalPeriod: "102 दिन" }
     },
@@ -648,7 +730,7 @@ export const objectTranslations: Record<string, Record<Language, ObjectTranslati
     'dres': {
         en: { name: "Dres", description: "A lonely dwarf planet in the asteroid belt.", funFact: "It has a massive canyon and is often forgotten by explorers.", temperature: "-150°C", realDistance: "40.8 million km", averageDistanceToEarth: "27.2 million km", orbitalPeriod: "2206 days" },
         fr: { name: "Dres", description: "Une planète naine isolée dans la ceinture d'astéroïdes.", funFact: "Elle possède un canyon massif et est souvent oubliée par les explorateurs.", temperature: "-150°C", realDistance: "40,8 millions de km", averageDistanceToEarth: "27,2 millions de km", orbitalPeriod: "2206 jours" },
-        es: { name: "Dres", description: "Un planeta enano solitario en el cinturón de asteroides.", funFact: "Tiene un cañón enorme और explorers lo olvidan a menudo.", temperature: "-150°C", realDistance: "40,8 millones de km", averageDistanceToEarth: "27,2 millones de km", orbitalPeriod: "2206 días" },
+        es: { name: "Dres", description: "Un planeta enano solitario en el cinturón de asteroides.", funFact: "Tiene un cañón enorme y los exploradores lo olvidan a menudo.", temperature: "-150°C", realDistance: "40,8 millones de km", averageDistanceToEarth: "27,2 millones de km", orbitalPeriod: "2206 días" },
         zh: { name: "Dres", description: "小行星带中一颗孤独的矮行星。", funFact: "它有一个巨大的峡谷，经常被探险家遗忘。", temperature: "-150°C", realDistance: "4080 万公里", averageDistanceToEarth: "2720 万公里", orbitalPeriod: "2206 天" },
         hi: { name: "ड्रेस", description: "क्षुद्रग्रह बेल्ट में एक अकेला बौना ग्रह।", funFact: "इसमें एक विशाल घाटी है और अक्सर खोजकर्ता इसे भूल जाते हैं।", temperature: "-150°C", realDistance: "40.8 मिलियन किमी", averageDistanceToEarth: "27.2 मिलियन किमी", orbitalPeriod: "2206 दिन" }
     },

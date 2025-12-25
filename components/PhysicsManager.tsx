@@ -6,6 +6,8 @@ import * as THREE from 'three';
 import { Rocket, Explosion } from './types';
 import { Trail, Text, Line } from '@react-three/drei';
 import { solarSystemData } from '@/data/solarSystemData';
+import { kerbolSystemData } from '@/data/kerbolSystemData';
+import { SystemType } from './types';
 
 // Fun random names for satellites
 const SATELLITE_NAMES = [
@@ -38,10 +40,11 @@ interface PhysicsManagerProps {
         active: boolean;
         mass: number;
         radius: number; // Event Horizon Radius
-    }
+    };
+    systemType?: SystemType;
 }
 
-export function PhysicsManager({ isActive, timeScale, rockets, setRockets, history, setHistory, blackHole }: PhysicsManagerProps) {
+export function PhysicsManager({ isActive, timeScale, rockets, setRockets, history, setHistory, blackHole, systemType = 'solar' }: PhysicsManagerProps) {
     const rocketsRef = useRef<Rocket[]>([]); // Ref to track rockets without re-binding listeners
     const [explosions, setExplosions] = useState<Explosion[]>([]);
     const { scene, camera, gl, pointer } = useThree();
@@ -280,7 +283,8 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             const simVel = startVel.clone();
 
             // Physics Bodies for Simulation - cache positions once per trajectory update
-            const bodies = solarSystemData.map(d => {
+            const currentSystemData = systemType === 'kerbol' ? kerbolSystemData : solarSystemData;
+            const bodies = currentSystemData.map(d => {
                 const obj = scene.getObjectByName(`celestial-${d.id}`);
                 if (obj) {
                     cachedBodyPositions.current.set(d.id, obj.position.clone());
@@ -293,11 +297,12 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                 };
             });
 
-            // Reduced from 300 to 100 iterations for better performance
-            const simDelta = 0.016 * 3; // Increased step size to compensate for fewer iterations
+            // Limit to 50 iterations (originally 300, then 100) to limit visual distance as requested.
+            // Also reduced from 100 because the user requested to limit the prediction distance.
+            const simDelta = 0.016 * 3;
 
             let collisionDetected = false;
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 50; i++) {
                 // Inline physics calculation to use cached positions
                 const force = new THREE.Vector3(0, 0, 0);
                 let hasCollided = false;
@@ -373,7 +378,8 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
 
         if (rockets.length === 0) return;
 
-        const bodies = solarSystemData.map(d => ({
+        const currentSystemData = systemType === 'kerbol' ? kerbolSystemData : solarSystemData;
+        const bodies = currentSystemData.map(d => ({
             id: d.id,
             // Reduced Sun mass (was 5000), kept others scaled
             mass: d.id === 'sun' ? 2000 : (d.size * 200),

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState, useMemo, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Sphere, Ring, Html, Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -24,7 +24,7 @@ interface CelestialBodyProps {
     positionRef?: React.MutableRefObject<Record<string, THREE.Vector3>>;
 }
 
-export function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMode, satellites, timeScale = 1, lang, eaten, positionRef }: CelestialBodyProps) {
+export const CelestialBody = memo(function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMode, satellites, timeScale = 1, lang, eaten, positionRef }: CelestialBodyProps) {
     const bodyGroupRef = useRef<THREE.Group>(null);
     const groupRef = useRef<THREE.Group>(null);
     const [hovered, setHovered] = useState(false);
@@ -71,29 +71,64 @@ export function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMo
 
     // Use deterministic initial angle based on planet ID to avoid hydration errors
     const initialAngle = useMemo(() => {
+        // HACK: Force James Webb to sync with Earth's position for L2 simulation
+        const idToHash = data.id === 'james-webb' ? 'earth' : data.id;
+
         let hash = 0;
-        for (let i = 0; i < data.id.length; i++) {
-            hash = ((hash << 5) - hash) + data.id.charCodeAt(i);
+        for (let i = 0; i < idToHash.length; i++) {
+            hash = ((hash << 5) - hash) + idToHash.charCodeAt(i);
             hash = hash & hash;
         }
         return (Math.abs(hash) % 360) * (Math.PI / 180);
     }, [data.id]);
     const angle = useRef(initialAngle);
 
+    const eccentricity = data.eccentricity || 0;
+    const periapsis = (data.periapsis || 0) * (Math.PI / 180);
+    const inclination = (data.inclination || 0) * (Math.PI / 180);
+    const ascendingNode = (data.ascendingNode || 0) * (Math.PI / 180);
+
+    // Optimization: Pre-calculate the orbit rotation matrix
+    // This combines Argument of Periapsis, Inclination, and Longitude of Ascending Node
+    // into a single matrix multiplication, saving many trig calls per frame.
+    const orbitMatrix = useMemo(() => {
+        const m = new THREE.Matrix4();
+
+        // 1. Rotation by Argument of Periapsis (w) around Y (Orbit Plane vertical)
+        const mPeri = new THREE.Matrix4().makeRotationY(periapsis);
+
+        // 2. Rotation by Inclination (i) around X (Tilt)
+        const mInc = new THREE.Matrix4().makeRotationX(inclination);
+
+        // 3. Rotation by Longitude of Ascending Node (Omega) around Y (Global vertical)
+        const mAsc = new THREE.Matrix4().makeRotationY(ascendingNode);
+
+        // Order: v_final = M_asc * M_inc * M_peri * v_local
+        m.multiplyMatrices(mAsc, mInc);
+        m.multiply(mPeri);
+
+        return m;
+    }, [periapsis, inclination, ascendingNode]);
+
     useFrame((state, delta) => {
         if (!isPaused && groupRef.current) {
             angle.current += delta * data.orbitSpeed * 0.1 * timeScale;
-            const x = Math.cos(angle.current) * scaledDistance;
-            const z = Math.sin(angle.current) * scaledDistance;
-            groupRef.current.position.set(x, 0, z);
 
-            // Update position ref if provided
-            if (positionRef) {
-                positionRef.current[data.id] = groupRef.current.position.clone();
-            }
-        } else if (isPaused && groupRef.current && positionRef) {
-            // Even if paused, ensure ref is populated (it won't move, but might not be set yet)
-            positionRef.current[data.id] = groupRef.current.position.clone();
+            const a = scaledDistance;
+            const e = eccentricity;
+            const b = a * Math.sqrt(1 - (e * e));
+            const c = a * e;
+
+            // 1. Calculate unrotated position in local orbital plane (XZ)
+            // Center of ellipse is (-c, 0, 0) relative to focus (Sun)
+            const xLocal = (a * Math.cos(angle.current)) - c;
+            const zLocal = b * Math.sin(angle.current);
+
+            // 2. Apply the pre-calculated rotation matrix
+            const pos = new THREE.Vector3(xLocal, 0, zLocal);
+            pos.applyMatrix4(orbitMatrix);
+
+            groupRef.current.position.copy(pos);
         }
 
         if (bodyGroupRef.current) {
@@ -103,8 +138,6 @@ export function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMo
             }
         }
     });
-
-
 
     const handleClick = (e: any) => {
         e.stopPropagation();
@@ -120,15 +153,28 @@ export function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMo
 
     const orbitPoints = useMemo(() => {
         const points = [];
-        const segments = 64;
+        const segments = 128;
+
+        const a = scaledDistance;
+        const e = eccentricity;
+        const b = a * Math.sqrt(1 - (e * e));
+        const c = a * e;
+
         for (let i = 0; i <= segments; i++) {
             const theta = (i / segments) * Math.PI * 2;
-            points.push(
-                new THREE.Vector3(Math.cos(theta) * scaledDistance, 0, Math.sin(theta) * scaledDistance)
-            );
+
+            // 1. Local
+            const xLocal = (a * Math.cos(theta)) - c;
+            const zLocal = b * Math.sin(theta);
+
+            // 2. Apply Matrix
+            const point = new THREE.Vector3(xLocal, 0, zLocal);
+            point.applyMatrix4(orbitMatrix);
+
+            points.push(point);
         }
         return points;
-    }, [scaledDistance]);
+    }, [scaledDistance, eccentricity, orbitMatrix]);
 
     // Calculate size based on mode
     const scaledSize = useMemo(() => {
@@ -267,8 +313,8 @@ export function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMo
                     </group>
                 )}
 
-                {/* Satellites (Recursive) */}
-                {satellites && satellites.map(sat => (
+                {/* Satellites (Recursive) - Hide in Real Mode to remove clutter as requested */}
+                {orbitMode !== 'real' && satellites && satellites.map(sat => (
                     <CelestialBody
                         key={sat.id}
                         data={sat}
@@ -297,4 +343,4 @@ export function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMo
             </group>
         </group>
     );
-}
+});

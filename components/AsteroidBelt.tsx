@@ -23,8 +23,8 @@ export function AsteroidBelt({ timeScale = 1, orbitMode = 'simplified' }: Astero
         // Mars (227M km) = ~9,100u. Jupiter (778M km) = ~31,000u.
         // Belt Start (~2.2 AU / 329M km) = 13,160u.
         // Belt End (~3.2 AU / 478M km) = 19,150u.
-        const innerRadius = orbitMode === 'real' ? 13160 : 18;
-        const outerRadius = orbitMode === 'real' ? 19150 : 23;
+        const innerRadius = orbitMode === 'real' ? 13160 : 28; // Starts just inside Ceres (30)
+        const outerRadius = orbitMode === 'real' ? 19150 : 37; // Ends before Jupiter (40)
 
         // Visual improvements: 8 distinct vibrant color variations
         const colors = [

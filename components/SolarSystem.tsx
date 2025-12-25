@@ -315,7 +315,7 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
             {/* LAYERS */}
             {layerMode === 'habitable' && <HabitableZoneLayer orbitMode={orbitMode} />}
             {layerMode === 'gravity' && <GravityWellLayer systemType={systemType} />}
-            {layerMode === 'lagrange' && <LagrangePointsLayer />}
+            {layerMode === 'lagrange' && <LagrangePointsLayer lang={lang} />}
 
             {/* Asteroid Belt - Only show for Solar System */}
             {systemType === 'solar' && <AsteroidBelt timeScale={timeScale} orbitMode={orbitMode} />}
@@ -361,6 +361,7 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                     mass: 200000,
                     radius: 150
                 }}
+                systemType={systemType}
             />
         </>
     );

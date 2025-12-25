@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0] - 2025-12-25
+
+### Added
+- **Nouveaux Corps Célestes**: Ajout de Cérès, Phobos, Deimos, Io, Europe, Ganymède, Callisto, Titan, Encelade, Titania, Triton et Charon avec traductions complètes (FR, EN, ES, ZH, HI).
+- **Mécanique Orbitale 3D**: Implémentation d'orbites képlériennes réalistes (excentricité, inclinaison, nœud ascendant).
+- **Améliorations Visuelles**: Génération procédurale pour les géantes gazeuses (bandes de Jupiter, GRS, couleurs précises pour Saturne, Uranus, Neptune).
+
+### Changed
+- **Optimisation Majeure**: Refonte de `VoxelSphere` et `CelestialBody` (React.memo, cache global de couleurs, matrices de rotation pré-calculées). Réduction drastique de la charge CPU/Mémoire.
+- **Traductions**: Corrections pour l'espagnol (Moho, Dres) et l'hindi (Éris, Makemake, Haumea).
+- **Espacement Orbital**: Ajustement des distances en mode "Simplifié" pour éviter les collisions (Mercure/Soleil, Astéroïdes).
+- **Codebase**: Nettoyage du code redondant et suppression des calculs inutiles.
+
 ## [1.3.3] - 2025-12-22
 
 ### Fixed
