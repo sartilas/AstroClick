@@ -34,6 +34,7 @@ export default function Home() {
     const [systemType, setSystemType] = useState<SystemType>('solar');
 
     const [showInstructions, setShowInstructions] = useState(true);
+    const [showRocketTooltip, setShowRocketTooltip] = useState(false);
 
     useEffect(() => {
         // Auto-detect language from browser
@@ -176,7 +177,7 @@ export default function Home() {
                             AstroClick
                         </h2>
                         <p className="text-gray-500 text-center text-xs font-mono mb-6 uppercase tracking-widest">
-                            v1.3.3 • Open Source
+                            v1.4.0 • Open Source
                         </p>
 
                         <div className="space-y-4 text-gray-300 text-sm leading-relaxed text-center">
@@ -416,7 +417,14 @@ export default function Home() {
                                     {orbitMode !== 'real' && (
                                         <button
                                             onClick={(e) => {
-                                                setShowCursor(!showCursor);
+                                                const nextState = !showCursor;
+                                                setShowCursor(nextState);
+                                                if (nextState) {
+                                                    setShowRocketTooltip(true);
+                                                    setTimeout(() => setShowRocketTooltip(false), 10000);
+                                                } else {
+                                                    setShowRocketTooltip(false);
+                                                }
                                                 // Remove focus to prevent spacebar from toggling button
                                                 (e.target as HTMLButtonElement).blur();
                                             }}
@@ -481,6 +489,18 @@ export default function Home() {
                             <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
                             {t.clickInstruction}
                         </div>
+                    </div>
+                )}
+
+                {/* Rocket Mode Tooltip - Shows for 10s */}
+                {showRocketTooltip && (
+                    <div className="absolute bottom-32 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-3 rounded-full shadow-[0_0_20px_rgba(234,88,12,0.5)] animate-bounce-subtle z-50 pointer-events-none border border-white/20 transition-all duration-500">
+                        <div className="flex items-center gap-2 font-bold tracking-wide text-sm whitespace-nowrap">
+                            <span className="text-xl">🚀</span>
+                            {t.rocketTooltip}
+                        </div>
+                        {/* Triangle Arrow */}
+                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-red-600/80"></div>
                     </div>
                 )}
 
