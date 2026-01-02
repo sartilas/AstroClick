@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.1] - 2026-01-02
+
+### Added
+- **Traduction Russe (RU)**: Ajout complet du support de la langue russe pour l'interface et tous les objets célestes (Système Solaire + Kerbol).
+- **Sélecteur de Langue**: Interface avec drapeaux (🇫🇷🇬🇧🇷🇺🇪🇸🇨🇳🇮🇳) dans le dock pour changer de langue manuellement.
+
+### Fixed
+- **Habitable Zone**: Le label "Zone Habitable" est maintenant correctement traduit dans toutes les langues.
+- **SEO**: Ajout de `ru-RU` aux URL alternatives et aux métadonnées Schema.org.
+
 ## [1.4.0] - 2025-12-25
 
 ### Added

@@ -313,7 +313,7 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
             )}
 
             {/* LAYERS */}
-            {layerMode === 'habitable' && <HabitableZoneLayer orbitMode={orbitMode} />}
+            {layerMode === 'habitable' && <HabitableZoneLayer orbitMode={orbitMode} lang={lang} />}
             {layerMode === 'gravity' && <GravityWellLayer systemType={systemType} />}
             {layerMode === 'lagrange' && <LagrangePointsLayer lang={lang} />}
 

@@ -1,11 +1,13 @@
 import { Ring, Text } from '@react-three/drei';
 import * as THREE from 'three';
+import { Language, dictionary } from '@/data/dictionary';
 
 interface HabitableZoneLayerProps {
     orbitMode: 'simplified' | 'real';
+    lang: Language;
 }
 
-export function HabitableZoneLayer({ orbitMode }: HabitableZoneLayerProps) {
+export function HabitableZoneLayer({ orbitMode, lang }: HabitableZoneLayerProps) {
     // Earth Distance: 10 (Simplified) vs 15 (Real)
     // HZ approx 0.95 AU to 1.5 AU
 
@@ -17,6 +19,9 @@ export function HabitableZoneLayer({ orbitMode }: HabitableZoneLayerProps) {
 
     const innerRadius = orbitMode === 'real' ? 5.68 : 9.5;
     const outerRadius = orbitMode === 'real' ? 10 : 16.7;
+
+    const t = dictionary[lang];
+    const label = t?.layerHabitable || 'Habitable Zone';
 
     return (
         <group rotation={[-Math.PI / 2, 0, 0]}>
@@ -40,7 +45,7 @@ export function HabitableZoneLayer({ orbitMode }: HabitableZoneLayerProps) {
                     anchorY="middle"
                     rotation={[-Math.PI / 2, 0, 0]}
                 >
-                    Habitable Zone
+                    {label}
                 </Text>
             </group>
         </group>

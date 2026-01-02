@@ -59,6 +59,7 @@ export const metadata: Metadata = {
             "es-ES": `${siteUrl}?lang=es`,
             "zh-CN": `${siteUrl}?lang=zh`,
             "hi-IN": `${siteUrl}?lang=hi`,
+            "ru-RU": `${siteUrl}?lang=ru`,
         },
     },
 
@@ -135,7 +136,7 @@ const jsonLd = {
         name: "AstroClick Team",
         url: siteUrl,
     },
-    inLanguage: ["fr", "en", "es", "zh", "hi"],
+    inLanguage: ["fr", "en", "es", "zh", "hi", "ru"],
     isAccessibleForFree: true,
     educationalUse: ["self study", "educational game"],
     about: {

@@ -39,7 +39,7 @@ export default function Home() {
     useEffect(() => {
         // Auto-detect language from browser
         const browserLang = navigator.language.split('-')[0];
-        if (['fr', 'en', 'es', 'zh', 'hi'].includes(browserLang)) {
+        if (['fr', 'en', 'es', 'zh', 'hi', 'ru'].includes(browserLang)) {
             setLang(browserLang as Language);
         } else {
             setLang('en'); // Default fallback
@@ -177,27 +177,27 @@ export default function Home() {
                             AstroClick
                         </h2>
                         <p className="text-gray-500 text-center text-xs font-mono mb-6 uppercase tracking-widest">
-                            v1.4.0 • Open Source
+                            v1.4.1 • Open Source
                         </p>
 
                         <div className="space-y-4 text-gray-300 text-sm leading-relaxed text-center">
                             <p>
-                                <strong>AstroClick</strong> est un projet éducatif gratuit et à but non lucratif.
+                                <strong>AstroClick</strong> {t.aboutDescription?.replace('AstroClick ', '') || 'is a free, non-profit educational project.'}
                             </p>
                             <p>
-                                Développé avec l&apos;aide de l&apos;IA
-                                <span className="text-blue-400 font-bold"> Gemini 3 Pro</span> et
+                                {t.aboutDevWith || 'Developed with the help of AI'}
+                                <span className="text-blue-400 font-bold"> Gemini 3 Pro</span> {lang === 'fr' ? 'et' : lang === 'es' ? 'y' : lang === 'ru' ? 'и' : lang === 'zh' ? '和' : lang === 'hi' ? 'और' : 'and'}
                                 <span className="text-purple-400 font-bold"> Claude 4.5</span>.
                             </p>
 
 
 
                             <p className="text-xs text-yellow-500/80 italic mt-2 animate-pulse">
-                                Psst... Cliquez 3 fois sur le logo pour une surprise cosmique !
+                                {t.aboutEasterEgg || 'Psst... Click 3 times on the logo for a cosmic surprise!'}
                             </p>
                             <div className="pt-4 mt-4 border-t border-white/10 flex flex-col gap-2 items-center">
                                 <p className="text-xs text-gray-500">
-                                    Code source disponible librement pour l&apos;éducation.
+                                    {t.aboutOpenSource || 'Source code freely available for education.'}
                                 </p>
                                 <a
                                     href="https://github.com/sartilas/AstroClick"
@@ -448,6 +448,32 @@ export default function Home() {
                                     >
                                         <Info size={20} />
                                     </button>
+                                </div>
+                            </div>
+
+                            {/* GROUP 4: Language Selector */}
+                            <div className="flex items-center gap-2 bg-black/40 p-2 rounded-2xl border border-white/10 backdrop-blur-sm">
+                                <span className="text-[9px] uppercase tracking-tighter text-gray-400 font-bold px-1 hidden sm:block">
+                                    <Languages size={14} />
+                                </span>
+                                <div className="flex gap-0.5">
+                                    {[
+                                        { code: 'fr' as Language, flag: '🇫🇷', name: 'Français' },
+                                        { code: 'en' as Language, flag: '🇬🇧', name: 'English' },
+                                        { code: 'ru' as Language, flag: '🇷🇺', name: 'Русский' },
+                                        { code: 'es' as Language, flag: '🇪🇸', name: 'Español' },
+                                        { code: 'zh' as Language, flag: '🇨🇳', name: '中文' },
+                                        { code: 'hi' as Language, flag: '🇮🇳', name: 'हिन्दी' },
+                                    ].map(({ code, flag, name }) => (
+                                        <button
+                                            key={code}
+                                            onClick={() => setLang(code)}
+                                            className={`px-2 py-1.5 rounded-lg text-lg transition-all ${lang === code ? 'bg-blue-600 scale-110 shadow-lg shadow-blue-500/30' : 'opacity-60 hover:opacity-100 hover:bg-white/10'}`}
+                                            title={name}
+                                        >
+                                            {flag}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
 
