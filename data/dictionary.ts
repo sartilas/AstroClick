@@ -78,6 +78,58 @@ export const dictionary: Record<Language, any> = {
             bop: { name: "Bop", desc: "A lumpy brown captured asteroid with the Dead Kraken Easter egg.", funFact: "🦑 The Space Kraken corpse is impaled near the North Pole!" },
             pol: { name: "Pol", desc: "Yellow spiky moon resembling a pollen grain. Strange rock formations.", funFact: "🌵 Surface covered in strange yellow spiky rocks - looks like a cactus!" },
             eeloo: { name: "Eeloo", desc: "A distant ice world with Tiger Stripes like Jupiter's moon Europa.", funFact: "📡 Was planned as a moon of a second gas giant that was never added!" }
+        },
+        alienShip: {
+            signalDetected: "Signal Detected",
+            fermiParadox: "Fermi Paradox"
+        },
+        drake: {
+            title: "Drake Equation Calculator",
+            description: "Estimate the number of active, communicative extraterrestrial civilizations in the Milky Way galaxy.",
+            variables: {
+                R: { name: "Star Formation Rate", desc: "Average rate of star formation in our galaxy per year.", unit: "/ year" },
+                fp: { name: "Fraction with Planets", desc: "Fraction of stars that have planetary systems.", unit: "" },
+                ne: { name: "Habitable Planets", desc: "Average number of planets that could support life, per star with planets.", unit: "" },
+                fl: { name: "Fraction with Life", desc: "Fraction of habitable planets where life actually develops.", unit: "" },
+                fi: { name: "Fraction with Intelligence", desc: "Fraction of planets with life that develop intelligent civilizations.", unit: "" },
+                fc: { name: "Fraction with Communication", desc: "Fraction of civilizations that develop detectable signals.", unit: "" },
+                L: { name: "Civilization Lifespan", desc: "Length of time civilizations release detectable signals.", unit: "years" }
+            },
+            presets: {
+                skeptical: "Skeptical",
+                scientific: "Scientific",
+                optimistic: "Optimistic"
+            },
+            result: {
+                detectableCivilizations: "Detectable Civilizations",
+                empty: "We may be alone in the galaxy...",
+                lonely: "A few neighbors, but so far away we may never hear them.",
+                crowded: "The galaxy is teeming with life! Where is everyone?"
+            }
+        },
+        fermiModal: {
+            title: "The Fermi Paradox",
+            intro: "If there are billions of stars and planets in the universe, why haven't we encountered extraterrestrials yet?",
+            introDesc: "This is the fundamental question posed by physicist Enrico Fermi in 1950. Given the age of the universe (13.8 billion years) and its immensity, the probability of extraterrestrial life seems high. Yet, there is only silence.",
+            footer: "The mystery remains. Are we alone, or are we simply looking in the wrong place?",
+            theories: {
+                greatFilter: {
+                    title: "The Great Filter",
+                    description: "There may be an evolutionary obstacle that is nearly impossible to overcome (such as the emergence of multicellular life or technological self-destruction) that prevents civilizations from reaching the stage of interstellar travel."
+                },
+                rareEarth: {
+                    title: "Rare Earth",
+                    description: "The conditions necessary for complex life (planet size, stabilizing moon, calm sun, magnetic field) may be much rarer than we think."
+                },
+                radioSilence: {
+                    title: "Radio Silence",
+                    description: "Perhaps civilizations emit radio signals for a very short period before changing technology or disappearing, making detection difficult."
+                },
+                darkForest: {
+                    title: "The Dark Forest",
+                    description: "A disturbing theory: the universe is like a dark forest full of predators. Intelligent civilizations deliberately hide to avoid being annihilated by more advanced ones."
+                }
+            }
         }
     },
     fr: {
@@ -294,6 +346,58 @@ export const dictionary: Record<Language, any> = {
                 desc: "Un monde glacé aux confins du système. Sa surface blanche est marquée de crevasses brunes rappelant les « Tiger Stripes » d'Europe.",
                 funFact: "📡 Eeloo devait à l'origine être la lune d'une seconde géante gazeuse qui n'a jamais été ajoutée au jeu !"
             }
+        },
+        alienShip: {
+            signalDetected: "Signal Détecté",
+            fermiParadox: "Paradoxe de Fermi"
+        },
+        drake: {
+            title: "Calculateur de l'Équation de Drake",
+            description: "Estimez le nombre de civilisations extraterrestres actives et capables de communiquer dans la Voie lactée.",
+            variables: {
+                R: { name: "Taux de formation d'étoiles", desc: "Nombre moyen d'étoiles formées dans notre galaxie par an.", unit: "/ an" },
+                fp: { name: "Fraction avec planètes", desc: "Fraction d'étoiles possédant des systèmes planétaires.", unit: "" },
+                ne: { name: "Planètes habitables", desc: "Nombre moyen de planètes potentiellement habitables par étoile.", unit: "" },
+                fl: { name: "Fraction avec vie", desc: "Fraction de planètes habitables où la vie apparaît.", unit: "" },
+                fi: { name: "Fraction avec intelligence", desc: "Fraction de planètes avec vie qui développent l'intelligence.", unit: "" },
+                fc: { name: "Fraction avec communication", desc: "Fraction de civilisations développant des signaux détectables.", unit: "" },
+                L: { name: "Durée de vie (années)", desc: "Durée pendant laquelle une civilisation émet des signaux détectables.", unit: "ans" }
+            },
+            presets: {
+                skeptical: "Sceptique",
+                scientific: "Scientifique",
+                optimistic: "Optimiste"
+            },
+            result: {
+                detectableCivilizations: "Civilisations détectables",
+                empty: "Nous sommes peut-être seuls dans la galaxie...",
+                lonely: "Quelques voisins, mais si lointains que nous ne les entendrons peut-être jamais.",
+                crowded: "La galaxie grouille de vie ! Où sont-ils tous ?"
+            }
+        },
+        fermiModal: {
+            title: "Le Paradoxe de Fermi",
+            intro: "S'il y a des milliards d'étoiles et de planètes dans l'univers, pourquoi n'avons-nous pas encore rencontré d'extraterrestres ?",
+            introDesc: "C'est la question fondamentale posée par le physicien Enrico Fermi en 1950. Avec l'âge de l'univers (13,8 milliards d'années) et son immensité, la probabilité d'une vie extraterrestre semble élevée. Pourtant, c'est le grand silence.",
+            footer: "Le mystère reste entier. Sommes-nous seuls, ou regardons-nous simplement au mauvais endroit ?",
+            theories: {
+                greatFilter: {
+                    title: "Le Grand Filtre",
+                    description: "Il existe peut-être un obstacle évolutif quasi-impossible à franchir (comme l'apparition de la vie multicellulaire ou l'autodestruction technologique) qui empêche les civilisations d'atteindre le stade du voyage interstellaire."
+                },
+                rareEarth: {
+                    title: "Terre Rare",
+                    description: "Les conditions nécessaires à la vie complexe (taille de la planète, lune stabilisatrice, soleil calme, champ magnétique) sont peut-être beaucoup plus rares que nous ne le pensons."
+                },
+                radioSilence: {
+                    title: "Le Silence Radio",
+                    description: "Peut-être que les civilisations émettent des signaux radio pendant une très courte période avant de changer de technologie ou de disparaître, rendant la détection difficile."
+                },
+                darkForest: {
+                    title: "La Forêt Sombre",
+                    description: "Théorie inquiétante : l'univers est comme une forêt sombre pleine de prédateurs. Les civilisations intelligentes se cachent volontairement pour ne pas être anéanties par d'autres plus avancées."
+                }
+            }
         }
     },
     zh: {
@@ -373,6 +477,58 @@ export const dictionary: Record<Language, any> = {
             bop: { name: "Bop", desc: "一颗棕色凹凸不平的捕获小行星，有死Kraken彩蛋。", funFact: "🦑 太空Kraken的尸体被刺穿在北极附近！" },
             pol: { name: "Pol", desc: "黄色尖刺卫星，像花粉粒。奇怪的岩石构造。", funFact: "🌵 表面覆盖着奇怪的黄色尖刺岩石 - 像仙人掌！" },
             eeloo: { name: "Eeloo", desc: "遥远的冰雪世界，有像木星欧罗巴的虎纹。", funFact: "📡 原计划是第二颗从未添加的气态巨行星的卫星！" }
+        },
+        alienShip: {
+            signalDetected: "检测到信号",
+            fermiParadox: "费米悖论"
+        },
+        drake: {
+            title: "德雷克方程计算器",
+            description: "估算银河系中活跃的、能够进行交流的外星文明数量。",
+            variables: {
+                R: { name: "恒星形成率", desc: "银河系每年形成的恒星平均数量。", unit: "/ 年" },
+                fp: { name: "拥有行星的比例", desc: "拥有行星系统的恒星比例。", unit: "" },
+                ne: { name: "宜居行星", desc: "每颗恒星拥有的潜在宜居行星平均数量。", unit: "" },
+                fl: { name: "生命出现比例", desc: "宜居行星中出现生命的比例。", unit: "" },
+                fi: { name: "智慧生命比例", desc: "有生命的行星中发展出智慧文明的比例。", unit: "" },
+                fc: { name: "通讯能力比例", desc: "发展出可探测信号的文明比例。", unit: "" },
+                L: { name: "文明寿命（年）", desc: "文明发射可探测信号的持续时间。", unit: "年" }
+            },
+            presets: {
+                skeptical: "保守",
+                scientific: "科学",
+                optimistic: "乐观"
+            },
+            result: {
+                detectableCivilizations: "可探测的文明",
+                empty: "我们可能是银河系中唯一的...",
+                lonely: "有一些邻居，但距离太远，我们可能永远听不到他们。",
+                crowded: "银河系充满了生命！他们都在哪里？"
+            }
+        },
+        fermiModal: {
+            title: "费米悖论",
+            intro: "如果宇宙中有数十亿颗恒星和行星，为什么我们还没有遇到外星人？",
+            introDesc: "这是物理学家恩里科·费米在1950年提出的根本问题。考虑到宇宙的年龄（138亿年）和其广阔，外星生命存在的可能性似乎很高。然而，一切都是寂静的。",
+            footer: "谜团依然存在。我们是孤独的，还是只是找错了地方？",
+            theories: {
+                greatFilter: {
+                    title: "大过滤器",
+                    description: "可能存在一个几乎无法跨越的进化障碍（如多细胞生命的出现或技术自毁），阻止文明达到星际旅行的阶段。"
+                },
+                rareEarth: {
+                    title: "稀有地球",
+                    description: "复杂生命所需的条件（行星大小、稳定的卫星、平静的太阳、磁场）可能比我们想象的要稀有得多。"
+                },
+                radioSilence: {
+                    title: "无线电静默",
+                    description: "也许文明只在很短的时间内发射无线电信号，然后就改变技术或消失了，这使得探测变得困难。"
+                },
+                darkForest: {
+                    title: "黑暗森林",
+                    description: "一个令人不安的理论：宇宙就像一片充满捕食者的黑暗森林。智慧文明故意隐藏起来，以免被更先进的文明毁灭。"
+                }
+            }
         }
     },
     es: {
@@ -452,6 +608,58 @@ export const dictionary: Record<Language, any> = {
             bop: { name: "Bop", desc: "Un asteroide capturado marrón con el Easter egg del Kraken Muerto.", funFact: "🦑 ¡El cadáver del Kraken espacial está empalado cerca del Polo Norte!" },
             pol: { name: "Pol", desc: "Luna amarilla puntiaguda que parece un grano de polen. Formaciones rocosas extrañas.", funFact: "🌵 ¡Superficie cubierta de rocas amarillas puntiagudas - parece un cactus!" },
             eeloo: { name: "Eeloo", desc: "Un mundo de hielo distante con Tiger Stripes como la luna Europa de Júpiter.", funFact: "📡 ¡Estaba planeado como luna de un segundo gigante gaseoso que nunca se añadió!" }
+        },
+        alienShip: {
+            signalDetected: "Señal Detectada",
+            fermiParadox: "Paradoja de Fermi"
+        },
+        drake: {
+            title: "Calculadora de la Ecuación de Drake",
+            description: "Estima el número de civilizaciones extraterrestres activas y comunicativas en la Vía Láctea.",
+            variables: {
+                R: { name: "Tasa de formación estelar", desc: "Número promedio de estrellas formadas en nuestra galaxia por año.", unit: "/ año" },
+                fp: { name: "Fracción con planetas", desc: "Fracción de estrellas con sistemas planetarios.", unit: "" },
+                ne: { name: "Planetas habitables", desc: "Número promedio de planetas potencialmente habitables por estrella.", unit: "" },
+                fl: { name: "Fracción con vida", desc: "Fracción de planetas habitables donde surge la vida.", unit: "" },
+                fi: { name: "Fracción con inteligencia", desc: "Fracción de planetas con vida que desarrollan inteligencia.", unit: "" },
+                fc: { name: "Fracción con comunicación", desc: "Fracción de civilizaciones que desarrollan señales detectables.", unit: "" },
+                L: { name: "Duración (años)", desc: "Tiempo durante el cual una civilización emite señales detectables.", unit: "años" }
+            },
+            presets: {
+                skeptical: "Escéptico",
+                scientific: "Científico",
+                optimistic: "Optimista"
+            },
+            result: {
+                detectableCivilizations: "Civilizaciones detectables",
+                empty: "Quizás estamos solos en la galaxia...",
+                lonely: "Algunos vecinos, pero tan lejos que quizás nunca los escuchemos.",
+                crowded: "¡La galaxia rebosa de vida! ¿Dónde están todos?"
+            }
+        },
+        fermiModal: {
+            title: "La Paradoja de Fermi",
+            intro: "Si hay miles de millones de estrellas y planetas en el universo, ¿por qué no hemos encontrado extraterrestres todavía?",
+            introDesc: "Esta es la pregunta fundamental planteada por el físico Enrico Fermi en 1950. Dada la edad del universo (13.800 millones de años) y su inmensidad, la probabilidad de vida extraterrestre parece alta. Sin embargo, solo hay silencio.",
+            footer: "El misterio permanece. ¿Estamos solos, o simplemente estamos buscando en el lugar equivocado?",
+            theories: {
+                greatFilter: {
+                    title: "El Gran Filtro",
+                    description: "Puede haber un obstáculo evolutivo casi imposible de superar (como la aparición de vida multicelular o la autodestrucción tecnológica) que impide que las civilizaciones alcancen la etapa del viaje interestelar."
+                },
+                rareEarth: {
+                    title: "Tierra Rara",
+                    description: "Las condiciones necesarias para la vida compleja (tamaño del planeta, luna estabilizadora, sol tranquilo, campo magnético) pueden ser mucho más raras de lo que pensamos."
+                },
+                radioSilence: {
+                    title: "El Silencio de Radio",
+                    description: "Quizás las civilizaciones emiten señales de radio durante un período muy corto antes de cambiar de tecnología o desaparecer, lo que dificulta la detección."
+                },
+                darkForest: {
+                    title: "El Bosque Oscuro",
+                    description: "Una teoría inquietante: el universo es como un bosque oscuro lleno de depredadores. Las civilizaciones inteligentes se esconden deliberadamente para evitar ser aniquiladas por otras más avanzadas."
+                }
+            }
         }
     },
     hi: {
@@ -531,6 +739,58 @@ export const dictionary: Record<Language, any> = {
             bop: { name: "Bop", desc: "मृत Kraken ईस्टर एग वाला भूरा उबड़-खाबड़ पकड़ा गया क्षुद्रग्रह।", funFact: "🦑 स्पेस Kraken का शव उत्तरी ध्रुव के पास नुकीला है!" },
             pol: { name: "Pol", desc: "पराग कण जैसा पीला नुकीला चंद्रमा। अजीब चट्टान संरचनाएं।", funFact: "🌵 सतह अजीब पीली नुकीली चट्टानों से ढकी - कैक्टस जैसी!" },
             eeloo: { name: "Eeloo", desc: "बृहस्पति के यूरोपा जैसी Tiger Stripes वाली दूरस्थ बर्फ दुनिया।", funFact: "📡 दूसरे गैस दानव का चंद्रमा होना था जो कभी नहीं जोड़ा गया!" }
+        },
+        alienShip: {
+            signalDetected: "सिग्नल का पता चला",
+            fermiParadox: "फर्मी विरोधाभास"
+        },
+        drake: {
+            title: "ड्रेक समीकरण कैलकुलेटर",
+            description: "मिल्की वे आकाशगंगा में सक्रिय, संचार-सक्षम अलौकिक सभ्यताओं की संख्या का अनुमान लगाएं।",
+            variables: {
+                R: { name: "तारा निर्माण दर", desc: "हमारी आकाशगंगा में प्रति वर्ष बनने वाले तारों की औसत संख्या।", unit: "/ वर्ष" },
+                fp: { name: "ग्रहों वाला अंश", desc: "ग्रह प्रणाली वाले तारों का अंश।", unit: "" },
+                ne: { name: "रहने योग्य ग्रह", desc: "प्रति तारे संभावित रहने योग्य ग्रहों की औसत संख्या।", unit: "" },
+                fl: { name: "जीवन वाला अंश", desc: "रहने योग्य ग्रहों पर जीवन विकसित होने का अंश।", unit: "" },
+                fi: { name: "बुद्धिमान अंश", desc: "जीवन वाले ग्रहों पर बुद्धिमान सभ्यता विकसित होने का अंश।", unit: "" },
+                fc: { name: "संचार योग्य अंश", desc: "पता लगाने योग्य संकेत विकसित करने वाली सभ्यताओं का अंश।", unit: "" },
+                L: { name: "सभ्यता की आयु (वर्ष)", desc: "सभ्यता द्वारा पता लगाने योग्य संकेत भेजने की अवधि।", unit: "वर्ष" }
+            },
+            presets: {
+                skeptical: "संशयवादी",
+                scientific: "वैज्ञानिक",
+                optimistic: "आशावादी"
+            },
+            result: {
+                detectableCivilizations: "पता लगाने योग्य सभ्यताएं",
+                empty: "शायद हम आकाशगंगा में अकेले हैं...",
+                lonely: "कुछ पड़ोसी हैं, लेकिन इतने दूर कि शायद हम उन्हें कभी नहीं सुनेंगे।",
+                crowded: "आकाशगंगा जीवन से भरी है! सब कहाँ हैं?"
+            }
+        },
+        fermiModal: {
+            title: "फर्मी विरोधाभास",
+            intro: "यदि ब्रह्मांड में अरबों तारे और ग्रह हैं, तो हमने अभी तक एलियंस से मुलाकात क्यों नहीं की?",
+            introDesc: "यह मूल प्रश्न है जो भौतिक विज्ञानी एनरिको फर्मी ने 1950 में उठाया था। ब्रह्मांड की आयु (13.8 अरब वर्ष) और इसकी विशालता को देखते हुए, अलौकिक जीवन की संभावना अधिक लगती है। फिर भी, केवल सन्नाटा है।",
+            footer: "रहस्य बना हुआ है। क्या हम अकेले हैं, या हम बस गलत जगह देख रहे हैं?",
+            theories: {
+                greatFilter: {
+                    title: "महान फ़िल्टर",
+                    description: "शायद एक ऐसी विकासवादी बाधा है जिसे पार करना लगभग असंभव है (जैसे बहुकोशिकीय जीवन का उदभव या तकनीकी आत्म-विनाश), जो सभ्यताओं को अंतरतारकीय यात्रा तक पहुँचने से रोकती है।"
+                },
+                rareEarth: {
+                    title: "दुर्लभ पृथ्वी",
+                    description: "जटिल जीवन के लिए आवश्यक शर्तें (ग्रह का आकार, स्थिर चंद्रमा, शांत सूर्य, चुंबकीय क्षेत्र) शायद हमारी सोच से कहीं अधिक दुर्लभ हैं।"
+                },
+                radioSilence: {
+                    title: "रेडियो मौन",
+                    description: "शायद सभ्यताएं तकनीक बदलने या गायब होने से पहले बहुत कम समय के लिए रेडियो संकेत भेजती हैं, जिससे पता लगाना मुश्किल हो जाता है।"
+                },
+                darkForest: {
+                    title: "अंधेरा जंगल",
+                    description: "एक चिंताजनक सिद्धांत: ब्रह्मांड शिकारियों से भरे अंधेरे जंगल की तरह है। बुद्धिमान सभ्यताएं अधिक उन्नत सभ्यताओं द्वारा नष्ट होने से बचने के लिए जानबूझकर छिपती हैं।"
+                }
+            }
         }
     },
     ru: {
@@ -792,6 +1052,30 @@ export const dictionary: Record<Language, any> = {
                 empty: "Возможно, мы одиноки в галактике...",
                 lonely: "Несколько соседей, но так далеко, что мы можем их никогда не услышать.",
                 crowded: "Галактика кишит жизнью! Где же все?"
+            }
+        },
+        fermiModal: {
+            title: "Парадокс Ферми",
+            intro: "Если во Вселенной миллиарды звёзд и планет, почему мы до сих пор не встретили инопланетян?",
+            introDesc: "Это фундаментальный вопрос, поставленный физиком Энрико Ферми в 1950 году. Учитывая возраст Вселенной (13,8 миллиарда лет) и её необъятность, вероятность внеземной жизни кажется высокой. Однако царит лишь тишина.",
+            footer: "Загадка остаётся. Мы одиноки, или просто ищем не там?",
+            theories: {
+                greatFilter: {
+                    title: "Великий фильтр",
+                    description: "Возможно, существует эволюционное препятствие, которое почти невозможно преодолеть (например, появление многоклеточной жизни или технологическое самоуничтожение), мешающее цивилизациям достичь стадии межзвёздных путешествий."
+                },
+                rareEarth: {
+                    title: "Редкая Земля",
+                    description: "Условия, необходимые для сложной жизни (размер планеты, стабилизирующая луна, спокойное солнце, магнитное поле), могут быть гораздо более редкими, чем мы думаем."
+                },
+                radioSilence: {
+                    title: "Радиомолчание",
+                    description: "Возможно, цивилизации излучают радиосигналы лишь короткое время, прежде чем сменить технологию или исчезнуть, что затрудняет обнаружение."
+                },
+                darkForest: {
+                    title: "Тёмный лес",
+                    description: "Тревожная теория: Вселенная подобна тёмному лесу, полному хищников. Разумные цивилизации намеренно скрываются, чтобы не быть уничтоженными более развитыми."
+                }
             }
         }
     }

@@ -14,9 +14,7 @@ interface FermiParadoxModalProps {
 export function FermiParadoxModal({ isOpen, onClose, lang }: FermiParadoxModalProps) {
     if (!isOpen) return null;
 
-    // Content is currently hardcoded for French/English support could be extended
-    // Given the prompt was in French, I will focus on French content but structure it for bilingual support if needed later.
-    // Actually, I'll use the 'lang' prop to switch if possible, or default to French as requested.
+    const t = dictionary[lang]?.fermiModal;
 
     return (
         <AnimatePresence>
@@ -43,7 +41,7 @@ export function FermiParadoxModal({ isOpen, onClose, lang }: FermiParadoxModalPr
                                     <HelpCircle className="text-green-400 w-6 h-6" />
                                 </div>
                                 <h2 className="text-2xl md:text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-green-300 to-emerald-500">
-                                    Le Paradoxe de Fermi
+                                    {t?.title}
                                 </h2>
                             </div>
                             <button
@@ -60,9 +58,9 @@ export function FermiParadoxModal({ isOpen, onClose, lang }: FermiParadoxModalPr
                             {/* Intro Section */}
                             <section className="bg-green-900/5 rounded-2xl p-6 border border-green-500/10">
                                 <p className="text-xl font-light leading-relaxed text-green-100">
-                                    <span className="font-bold text-green-400">"S'il y a des milliards d'étoiles et de planètes dans l'univers, pourquoi n'avons-nous pas encore rencontré d'extraterrestres ?"</span>
+                                    <span className="font-bold text-green-400">"{t?.intro}"</span>
                                     <br /><br />
-                                    C'est la question fondamentale posée par le physicien Enrico Fermi en 1950. Avec l'âge de l'univers (13,8 milliards d'années) et son immensité, la probabilité d'une vie extraterrestre semble élevée. Pourtant, c'est le grand silence.
+                                    {t?.introDesc}
                                 </p>
                             </section>
 
@@ -70,26 +68,26 @@ export function FermiParadoxModal({ isOpen, onClose, lang }: FermiParadoxModalPr
                             <div className="grid md:grid-cols-2 gap-4">
                                 <TheoryCard
                                     icon={Brain}
-                                    title="Le Grand Filtre"
-                                    description="Il existe peut-être un obstacle évolutif quasi-impossible à franchir (comme l'apparition de la vie multicellulaire ou l'autodestruction technologique) qui empêche les civilisations d'atteindre le stade du voyage interstellaire."
+                                    title={t?.theories?.greatFilter?.title}
+                                    description={t?.theories?.greatFilter?.description}
                                     color="text-red-400"
                                 />
                                 <TheoryCard
                                     icon={Globe2}
-                                    title="Terre Rare"
-                                    description="Les conditions nécessaires à la vie complexe (taille de la planète, lune stabilisatrice, soleil calme, champ magnétique) sont peut-être beaucoup plus rares que nous ne le pensons."
+                                    title={t?.theories?.rareEarth?.title}
+                                    description={t?.theories?.rareEarth?.description}
                                     color="text-blue-400"
                                 />
                                 <TheoryCard
                                     icon={Radio}
-                                    title="Le Silence Radio"
-                                    description="Peut-être que les civilisations émettent des signaux radio pendant une très courte période avant de changer de technologie ou de disparaître, rendant la détection difficile."
+                                    title={t?.theories?.radioSilence?.title}
+                                    description={t?.theories?.radioSilence?.description}
                                     color="text-yellow-400"
                                 />
                                 <TheoryCard
                                     icon={AlertTriangle}
-                                    title="La Forêt Sombre"
-                                    description="Théorie inquiétante : l'univers est comme une forêt sombre pleine de prédateurs. Les civilisations intelligentes se cachent volontairement pour ne pas être anéanties par d'autres plus avancées."
+                                    title={t?.theories?.darkForest?.title}
+                                    description={t?.theories?.darkForest?.description}
                                     color="text-purple-400"
                                 />
                             </div>
@@ -98,7 +96,7 @@ export function FermiParadoxModal({ isOpen, onClose, lang }: FermiParadoxModalPr
                             <DrakeEquationCalculator lang={lang} />
 
                             <footer className="text-center text-sm text-gray-500 pt-8 border-t border-white/5">
-                                <p>Le mystère reste entier. Sommes-nous seuls, ou regardons-nous simplement au mauvais endroit ?</p>
+                                <p>{t?.footer}</p>
                             </footer>
 
                         </div>

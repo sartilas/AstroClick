@@ -649,15 +649,20 @@ export const solarSystemData: SolarSystemObject[] = [
         type: 'telescope',
         color: '#FFD700',
         size: 0.2, // Increased size for visibility
-        distance: 17.5, // 16 (Earth) + 1.5 (L2 offset)
-        orbitSpeed: 1.0, // Match Earth speed
+        distance: 17.5, // 16 (Earth) + 1.5 (L2 offset in simplified mode)
+        scientificDistance: 151100000, // Earth + 1.5M km (L2 point)
+        orbitSpeed: 1.0, // MUST match Earth's orbital speed exactly
         rotationSpeed: 0,
-        // orbiting: 'earth', // REMOVED to orbit Sun directly at L2 position
+        // Orbital parameters aligned with Earth for L2 synchronization
+        eccentricity: 0.017, // Same as Earth
+        periapsis: 102, // Same as Earth
+        inclination: 0, // Same as Earth
+        ascendingNode: -11, // Same as Earth
         funFact: 'James Webb can see galaxies that formed just after the Big Bang, over 13 billion years ago!',
         temperature: '-233°C (operating temp)',
         realDistance: '1.5 million km from Earth (at L2 point)',
         averageDistanceToEarth: '1.5 million km',
-        orbitalPeriod: '6 months',
+        orbitalPeriod: '1 year (synchronous with Earth)',
         moons: 0,
         description: 'The most powerful space telescope ever built! It uses infrared light to see through cosmic dust.',
         launchDate: 'December 25, 2021',

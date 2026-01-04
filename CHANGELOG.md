@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.2] - 2026-01-04
+
+### Added
+- **Traductions Paradoxe de Fermi**: Ajout des traductions complètes pour la modal du Paradoxe de Fermi dans toutes les langues (EN, FR, ZH, ES, HI, RU).
+  - Titre, introduction, théories (Grand Filtre, Terre Rare, Silence Radio, Forêt Sombre).
+  - Calculateur de l'Équation de Drake traduit dans toutes les langues.
+- **Section alienShip**: Traductions pour le tooltip du vaisseau alien ("Signal Détecté", "Paradoxe de Fermi").
+
+### Fixed
+- **James Webb au Point L2**: Le télescope spatial James Webb orbite désormais correctement au point de Lagrange L2, synchronisé avec la Terre.
+  - Paramètres orbitaux (excentricité, périapside, inclinaison) alignés avec ceux de la Terre.
+  - Distance scientifique corrigée (151.1 millions km du Soleil).
+  - Période orbitale corrigée de "6 mois" à "1 an (synchrone avec la Terre)".
+- **Erreur Client-Side Fermi**: Correction de l'erreur qui se produisait lors du survol/clic sur le vaisseau du Paradoxe de Fermi (traductions manquantes).
+
 ## [1.4.1] - 2026-01-02
 
 ### Added
