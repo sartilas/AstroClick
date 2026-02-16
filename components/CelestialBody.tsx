@@ -8,6 +8,7 @@ import { SolarSystemObject } from '@/data/solarSystemData';
 import { VoxelSphere } from './VoxelSphere';
 import { VoxelRing } from './VoxelRing';
 import { Atmosphere, ThickAtmosphere, ThinAtmosphere } from './Atmosphere';
+import { JWSTModel } from './JWSTModel';
 import { dictionary, Language } from '@/data/dictionary';
 import { objectTranslations } from '@/data/objectTranslations';
 
@@ -132,9 +133,17 @@ export const CelestialBody = memo(function CelestialBody({ data, onSelect, onDou
         }
 
         if (bodyGroupRef.current) {
-            bodyGroupRef.current.rotation.y += delta * data.rotationSpeed * timeScale;
-            if (data.tilt) {
-                bodyGroupRef.current.rotation.z = (data.tilt * Math.PI) / 180;
+            if (data.id === 'james-webb') {
+                // JWST specific: Always face the Sun (0,0,0) - Sunshield protection
+                // We use 0,0,0 which is the Sun's position global space
+                bodyGroupRef.current.lookAt(0, 0, 0);
+                // Adjust rotation to align shield (assuming model +Z is shield or similar)
+                // If model is upright, we might need extra rotation.
+            } else {
+                bodyGroupRef.current.rotation.y += delta * data.rotationSpeed * timeScale;
+                if (data.tilt) {
+                    bodyGroupRef.current.rotation.z = (data.tilt * Math.PI) / 180;
+                }
             }
         }
     });
@@ -256,46 +265,54 @@ export const CelestialBody = memo(function CelestialBody({ data, onSelect, onDou
                     onPointerOver={() => setHovered(true)}
                     onPointerOut={() => setHovered(false)}
                 >
-                    {/* High Precision Voxel Sphere with Procedural Detail */}
-                    <VoxelSphere
-                        radius={scaledSize}
-                        color={data.color}
-                        resolution={voxelResolution}
-                        type={planetType}
-                    />
-
-                    {/* Atmosphere Effect */}
-                    {data.hasAtmosphere && data.atmosphereColor && (
+                    {data.id === 'james-webb' ? (
+                        <group rotation={[Math.PI / 2, 0, 0]}>
+                            <JWSTModel scale={scaledSize * 5} />
+                        </group>
+                    ) : (
                         <>
-                            {data.atmosphereType === 'thick' && (
-                                <ThickAtmosphere
-                                    radius={scaledSize}
-                                    color={data.atmosphereColor}
-                                    intensity={data.atmosphereIntensity || 0.7}
-                                />
-                            )}
-                            {data.atmosphereType === 'thin' && (
-                                <ThinAtmosphere
-                                    radius={scaledSize}
-                                    color={data.atmosphereColor}
-                                    intensity={data.atmosphereIntensity || 0.3}
-                                />
-                            )}
-                            {data.atmosphereType === 'normal' && (
-                                <Atmosphere
-                                    radius={scaledSize}
-                                    color={data.atmosphereColor}
-                                    intensity={data.atmosphereIntensity || 0.5}
-                                    scale={1.12}
-                                />
-                            )}
-                            {/* Default atmosphere if no type specified */}
-                            {!data.atmosphereType && (
-                                <Atmosphere
-                                    radius={scaledSize}
-                                    color={data.atmosphereColor}
-                                    intensity={data.atmosphereIntensity || 0.4}
-                                />
+                            {/* High Precision Voxel Sphere with Procedural Detail */}
+                            <VoxelSphere
+                                radius={scaledSize}
+                                color={data.color}
+                                resolution={voxelResolution}
+                                type={planetType}
+                            />
+
+                            {/* Atmosphere Effect */}
+                            {data.hasAtmosphere && data.atmosphereColor && (
+                                <>
+                                    {data.atmosphereType === 'thick' && (
+                                        <ThickAtmosphere
+                                            radius={scaledSize}
+                                            color={data.atmosphereColor}
+                                            intensity={data.atmosphereIntensity || 0.7}
+                                        />
+                                    )}
+                                    {data.atmosphereType === 'thin' && (
+                                        <ThinAtmosphere
+                                            radius={scaledSize}
+                                            color={data.atmosphereColor}
+                                            intensity={data.atmosphereIntensity || 0.3}
+                                        />
+                                    )}
+                                    {data.atmosphereType === 'normal' && (
+                                        <Atmosphere
+                                            radius={scaledSize}
+                                            color={data.atmosphereColor}
+                                            intensity={data.atmosphereIntensity || 0.5}
+                                            scale={1.12}
+                                        />
+                                    )}
+                                    {/* Default atmosphere if no type specified */}
+                                    {!data.atmosphereType && (
+                                        <Atmosphere
+                                            radius={scaledSize}
+                                            color={data.atmosphereColor}
+                                            intensity={data.atmosphereIntensity || 0.4}
+                                        />
+                                    )}
+                                </>
                             )}
                         </>
                     )}

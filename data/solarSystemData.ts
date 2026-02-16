@@ -164,7 +164,7 @@ export const solarSystemData: SolarSystemObject[] = [
         orbiting: 'earth',
         funFact: 'The Moon is Earth\'s only natural satellite. We have visited it with astronauts!',
         temperature: '-23°C (average)',
-        realDistance: '384,400 km from Earth',
+        realDistance: '~150 million km from the Sun',
         averageDistanceToEarth: '384,400 km',
         orbitalPeriod: '27 days',
         moons: 0,
@@ -648,11 +648,11 @@ export const solarSystemData: SolarSystemObject[] = [
         name: 'James Webb Space Telescope',
         type: 'telescope',
         color: '#FFD700',
-        size: 0.2, // Increased size for visibility
-        distance: 17.5, // 16 (Earth) + 1.5 (L2 offset in simplified mode)
+        size: 0.05, // Significantly reduced size
+        distance: 18.5, // 16 (Earth) + 2.5 (Outside Moon orbit at radius 2)
         scientificDistance: 151100000, // Earth + 1.5M km (L2 point)
         orbitSpeed: 1.0, // MUST match Earth's orbital speed exactly
-        rotationSpeed: 0,
+        rotationSpeed: 0, // Tidally locked
         // Orbital parameters aligned with Earth for L2 synchronization
         eccentricity: 0.017, // Same as Earth
         periapsis: 102, // Same as Earth
@@ -660,7 +660,7 @@ export const solarSystemData: SolarSystemObject[] = [
         ascendingNode: -11, // Same as Earth
         funFact: 'James Webb can see galaxies that formed just after the Big Bang, over 13 billion years ago!',
         temperature: '-233°C (operating temp)',
-        realDistance: '1.5 million km from Earth (at L2 point)',
+        realDistance: '~151 million km from the Sun (L2)',
         averageDistanceToEarth: '1.5 million km',
         orbitalPeriod: '1 year (synchronous with Earth)',
         moons: 0,
@@ -681,7 +681,7 @@ export const solarSystemData: SolarSystemObject[] = [
         orbiting: 'earth',
         funFact: 'Hubble has taken over 1.5 million pictures of the universe! It orbits Earth every 95 minutes.',
         temperature: 'Varies (-100°C to 100°C)',
-        realDistance: '547 km above Earth',
+        realDistance: '~150 million km from the Sun',
         averageDistanceToEarth: '547 km',
         orbitalPeriod: '95 minutes',
         moons: 0,
@@ -702,7 +702,7 @@ export const solarSystemData: SolarSystemObject[] = [
         orbiting: 'earth',
         funFact: 'The ISS is as big as a football field! Astronauts see 16 sunrises and sunsets every day up there!',
         temperature: 'Controlled at ~21°C inside',
-        realDistance: '408 km above Earth',
+        realDistance: '~150 million km from the Sun',
         averageDistanceToEarth: '408 km',
         orbitalPeriod: '93 minutes',
         moons: 0,
