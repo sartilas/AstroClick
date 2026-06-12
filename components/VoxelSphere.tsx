@@ -45,7 +45,7 @@ export const VoxelSphere = memo(function VoxelSphere({ radius, color, resolution
 
     const { positions, colors } = useMemo(() => {
         const tempPositions: { x: number; y: number; z: number }[] = [];
-        const tempColors: Float32Array[] = [];
+        const tempColors: number[] = []; // Flat RGB array, uploaded as a single GPU buffer
         const halfRes = resolution / 2;
 
         const baseColor = new THREE.Color(color);
@@ -139,12 +139,12 @@ export const VoxelSphere = memo(function VoxelSphere({ radius, color, resolution
                             else voxelColor = baseColor;
                         }
 
-                        tempColors.push(Float32Array.from(voxelColor.toArray()));
+                        tempColors.push(voxelColor.r, voxelColor.g, voxelColor.b);
                     }
                 }
             }
         }
-        return { positions: tempPositions, colors: tempColors };
+        return { positions: tempPositions, colors: new Float32Array(tempColors) };
     }, [color, resolution, type]);
 
     useLayoutEffect(() => {
@@ -152,20 +152,17 @@ export const VoxelSphere = memo(function VoxelSphere({ radius, color, resolution
             const tempObject = new THREE.Object3D();
             const voxelSize = (radius * 2) / resolution;
 
-            // Ensure color buffer exists
-            if (!meshRef.current.instanceColor) {
-                meshRef.current.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(positions.length * 3), 3);
-            }
-
             positions.forEach((pos, i) => {
                 tempObject.position.set(pos.x * voxelSize, pos.y * voxelSize, pos.z * voxelSize);
                 tempObject.scale.set(voxelSize * 1.02, voxelSize * 1.02, voxelSize * 1.02);
                 tempObject.updateMatrix();
                 meshRef.current!.setMatrixAt(i, tempObject.matrix);
-                meshRef.current!.setColorAt(i, new THREE.Color().fromArray(colors[i]));
             });
             meshRef.current.instanceMatrix.needsUpdate = true;
-            if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
+
+            // Upload the precomputed flat color buffer in one go (no per-instance setColorAt)
+            meshRef.current.instanceColor = new THREE.InstancedBufferAttribute(colors, 3);
+            meshRef.current.instanceColor.needsUpdate = true;
         }
     }, [positions, colors, radius, resolution]);
 

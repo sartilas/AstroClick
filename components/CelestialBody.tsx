@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useMemo, memo } from 'react';
+import { useRef, useState, useMemo, useEffect, memo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Sphere, Ring, Html, Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -11,6 +11,10 @@ import { Atmosphere, ThickAtmosphere, ThinAtmosphere } from './Atmosphere';
 import { JWSTModel } from './JWSTModel';
 import { dictionary, Language } from '@/data/dictionary';
 import { objectTranslations } from '@/data/objectTranslations';
+
+// Reusable temp vector: useFrame callbacks run sequentially on the main thread,
+// so a single shared scratch vector avoids one allocation per body per frame.
+const _orbitPos = new THREE.Vector3();
 
 interface CelestialBodyProps {
     data: SolarSystemObject;
@@ -23,9 +27,12 @@ interface CelestialBodyProps {
     lang: Language;
     eaten?: boolean;
     positionRef?: React.MutableRefObject<Record<string, THREE.Vector3>>;
+    // Date simulation: externally computed orbital angles (radians) keyed by object id.
+    // Applied once whenever trigger changes; animation continues from there.
+    angleSync?: { trigger: number; angles: Record<string, number> } | null;
 }
 
-export const CelestialBody = memo(function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMode, satellites, timeScale = 1, lang, eaten, positionRef }: CelestialBodyProps) {
+export const CelestialBody = memo(function CelestialBody({ data, onSelect, onDoubleClick, isPaused, orbitMode, satellites, timeScale = 1, lang, eaten, positionRef, angleSync }: CelestialBodyProps) {
     const bodyGroupRef = useRef<THREE.Group>(null);
     const groupRef = useRef<THREE.Group>(null);
     const [hovered, setHovered] = useState(false);
@@ -84,6 +91,16 @@ export const CelestialBody = memo(function CelestialBody({ data, onSelect, onDou
     }, [data.id]);
     const angle = useRef(initialAngle);
 
+    // Jump to externally computed angle (date simulation); position refreshes on next frame
+    useEffect(() => {
+        if (!angleSync) return;
+        const syncedAngle = angleSync.angles[data.id];
+        if (syncedAngle !== undefined) {
+            angle.current = syncedAngle;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [angleSync?.trigger, data.id]);
+
     const eccentricity = data.eccentricity || 0;
     const periapsis = (data.periapsis || 0) * (Math.PI / 180);
     const inclination = (data.inclination || 0) * (Math.PI / 180);
@@ -126,10 +143,9 @@ export const CelestialBody = memo(function CelestialBody({ data, onSelect, onDou
             const zLocal = b * Math.sin(angle.current);
 
             // 2. Apply the pre-calculated rotation matrix
-            const pos = new THREE.Vector3(xLocal, 0, zLocal);
-            pos.applyMatrix4(orbitMatrix);
+            _orbitPos.set(xLocal, 0, zLocal).applyMatrix4(orbitMatrix);
 
-            groupRef.current.position.copy(pos);
+            groupRef.current.position.copy(_orbitPos);
         }
 
         if (bodyGroupRef.current) {

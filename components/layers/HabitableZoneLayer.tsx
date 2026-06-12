@@ -1,4 +1,4 @@
-import { Ring, Text } from '@react-three/drei';
+import { Ring, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { Language, dictionary } from '@/data/dictionary';
 
@@ -35,18 +35,13 @@ export function HabitableZoneLayer({ orbitMode, lang }: HabitableZoneLayerProps)
                 <meshBasicMaterial color="#4CAF50" side={THREE.DoubleSide} />
             </Ring>
 
-            {/* Labels */}
+            {/* Label - DOM-based (troika <Text> shaders break with three 0.180) */}
             <group rotation={[Math.PI / 2, 0, 0]}>
-                <Text
-                    position={[0, 0, 12]}
-                    fontSize={1}
-                    color="#4CAF50"
-                    anchorX="center"
-                    anchorY="middle"
-                    rotation={[-Math.PI / 2, 0, 0]}
-                >
-                    {label}
-                </Text>
+                <Html position={[0, 0, 12]} center style={{ pointerEvents: 'none' }} zIndexRange={[40, 0]}>
+                    <span className="text-[#4CAF50] text-xs font-bold bg-black/60 px-2 py-1 rounded border border-[#4CAF50]/40 whitespace-nowrap">
+                        {label}
+                    </span>
+                </Html>
             </group>
         </group>
     );

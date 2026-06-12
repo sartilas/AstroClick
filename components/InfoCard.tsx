@@ -76,6 +76,7 @@ const Object3DPreview = ({ data, onClose, lang }: { data: SolarSystemObject, onC
                     {data.type === 'telescope' && (t?.telescope || 'Telescope')}
                     {data.type === 'satellite' && (t?.satellite || 'Satellite')}
                     {data.type === 'star' && (t?.star || 'Star')}
+                    {data.type === 'comet' && (t?.comet || '☄️ Comet')}
                 </span>
             </div>
 

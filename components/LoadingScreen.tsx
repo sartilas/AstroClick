@@ -69,9 +69,16 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
         animationFrameId = requestAnimationFrame(animate);
 
+        // Fallback: rAF is suspended in hidden/background tabs, which would leave the
+        // loading screen stuck forever. Timers keep running, so guarantee completion.
+        const fallbackId = setTimeout(() => {
+            if (isMounted) onComplete();
+        }, duration + 2500);
+
         return () => {
             isMounted = false;
             cancelAnimationFrame(animationFrameId);
+            clearTimeout(fallbackId);
         };
     }, [onComplete]);
 

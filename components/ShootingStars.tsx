@@ -15,6 +15,10 @@ interface ShootingStar {
     color: THREE.Color;
 }
 
+// Scratch vectors reused across frames (avoids 2 allocations per star per frame)
+const _starPos = new THREE.Vector3();
+const _starNext = new THREE.Vector3();
+
 export function ShootingStars() {
     const starsRef = useRef<THREE.Group>(null);
     const starCount = 8; // Increased count slightly
@@ -87,12 +91,12 @@ export function ShootingStars() {
 
                 // Orbital movement: Rotate initial position around axis
                 const angle = star.speed * star.life;
-                const currentPos = star.initialPos.clone().applyAxisAngle(star.axis, angle);
-                mesh.position.copy(currentPos);
+                _starPos.copy(star.initialPos).applyAxisAngle(star.axis, angle);
+                mesh.position.copy(_starPos);
 
                 // Construct next position for lookAt (tangent)
-                const nextPos = star.initialPos.clone().applyAxisAngle(star.axis, angle + 0.1);
-                mesh.lookAt(nextPos);
+                _starNext.copy(star.initialPos).applyAxisAngle(star.axis, angle + 0.1);
+                mesh.lookAt(_starNext);
 
                 // Scale streak based on speed (constant here) but keep it thin
                 mesh.scale.z = 15; // Constant streak length for style

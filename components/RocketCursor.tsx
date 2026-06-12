@@ -8,6 +8,13 @@ interface RocketCursorProps {
     isKSP?: boolean;
 }
 
+// Shared scratch objects — avoids per-frame allocations in useFrame
+const _unproject = new THREE.Vector3();
+const _targetPos = new THREE.Vector3();
+const _velocity = new THREE.Vector3();
+const _tailOffset = new THREE.Vector3();
+const _drift = new THREE.Vector3();
+
 export function RocketCursor({ isKSP = false }: RocketCursorProps) {
     const rocketRef = useRef<THREE.Group>(null);
     const particlesRef = useRef<THREE.InstancedMesh>(null);
@@ -20,7 +27,7 @@ export function RocketCursor({ isKSP = false }: RocketCursorProps) {
 
     // Particle system (smoke) - reduced count for performance
     const particleCount = 20;
-    const tempObject = new THREE.Object3D();
+    const tempObject = useMemo(() => new THREE.Object3D(), []);
     const particles = useMemo(() => {
         return new Array(particleCount).fill(0).map(() => ({
             position: new THREE.Vector3(),
@@ -37,22 +44,21 @@ export function RocketCursor({ isKSP = false }: RocketCursorProps) {
 
         // Position rocket in front of camera based on mouse
         // We use a fixed distance plane for consistent cursor feel behavior
-        const vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
-        vector.unproject(camera);
-        const dir = vector.sub(camera.position).normalize();
+        _unproject.set(mouse.x, mouse.y, 0.5).unproject(camera);
+        const dir = _unproject.sub(camera.position).normalize();
         const distance = 15; // Distance from camera
-        const targetPos = camera.position.clone().add(dir.multiplyScalar(distance));
+        _targetPos.copy(camera.position).add(dir.multiplyScalar(distance));
 
         // Smooth position follow
-        rocketRef.current.position.lerp(targetPos, 0.2);
+        rocketRef.current.position.lerp(_targetPos, 0.2);
 
         // Calculate movement vector for orientation
-        const velocity = targetPos.clone().sub(rocketRef.current.position);
+        _velocity.copy(_targetPos).sub(rocketRef.current.position);
 
         // Orient rocket to face movement direction
-        if (velocity.lengthSq() > 0.01) {
-            velocity.normalize();
-            targetQuaternion.current.setFromUnitVectors(upVector, velocity);
+        if (_velocity.lengthSq() > 0.01) {
+            _velocity.normalize();
+            targetQuaternion.current.setFromUnitVectors(upVector, _velocity);
             rocketRef.current.quaternion.slerp(targetQuaternion.current, 0.15);
         }
 
@@ -76,18 +82,18 @@ export function RocketCursor({ isKSP = false }: RocketCursorProps) {
                     p.life = 1;
                     p.position.copy(rocketRef.current!.position);
                     // Offset to tail
-                    const tailOffset = new THREE.Vector3(0, -0.5, 0).applyQuaternion(rocketRef.current!.quaternion);
-                    p.position.add(tailOffset);
+                    _tailOffset.set(0, -0.5, 0).applyQuaternion(rocketRef.current!.quaternion);
+                    p.position.add(_tailOffset);
 
                     // Random velocity away + slight inertia
                     p.velocity.set(
                         (Math.random() - 0.5) * 0.8,
                         (Math.random() - 0.5) * 0.8,
                         (Math.random() - 0.5) * 0.8
-                    ).add(new THREE.Vector3(0, -2, 0).applyQuaternion(rocketRef.current!.quaternion));
+                    ).add(_drift.set(0, -2, 0).applyQuaternion(rocketRef.current!.quaternion));
                 }
 
-                p.position.add(p.velocity.clone().multiplyScalar(delta * 2));
+                p.position.add(_drift.copy(p.velocity).multiplyScalar(delta * 2));
 
                 tempObject.position.copy(p.position);
                 const scale = p.life * p.scale;

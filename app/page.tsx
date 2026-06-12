@@ -1,12 +1,18 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { InfoCard } from '@/components/InfoCard';
 import { LoadingScreen } from '@/components/LoadingScreen';
+import { SearchBar } from '@/components/SearchBar';
+import { QuizModal } from '@/components/QuizModal';
+import { CompareModal } from '@/components/CompareModal';
 import Image from 'next/image';
-import { SolarSystemObject } from '@/data/solarSystemData';
-import { Moon, Sun, Minimize2, Maximize2, Ruler, Orbit, Rocket, Music, VolumeX, Volume2, Info, X, Eye, EyeOff, Layers, Ban, Leaf, Magnet, Network, RotateCcw, ChevronUp, ChevronDown, Languages, Globe, Mail } from 'lucide-react';
+import { solarSystemData, SolarSystemObject } from '@/data/solarSystemData';
+import { kerbolSystemData } from '@/data/kerbolSystemData';
+import { objectTranslations } from '@/data/objectTranslations';
+import { getPlanetAnglesAtDate } from '@/data/planetEpochs';
+import { Moon, Sun, Minimize2, Maximize2, Ruler, Orbit, Rocket, Music, VolumeX, Volume2, Info, X, Eye, EyeOff, Layers, Ban, Leaf, Magnet, Network, RotateCcw, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Languages, Globe, Mail, Play, Square, GraduationCap, Scale, Camera, CalendarDays } from 'lucide-react';
 import { LayerMode, SystemType } from '@/components/types';
 
 import { dictionary, Language } from '@/data/dictionary';
@@ -35,6 +41,23 @@ export default function Home() {
 
     const [showInstructions, setShowInstructions] = useState(true);
     const [showRocketTooltip, setShowRocketTooltip] = useState(false);
+
+    // --- New features state ---
+    const [flyToRequest, setFlyToRequest] = useState<{ id: string; trigger: number } | null>(null);
+    const [tourIndex, setTourIndex] = useState(-1); // -1 = tour inactive
+    const [quizOpen, setQuizOpen] = useState(false);
+    const [compareOpen, setCompareOpen] = useState(false);
+    const [dateOpen, setDateOpen] = useState(false);
+    const [simDate, setSimDate] = useState(() => new Date().toISOString().slice(0, 10));
+    const [activeDate, setActiveDate] = useState<string | null>(null);
+    const [angleSync, setAngleSync] = useState<{ trigger: number; angles: Record<string, number> } | null>(null);
+    const [photoFlash, setPhotoFlash] = useState(false);
+    const [showPhotoToast, setShowPhotoToast] = useState(false);
+    const [showDateToast, setShowDateToast] = useState(false);
+
+    const requestFlyTo = useCallback((id: string) => {
+        setFlyToRequest(prev => ({ id, trigger: (prev?.trigger || 0) + 1 }));
+    }, []);
 
     useEffect(() => {
         // Auto-detect language from browser
@@ -98,9 +121,116 @@ export default function Home() {
         }
     };
 
+    // --- Guided Tour ---
+    const currentSystemData = systemType === 'kerbol' ? kerbolSystemData : solarSystemData;
+    const tourStops = useMemo(() => currentSystemData.filter(o =>
+        o.type === 'star' ||
+        (!o.orbiting && o.type === 'planet') ||
+        o.id === 'pluto' ||
+        o.type === 'comet'
+    ), [currentSystemData]);
+
+    const stopTour = useCallback(() => setTourIndex(-1), []);
+
+    useEffect(() => {
+        if (tourIndex < 0 || tourStops.length === 0) return;
+        const obj = tourStops[tourIndex % tourStops.length];
+        setSelectedObject(obj);
+        requestFlyTo(obj.id);
+        const timer = setTimeout(() => {
+            setTourIndex((tourIndex + 1) % tourStops.length);
+        }, 12000);
+        return () => clearTimeout(timer);
+    }, [tourIndex, tourStops, requestFlyTo]);
+
     const handleSelectObject = (obj: SolarSystemObject | null) => {
+        // Manual interaction takes over from the guided tour
+        if (tourIndex >= 0) stopTour();
         setSelectedObject(obj);
     };
+
+    // --- Search ---
+    const searchableObjects = useMemo(() => {
+        // Satellites/moons are not rendered in real-scale mode, exclude them there
+        return currentSystemData.filter(o => orbitMode === 'real' ? !o.orbiting : true);
+    }, [currentSystemData, orbitMode]);
+
+    const handleSearchPick = useCallback((obj: SolarSystemObject) => {
+        stopTour();
+        setSelectedObject(obj);
+        requestFlyTo(obj.id);
+    }, [requestFlyTo, stopTour]);
+
+    // --- Date simulation ---
+    const applyDate = useCallback((dateStr: string) => {
+        const d = new Date(dateStr + 'T12:00:00Z');
+        if (isNaN(d.getTime())) return;
+        setAngleSync(prev => ({ trigger: (prev?.trigger || 0) + 1, angles: getPlanetAnglesAtDate(d) }));
+        setActiveDate(dateStr);
+        setTimeScale(0); // Freeze the snapshot; the user can resume time
+        setDateOpen(false);
+        // Visible confirmation that the positions were applied
+        setShowDateToast(true);
+        setTimeout(() => setShowDateToast(false), 3500);
+    }, []);
+
+    // --- Photo Mode ---
+    const takePhoto = useCallback(() => {
+        const canvases = Array.from(document.querySelectorAll('canvas'));
+        if (canvases.length === 0) return;
+        // The main 3D canvas is the biggest one (InfoCard preview also uses a canvas)
+        const source = canvases.reduce((a, b) => (b.width * b.height > a.width * a.height ? b : a));
+
+        const out = document.createElement('canvas');
+        out.width = source.width;
+        out.height = source.height;
+        const ctx = out.getContext('2d');
+        if (!ctx) return;
+
+        // Recreate the page background (the WebGL canvas is transparent)
+        if (theme === 'gradient') {
+            const g = ctx.createRadialGradient(out.width / 2, out.height / 2, 0, out.width / 2, out.height / 2, Math.max(out.width, out.height) / 1.2);
+            g.addColorStop(0, '#1a2350');
+            g.addColorStop(1, '#0b1026');
+            ctx.fillStyle = g;
+        } else {
+            ctx.fillStyle = '#000000';
+        }
+        ctx.fillRect(0, 0, out.width, out.height);
+        ctx.drawImage(source, 0, 0);
+
+        // Watermark
+        const pad = Math.round(out.width * 0.018);
+        const fontSize = Math.max(14, Math.round(out.width * 0.013));
+        ctx.font = `bold ${fontSize}px monospace`;
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.fillText('AstroClick • astroclick.org', pad, out.height - pad);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.fillText(new Date().toLocaleDateString(), out.width - pad, out.height - pad);
+
+        out.toBlob((blob) => {
+            if (!blob) return;
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `astroclick-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.png`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }, 'image/png');
+
+        setPhotoFlash(true);
+        setTimeout(() => setPhotoFlash(false), 250);
+        setShowPhotoToast(true);
+        setTimeout(() => setShowPhotoToast(false), 2500);
+    }, [theme]);
+
+    const tf = t.features || {};
+    const currentTourStop = tourIndex >= 0 ? tourStops[tourIndex % tourStops.length] : null;
+    const currentTourStopName = currentTourStop
+        ? (objectTranslations[currentTourStop.id]?.[lang]?.name || currentTourStop.name)
+        : '';
 
     return (
         <main className={`relative w-full h-screen overflow-hidden transition-colors duration-500 ${theme === 'black' ? 'bg-black' : 'bg-[#0b1026]'}`}
@@ -177,7 +307,7 @@ export default function Home() {
                             AstroClick
                         </h2>
                         <p className="text-gray-500 text-center text-xs font-mono mb-6 uppercase tracking-widest">
-                            v1.4.2 • Open Source
+                            v2.0.0 • Open Source
                         </p>
 
                         <div className="space-y-4 text-gray-300 text-sm leading-relaxed text-center">
@@ -186,8 +316,9 @@ export default function Home() {
                             </p>
                             <p>
                                 {t.aboutDevWith || 'Developed with the help of AI'}
-                                <span className="text-blue-400 font-bold"> Gemini 3 Pro</span> {lang === 'fr' ? 'et' : lang === 'es' ? 'y' : lang === 'ru' ? 'и' : lang === 'zh' ? '和' : lang === 'hi' ? 'और' : 'and'}
-                                <span className="text-purple-400 font-bold"> Claude 4.5</span>.
+                                <span className="text-blue-400 font-bold"> Gemini 3 Pro</span>,
+                                <span className="text-purple-400 font-bold"> Claude 4.5</span> {lang === 'fr' ? 'et' : lang === 'es' ? 'y' : lang === 'ru' ? 'и' : lang === 'zh' ? '和' : lang === 'hi' ? 'और' : 'and'}
+                                <span className="text-teal-400 font-bold"> Claude Fable 5</span>.
                             </p>
 
 
@@ -256,6 +387,8 @@ export default function Home() {
                     blackHoleActive={blackHoleActive}
                     onBlackHoleComplete={() => setBlackHoleActive(false)}
                     systemType={systemType}
+                    flyToRequest={flyToRequest}
+                    angleSync={angleSync}
                 />
 
                 {/* UI Controls - Bottom Dock */}
@@ -321,7 +454,7 @@ export default function Home() {
                                     <span className="text-[9px] uppercase tracking-tighter text-gray-400 font-bold">{t.systemToggle}</span>
                                     <div className="flex gap-1">
                                         <button
-                                            onClick={() => { setSystemType('solar'); setSelectedObject(null); }}
+                                            onClick={() => { setSystemType('solar'); setSelectedObject(null); stopTour(); }}
                                             className={`p-2 rounded-lg transition-all flex items-center gap-1 ${systemType === 'solar' ? 'bg-yellow-600 text-white shadow-lg shadow-yellow-500/30' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
                                             title={t.solarSystem}
                                         >
@@ -331,7 +464,7 @@ export default function Home() {
                                         <div className="relative">
                                             <div className="absolute -top-2 -right-1 bg-gradient-to-r from-purple-600 to-pink-500 text-[6px] font-black px-1 py-0.5 rounded-full text-white shadow-lg border border-purple-400 pointer-events-none z-10 animate-pulse">NEW</div>
                                             <button
-                                                onClick={() => { setSystemType('kerbol'); setSelectedObject(null); }}
+                                                onClick={() => { setSystemType('kerbol'); setSelectedObject(null); stopTour(); }}
                                                 className={`p-2 rounded-lg transition-all flex items-center gap-1 ${systemType === 'kerbol' ? 'bg-green-600 text-white shadow-lg shadow-green-500/30' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
                                                 title={t.kerbolSystem}
                                             >
@@ -451,7 +584,59 @@ export default function Home() {
                                 </div>
                             </div>
 
-                            {/* GROUP 4: Language Selector */}
+                            {/* GROUP 4: Explore (Tour, Quiz, Compare, Photo, Date) */}
+                            <div className="flex items-center gap-1 bg-black/40 p-2 rounded-2xl border border-white/10 backdrop-blur-sm relative">
+                                <div className="absolute -top-2 right-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-[8px] font-black px-1.5 py-0.5 rounded-full text-white shadow-lg border border-teal-400 pointer-events-none animate-pulse">NEW</div>
+
+                                {/* Guided Tour */}
+                                <button
+                                    onClick={() => tourIndex >= 0 ? stopTour() : setTourIndex(0)}
+                                    className={`p-2 rounded-xl transition-all ${tourIndex >= 0 ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                    title={tourIndex >= 0 ? (tf.tourStop || 'Stop tour') : (tf.tourTitle || 'Guided Tour')}
+                                >
+                                    {tourIndex >= 0 ? <Square size={18} /> : <Play size={18} />}
+                                </button>
+
+                                {/* Quiz */}
+                                <button
+                                    onClick={() => setQuizOpen(true)}
+                                    className={`p-2 rounded-xl transition-all ${quizOpen ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                    title={tf.quizTitle || 'Space Quiz'}
+                                >
+                                    <GraduationCap size={18} />
+                                </button>
+
+                                {/* Compare */}
+                                <button
+                                    onClick={() => setCompareOpen(true)}
+                                    className={`p-2 rounded-xl transition-all ${compareOpen ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                    title={tf.compareTitle || 'Planet Comparator'}
+                                >
+                                    <Scale size={18} />
+                                </button>
+
+                                {/* Photo Mode */}
+                                <button
+                                    onClick={takePhoto}
+                                    className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                                    title={tf.photoButton || 'Photo mode'}
+                                >
+                                    <Camera size={18} />
+                                </button>
+
+                                {/* Date Simulation (Solar System only — Kerbol is fictional) */}
+                                {systemType === 'solar' && (
+                                    <button
+                                        onClick={() => setDateOpen(!dateOpen)}
+                                        className={`p-2 rounded-xl transition-all ${activeDate ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : dateOpen ? 'bg-white/20 text-white' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
+                                        title={tf.dateTitle || 'Positions on a date'}
+                                    >
+                                        <CalendarDays size={18} />
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* GROUP 5: Language Selector */}
                             <div className="flex items-center gap-2 bg-black/40 p-2 rounded-2xl border border-white/10 backdrop-blur-sm">
                                 <span className="text-[9px] uppercase tracking-tighter text-gray-400 font-bold px-1 hidden sm:block">
                                     <Languages size={14} />
@@ -481,6 +666,119 @@ export default function Home() {
                     </div>
                 </div>
 
+
+                {/* Date Popover - fixed above the dock (the dock clips its children via overflow-x-auto) */}
+                {dateOpen && systemType === 'solar' && isHudVisible && (
+                    <div className="fixed bottom-32 right-4 w-72 bg-[#0b1026] border border-white/20 rounded-xl p-4 shadow-2xl z-[120] animate-fade-in">
+                        <button
+                            onClick={() => setDateOpen(false)}
+                            className="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors"
+                        >
+                            <X size={16} />
+                        </button>
+                        <h3 className="text-white text-sm font-bold mb-3 flex items-center gap-2">
+                            <CalendarDays size={15} className="text-blue-400" />
+                            {tf.dateTitle || 'Positions on a date'}
+                        </h3>
+                        <input
+                            type="date"
+                            value={simDate}
+                            min="1900-01-01"
+                            max="2100-12-31"
+                            onChange={(e) => setSimDate(e.target.value)}
+                            className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-blue-400/60 [color-scheme:dark] mb-3"
+                        />
+                        <div className="flex gap-2 mb-3">
+                            <button
+                                onClick={() => applyDate(simDate)}
+                                className="flex-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors"
+                            >
+                                {tf.dateApply || 'Apply'}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const today = new Date().toISOString().slice(0, 10);
+                                    setSimDate(today);
+                                    applyDate(today);
+                                }}
+                                className="flex-1 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-lg transition-colors"
+                            >
+                                {tf.dateToday || 'Today'}
+                            </button>
+                        </div>
+                        {activeDate && (
+                            <p className="text-[10px] text-blue-300 font-mono mb-2">
+                                {tf.dateActive || 'Positions on'} {activeDate}
+                            </p>
+                        )}
+                        <p className="text-[10px] text-gray-500 leading-relaxed">
+                            {tf.dateNote || 'Approximate planet positions (J2000 mean longitudes).'}
+                        </p>
+                    </div>
+                )}
+
+                {/* Search Bar - Top Right */}
+                <div className={`absolute top-4 right-4 z-40 transition-opacity duration-500 ${isHudVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                    <SearchBar lang={lang} objects={searchableObjects} onPick={handleSearchPick} />
+                </div>
+
+                {/* Guided Tour Control Bar */}
+                {tourIndex >= 0 && (
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 bg-black/70 backdrop-blur-md border border-white/20 rounded-full pl-4 pr-2 py-2 text-white shadow-2xl animate-fade-in">
+                        <span className="w-2 h-2 bg-teal-400 rounded-full animate-pulse shrink-0" />
+                        <span className="text-xs font-bold uppercase tracking-wider text-teal-300 whitespace-nowrap hidden sm:inline">{tf.tourTitle || 'Guided Tour'}</span>
+                        <span className="text-xs text-gray-200 font-mono whitespace-nowrap" translate="no">
+                            {currentTourStopName} ({(tourIndex % tourStops.length) + 1}/{tourStops.length})
+                        </span>
+                        <div className="flex items-center gap-0.5 ml-1">
+                            <button
+                                onClick={() => setTourIndex((tourIndex - 1 + tourStops.length) % tourStops.length)}
+                                className="p-1.5 rounded-full hover:bg-white/15 text-gray-300 hover:text-white transition-colors"
+                                title={tf.tourPrev || 'Previous'}
+                            >
+                                <ChevronLeft size={16} />
+                            </button>
+                            <button
+                                onClick={() => setTourIndex((tourIndex + 1) % tourStops.length)}
+                                className="p-1.5 rounded-full hover:bg-white/15 text-gray-300 hover:text-white transition-colors"
+                                title={tf.tourNext || 'Next'}
+                            >
+                                <ChevronRight size={16} />
+                            </button>
+                            <button
+                                onClick={stopTour}
+                                className="p-1.5 rounded-full hover:bg-red-500/40 text-gray-300 hover:text-white transition-colors"
+                                title={tf.tourStop || 'Stop tour'}
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Photo flash effect */}
+                {photoFlash && (
+                    <div className="absolute inset-0 bg-white/70 z-[90] pointer-events-none" />
+                )}
+
+                {/* Photo saved toast - z above the dock (z-[100]) so it stays visible */}
+                {showPhotoToast && (
+                    <div className="fixed bottom-48 left-1/2 -translate-x-1/2 bg-green-600 text-white px-5 py-2.5 rounded-full shadow-[0_0_20px_rgba(22,163,74,0.5)] z-[130] pointer-events-none border border-white/20 text-sm font-bold whitespace-nowrap animate-fade-in">
+                        {tf.photoSaved || '📸 Photo saved!'}
+                    </div>
+                )}
+
+                {/* Date applied toast */}
+                {showDateToast && activeDate && (
+                    <div className="fixed bottom-48 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-5 py-2.5 rounded-full shadow-[0_0_20px_rgba(37,99,235,0.5)] z-[130] pointer-events-none border border-white/20 text-sm font-bold whitespace-nowrap animate-fade-in flex items-center gap-2">
+                        <CalendarDays size={16} />
+                        {(tf.dateActive || 'Positions on')} {activeDate} — ⏸️
+                    </div>
+                )}
+
+                {/* Quiz & Compare Modals */}
+                <QuizModal isOpen={quizOpen} onClose={() => setQuizOpen(false)} lang={lang} systemType={systemType} />
+                <CompareModal isOpen={compareOpen} onClose={() => setCompareOpen(false)} lang={lang} systemType={systemType} />
 
                 {/* Title Overlay - Hidden when HUD is hidden */}
                 <div className={`absolute top-4 left-4 z-10 pointer-events-none transition-opacity duration-500 ${isHudVisible ? 'opacity-100' : 'opacity-0'}`}>
@@ -533,7 +831,7 @@ export default function Home() {
                 {/* Info Card Overlay */}
                 <InfoCard
                     selectedObject={selectedObject}
-                    onClose={() => setSelectedObject(null)}
+                    onClose={() => { stopTour(); setSelectedObject(null); }}
                     lang={lang}
                     systemType={systemType}
                 />

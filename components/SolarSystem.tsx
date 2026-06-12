@@ -22,6 +22,8 @@ import { LagrangePointsLayer } from './layers/LagrangePointsLayer';
 import { BlackHoleEvent } from './BlackHoleEvent';
 import { AlienShip } from './AlienShip';
 import { FermiParadoxModal } from './FermiParadoxModal';
+import { SunGlow } from './SunGlow';
+import { Comet } from './Comet';
 
 
 
@@ -39,6 +41,10 @@ interface SolarSystemProps {
     blackHoleActive?: boolean;
     onBlackHoleComplete?: () => void;
     systemType?: SystemType;
+    // External camera focus request (guided tour, search bar). trigger increments on each request.
+    flyToRequest?: { id: string; trigger: number } | null;
+    // Date simulation: planet angles to apply when trigger changes
+    angleSync?: { trigger: number; angles: Record<string, number> } | null;
 }
 
 interface SunProps {
@@ -47,7 +53,7 @@ interface SunProps {
     onDoubleClick?: (obj: SolarSystemObject) => void;
     data?: SolarSystemObject;
     rtxMode?: boolean;
-    sunRef?: React.RefObject<THREE.Mesh>;
+    sunRef?: React.RefObject<THREE.Mesh | null>;
     color?: string; // Allow custom color for Kerbol
 }
 
@@ -100,13 +106,9 @@ function Sun({ orbitMode, onSelect, onDoubleClick, data, rtxMode, sunRef, color 
                 <meshBasicMaterial color={color} transparent opacity={0.5} />
             </mesh>
 
-            {/* Additional glow/voxel shell */}
-            <group scale={1.2}>
-                <mesh>
-                    <boxGeometry args={[1, 1, 1]} />
-                    <meshBasicMaterial visible={false} />
-                </mesh>
-            </group>
+            {/* Corona / halo glow - slightly larger in real mode so the star stays visible from afar.
+                Hidden in RTX mode: Bloom + GodRays already provide the glow there. */}
+            {!rtxMode && <SunGlow radius={orbitMode === 'real' ? size * 3 : size} color={color} />}
 
             {/* Point light at sun's position */}
             <pointLight
@@ -116,8 +118,8 @@ function Sun({ orbitMode, onSelect, onDoubleClick, data, rtxMode, sunRef, color 
                 decay={rtxMode ? 0 : 1}
                 color="#ffffff"
                 castShadow={rtxMode}
-                shadow-mapSize-width={4096}
-                shadow-mapSize-height={4096}
+                shadow-mapSize-width={2048}
+                shadow-mapSize-height={2048}
                 shadow-bias={-0.0005}
             />
         </group>
@@ -129,18 +131,24 @@ function CameraController({
     orbitMode,
     resetCameraTrigger,
     focusTarget,
-    onClearFocus
+    onClearFocus,
+    focusDistance,
+    onArrived
 }: {
     target: SolarSystemObject | null,
     orbitMode: 'simplified' | 'real',
     resetCameraTrigger: number,
     focusTarget: string | null,
-    onClearFocus: () => void
+    onClearFocus: () => void,
+    focusDistance: number | null,
+    onArrived: () => void
 }) {
     const controlsRef = useRef<any>(null);
     const prevTrigger = useRef(resetCameraTrigger);
-    const { scene } = useThree();
+    const { scene, camera } = useThree();
     const isDragging = useRef(false);
+    const targetPos = useRef(new THREE.Vector3());
+    const camOffset = useRef(new THREE.Vector3());
 
     // Handle mouse events to detect right-click drag (exit focus mode)
     useEffect(() => {
@@ -187,11 +195,24 @@ function CameraController({
         if (focusTarget && controlsRef.current) {
             const targetObj = scene.getObjectByName(`celestial-${focusTarget}`);
             if (targetObj) {
-                const targetPos = new THREE.Vector3();
-                targetObj.getWorldPosition(targetPos);
+                targetObj.getWorldPosition(targetPos.current);
 
                 // Smoothly lerp camera target to the object
-                controlsRef.current.target.lerp(targetPos, 0.05);
+                controlsRef.current.target.lerp(targetPos.current, 0.05);
+
+                // Fly the camera to a comfortable viewing distance (tour / search requests).
+                // Once arrived, onArrived clears focusDistance so manual zoom isn't fought.
+                if (focusDistance !== null) {
+                    camOffset.current.copy(camera.position).sub(controlsRef.current.target);
+                    const dist = camOffset.current.length();
+                    const newDist = THREE.MathUtils.lerp(dist, focusDistance, 0.06);
+                    camOffset.current.normalize().multiplyScalar(newDist);
+                    camera.position.copy(controlsRef.current.target).add(camOffset.current);
+                    if (Math.abs(newDist - focusDistance) < focusDistance * 0.05) {
+                        onArrived();
+                    }
+                }
+
                 controlsRef.current.update();
             }
         }
@@ -224,30 +245,40 @@ interface SceneProps extends SolarSystemProps {
     systemType: SystemType;
     focusTarget: string | null;
     setFocusTarget: React.Dispatch<React.SetStateAction<string | null>>;
+    focusDistance: number | null;
+    setFocusDistance: React.Dispatch<React.SetStateAction<number | null>>;
     onOpenFermi: () => void;
 }
 
-function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode, resetCameraTrigger, blackHoleActive, onBlackHoleComplete, systemType, focusTarget, setFocusTarget, onOpenFermi }: SceneProps) {
+function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale = 1, lang, rockets, setRockets, history, setHistory, rtxMode, layerMode, resetCameraTrigger, blackHoleActive, onBlackHoleComplete, systemType, focusTarget, setFocusTarget, focusDistance, setFocusDistance, onOpenFermi, angleSync }: SceneProps) {
     const sunRef = useRef<THREE.Mesh>(null);
 
     // Callback to clear focus (when user right-click drags)
     const handleClearFocus = useCallback(() => {
         setFocusTarget(null);
-    }, [setFocusTarget]);
+        setFocusDistance(null);
+    }, [setFocusTarget, setFocusDistance]);
 
-    // Handle double-click on objects to focus camera
+    // Handle double-click on objects to focus camera (target follow only, no fly)
     const handleDoubleClick = useCallback((obj: SolarSystemObject) => {
         setFocusTarget(obj.id);
-    }, [setFocusTarget]);
+        setFocusDistance(null);
+    }, [setFocusTarget, setFocusDistance]);
+
+    // Stop flying once arrived so the user keeps manual zoom control
+    const handleArrived = useCallback(() => {
+        setFocusDistance(null);
+    }, [setFocusDistance]);
 
     // Get current system data based on systemType
     const currentSystemData = systemType === 'kerbol' ? kerbolSystemData : solarSystemData;
     const starId = systemType === 'kerbol' ? 'kerbol' : 'sun';
 
-    // Separate primaries (Star orbiters) and satellites (Moons, etc)
-    const { primaries, satelliteMap, starData } = useMemo(() => {
+    // Separate primaries (Star orbiters), satellites (Moons, etc) and comets
+    const { primaries, satelliteMap, starData, comets } = useMemo(() => {
         const p: SolarSystemObject[] = [];
         const s: Record<string, SolarSystemObject[]> = {};
+        const c: SolarSystemObject[] = [];
         let star: SolarSystemObject | undefined;
 
         currentSystemData.forEach(obj => {
@@ -256,14 +287,16 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                 return;
             }
 
-            if (obj.orbiting) {
+            if (obj.type === 'comet') {
+                c.push(obj);
+            } else if (obj.orbiting) {
                 if (!s[obj.orbiting]) s[obj.orbiting] = [];
                 s[obj.orbiting].push(obj);
             } else {
                 p.push(obj);
             }
         });
-        return { primaries: p, satelliteMap: s, starData: star };
+        return { primaries: p, satelliteMap: s, starData: star, comets: c };
     }, [currentSystemData, starId]);
 
 
@@ -274,7 +307,7 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
             <ambientLight intensity={rtxMode ? 0.1 : 1.5} />
             <hemisphereLight intensity={rtxMode ? 0.1 : 0.6} groundColor="#000000" color="#ffffff" />
 
-            {/* Stars background */}
+            {/* Stars background - two layers for parallax depth */}
             <Stars
                 radius={orbitMode === 'real' ? 2000 : 300}
                 depth={60}
@@ -283,6 +316,15 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                 saturation={0}
                 fade
                 speed={0.5}
+            />
+            <Stars
+                radius={orbitMode === 'real' ? 3000 : 450}
+                depth={120}
+                count={2000}
+                factor={4}
+                saturation={0.4}
+                fade
+                speed={0.2}
             />
 
             {/* Shooting Stars Background Effect */}
@@ -320,6 +362,19 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
             {/* Asteroid Belt - Only show for Solar System */}
             {systemType === 'solar' && <AsteroidBelt timeScale={timeScale} orbitMode={orbitMode} />}
 
+            {/* Comets (elliptical orbit + particle tails) */}
+            {comets.map((obj) => (
+                <Comet
+                    key={obj.id}
+                    data={obj}
+                    onSelect={onSelectObject}
+                    onDoubleClick={handleDoubleClick}
+                    orbitMode={orbitMode}
+                    timeScale={timeScale}
+                    lang={lang}
+                />
+            ))}
+
             {/* All celestial bodies */}
             {primaries.map((obj) => (
                 <CelestialBody
@@ -332,6 +387,7 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                     satellites={satelliteMap[obj.id]}
                     timeScale={timeScale}
                     lang={lang}
+                    angleSync={angleSync}
                 />
             ))}
 
@@ -342,6 +398,8 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
                 resetCameraTrigger={resetCameraTrigger}
                 focusTarget={focusTarget}
                 onClearFocus={handleClearFocus}
+                focusDistance={focusDistance}
+                onArrived={handleArrived}
             />
 
             {/* Rocket Cursor */}
@@ -367,11 +425,29 @@ function Scene({ selectedObject, onSelectObject, orbitMode, showCursor, timeScal
     );
 }
 
-export default function SolarSystem({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale, lang, rtxMode = false, layerMode, isHudVisible, resetCameraTrigger, blackHoleActive, onBlackHoleComplete, systemType = 'solar' }: SolarSystemProps) {
+export default function SolarSystem({ selectedObject, onSelectObject, orbitMode, showCursor, timeScale, lang, rtxMode = false, layerMode, isHudVisible, resetCameraTrigger, blackHoleActive, onBlackHoleComplete, systemType = 'solar', flyToRequest, angleSync }: SolarSystemProps) {
     const [rockets, setRockets] = useState<Rocket[]>([]);
     const [history, setHistory] = useState<Rocket[]>([]);
     const [focusTarget, setFocusTarget] = useState<string | null>(null);
+    const [focusDistance, setFocusDistance] = useState<number | null>(null);
     const [fermiModalOpen, setFermiModalOpen] = useState(false);
+
+    // External fly-to requests (guided tour, search bar)
+    useEffect(() => {
+        if (!flyToRequest) return;
+        const data = systemType === 'kerbol' ? kerbolSystemData : solarSystemData;
+        const obj = data.find(o => o.id === flyToRequest.id);
+        if (!obj) return;
+
+        // Comfortable viewing distance based on object size and scale mode
+        const distance = orbitMode === 'real'
+            ? Math.max(((obj.scientificRadius || 1000) / 25000000) * 12, 0.6)
+            : Math.max(obj.size * 7, 3);
+
+        setFocusTarget(flyToRequest.id);
+        setFocusDistance(distance);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [flyToRequest?.trigger]);
 
 
     return (
@@ -388,7 +464,8 @@ export default function SolarSystem({ selectedObject, onSelectObject, orbitMode,
             <Canvas
                 shadows
                 camera={{ position: [0, 50, 80], fov: 60, far: 5000 }} // Reduced far plane
-                gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
+                dpr={[1, 2]} // Cap pixel ratio: avoids rendering 3x resolution on high-DPI screens
+                gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, powerPreference: 'high-performance', preserveDrawingBuffer: true }} // preserveDrawingBuffer: needed for Photo Mode canvas capture
                 onPointerMissed={() => {
                     if (!showCursor) onSelectObject(null);
                 }}
@@ -413,7 +490,10 @@ export default function SolarSystem({ selectedObject, onSelectObject, orbitMode,
                     systemType={systemType}
                     focusTarget={focusTarget}
                     setFocusTarget={setFocusTarget}
+                    focusDistance={focusDistance}
+                    setFocusDistance={setFocusDistance}
                     onOpenFermi={() => setFermiModalOpen(true)}
+                    angleSync={angleSync}
                 />
             </Canvas>
         </div>

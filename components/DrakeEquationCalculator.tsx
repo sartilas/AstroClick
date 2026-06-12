@@ -8,19 +8,19 @@ interface DrakeEquationCalculatorProps {
     lang: Language;
 }
 
+// Static config for ranges/steps (numbers don't need translation)
+const config: Record<string, { min: number; max: number; step: number; default: number; logScale?: boolean }> = {
+    R: { min: 1, max: 10, step: 0.5, default: 1.5 },
+    fp: { min: 0, max: 1, step: 0.01, default: 0.9 },
+    ne: { min: 0, max: 5, step: 0.1, default: 0.4 },
+    fl: { min: 0, max: 1, step: 0.01, default: 0.5 },
+    fi: { min: 0, max: 1, step: 0.001, default: 0.1 },
+    fc: { min: 0, max: 1, step: 0.01, default: 0.2 },
+    L: { min: 100, max: 10000000, step: 100, default: 10000, logScale: true }
+};
+
 export function DrakeEquationCalculator({ lang }: DrakeEquationCalculatorProps) {
     const t = dictionary[lang].drake;
-
-    // Static config for ranges/steps (numbers don't need translation)
-    const config: Record<string, { min: number; max: number; step: number; default: number; logScale?: boolean }> = {
-        R: { min: 1, max: 10, step: 0.5, default: 1.5 },
-        fp: { min: 0, max: 1, step: 0.01, default: 0.9 },
-        ne: { min: 0, max: 5, step: 0.1, default: 0.4 },
-        fl: { min: 0, max: 1, step: 0.01, default: 0.5 },
-        fi: { min: 0, max: 1, step: 0.001, default: 0.1 },
-        fc: { min: 0, max: 1, step: 0.01, default: 0.2 },
-        L: { min: 100, max: 10000000, step: 100, default: 10000, logScale: true }
-    };
 
     const variables = useMemo(() => [
         { id: 'R', symbol: 'R*', ...t.variables.R, ...config.R },
@@ -30,7 +30,7 @@ export function DrakeEquationCalculator({ lang }: DrakeEquationCalculatorProps) 
         { id: 'fi', symbol: 'fi', ...t.variables.fi, ...config.fi },
         { id: 'fc', symbol: 'fc', ...t.variables.fc, ...config.fc },
         { id: 'L', symbol: 'L', ...t.variables.L, ...config.L }
-    ], [t, config]);
+    ], [t]);
 
     const [values, setValues] = useState<Record<string, number>>(() => {
         const initial: Record<string, number> = {};

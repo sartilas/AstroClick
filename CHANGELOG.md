@@ -1,5 +1,41 @@
 # Changelog
 
+## [2.0.0] - 2026-06-12
+
+### Added
+- **☄️ Comète de Halley** : orbite rétrograde très excentrique (inclinaison 162°), noyau voxel glacé, coma lumineuse et deux queues de particules (ionique bleue + poussière incurvée) qui s'allongent à l'approche du Soleil. Fiche éducative traduite en 6 langues.
+- **Visite guidée** : la caméra enchaîne automatiquement les 11 étapes (Soleil → Pluton + Halley) avec fiche info, barre de contrôle flottante (précédent/suivant/stop). Compatible système Kerbol.
+- **Barre de recherche** : recherche insensible aux accents dans les noms traduits, vol caméra vers l'objet sélectionné.
+- **Positions à une date** : calendrier (1900-2100) basé sur les longitudes moyennes J2000 des 8 planètes + Pluton. Pause automatique et toast de confirmation à l'application.
+- **Quiz Spatial** : 8 questions générées depuis les données (lunes, faits, températures, distances), traduites, avec meilleur score persistant (localStorage).
+- **Comparateur de planètes** : tailles relatives visuelles, ratio, tableau comparatif traduit (diamètre, température, lunes, période, distance).
+- **Mode photo** : capture PNG du canvas avec fond reconstitué et filigrane AstroClick.
+- **Halo solaire** (SunGlow) : couronne procédurale à deux couches avec pulsation, hors mode RTX.
+- **Double couche d'étoiles** pour la profondeur de parallaxe.
+- **En-têtes de sécurité HTTP** : CSP complète, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy.
+
+### Changed
+- **Migration majeure** : Next.js 14 → 15.5.19, React 18 → 19, React Three Fiber 8 → 9, drei 9 → 10, three 0.160 → 0.180, postprocessing v3, framer-motion v12 (corrige les CVE de l'Image Optimizer Next 14).
+- **Performances** : positions des corps résolues une fois par frame dans PhysicsManager (au lieu de ~300 traversées de scène/frame), buffers de couleurs voxel envoyés en un seul transfert GPU, suppression des allocations par frame (Vector3/Color/Object3D), shadow map solaire 4096→2048, dpr plafonné à 2.
+- **Labels 3D** : textes satellites/Lagrange/zone habitable convertis de troika `<Text>` (shaders incompatibles three 0.180) vers des labels DOM, cohérents avec les labels de survol des planètes.
+- **UI harmonisée** : modales Quiz et Comparateur alignées sur l'identité du site (titres en dégradé, sous-titres mono).
+- **Image Docker** : node:18-alpine (EOL) → node:22-alpine.
+- **Audio** : son d'explosion auto-hébergé (`/explosion.mp3`) au lieu du CDN Pixabay.
+
+### Fixed
+- **Popover calendrier** invisible (clippé par l'`overflow-x-auto` du dock) → repositionné en `fixed` au-dessus du dock.
+- **Ghosting RTX** : `renderer.autoClear` non restauré à la désactivation de l'EffectComposer, provoquant des traînées d'accumulation avec `preserveDrawingBuffer`.
+- **Halo solaire amplifié par le bloom en RTX** → masqué en mode RTX.
+- **Écran de chargement bloqué** dans les onglets en arrière-plan (rAF suspendu) → fallback par timer.
+- **Quiz** : le nom de l'objet n'apparaît plus dans les questions « à quel objet correspond ce fait ».
+- **Mémoïsation cassée** de SatelliteMesh (callback inline) et tick UI multi-frames (modulo) dans PhysicsManager.
+- **Trail satellites** retiré (meshline rend une géométrie plein écran avec three 0.180) — lueur moteur conservée.
+
+### Security
+- CSP stricte (connect-src limité à NASA + Umami, frame-ancestors 'none').
+- Suppression du protocole HTTP autorisé pour les images NASA.
+- `npm audit` : 10 → 2 vulnérabilités (les 2 restantes : postcss embarqué dans Next, outil de build uniquement).
+
 ## [1.4.2] - 2026-01-04
 
 ### Added

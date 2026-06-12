@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useMemo } from 'react';
-import { useFrame, extend, ReactThreeFiber } from '@react-three/fiber';
+import { useFrame, extend, type ThreeElement } from '@react-three/fiber';
 import { shaderMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -68,17 +68,16 @@ const AtmosphereMaterial = shaderMaterial(
 
 extend({ AtmosphereMaterial });
 
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            atmosphereMaterial: ReactThreeFiber.Object3DNode<THREE.ShaderMaterial, typeof AtmosphereMaterial> & {
-                uColor?: THREE.Color;
-                uIntensity?: number;
-                uPow?: number;
-                uTime?: number;
-                uViewVector?: THREE.Vector3;
-            };
-        }
+// R3F v9: custom elements are declared on the ThreeElements interface
+declare module '@react-three/fiber' {
+    interface ThreeElements {
+        atmosphereMaterial: ThreeElement<typeof AtmosphereMaterial> & {
+            uColor?: THREE.Color;
+            uIntensity?: number;
+            uPow?: number;
+            uTime?: number;
+            uViewVector?: THREE.Vector3;
+        };
     }
 }
 

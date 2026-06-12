@@ -13,6 +13,62 @@ interface ObjectTranslation {
 }
 
 export const objectTranslations: Record<string, Record<Language, ObjectTranslation>> = {
+    halley: {
+        en: {
+            name: "Halley's Comet",
+            description: "The most famous comet of all! A dirty snowball of ice and dust whose spectacular tail always points away from the Sun.",
+            funFact: "Halley's Comet is visible from Earth every 75-79 years! Its last visit was in 1986, and it will return in 2061.",
+            temperature: "-70°C (nucleus)",
+            realDistance: "0.59 - 35 AU (highly elliptical)",
+            averageDistanceToEarth: "Varies enormously",
+            orbitalPeriod: "~76 years"
+        },
+        fr: {
+            name: "Comète de Halley",
+            description: "La plus célèbre des comètes ! Une boule de neige sale de glace et de poussière dont la queue spectaculaire pointe toujours à l'opposé du Soleil.",
+            funFact: "La comète de Halley est visible depuis la Terre tous les 75-79 ans ! Sa dernière visite date de 1986, elle reviendra en 2061.",
+            temperature: "-70°C (noyau)",
+            realDistance: "0,59 - 35 UA (très elliptique)",
+            averageDistanceToEarth: "Varie énormément",
+            orbitalPeriod: "~76 ans"
+        },
+        es: {
+            name: "Cometa Halley",
+            description: "¡El cometa más famoso de todos! Una bola de nieve sucia de hielo y polvo cuya espectacular cola siempre apunta en dirección opuesta al Sol.",
+            funFact: "¡El cometa Halley es visible desde la Tierra cada 75-79 años! Su última visita fue en 1986 y volverá en 2061.",
+            temperature: "-70°C (núcleo)",
+            realDistance: "0.59 - 35 UA (muy elíptica)",
+            averageDistanceToEarth: "Varía enormemente",
+            orbitalPeriod: "~76 años"
+        },
+        zh: {
+            name: "哈雷彗星",
+            description: "最著名的彗星！一个由冰和尘埃组成的“脏雪球”，其壮观的彗尾总是指向远离太阳的方向。",
+            funFact: "哈雷彗星每75-79年就能从地球上看到一次！上次造访是1986年，下次将在2061年回归。",
+            temperature: "-70°C（彗核）",
+            realDistance: "0.59 - 35 天文单位（高度椭圆）",
+            averageDistanceToEarth: "变化极大",
+            orbitalPeriod: "约76年"
+        },
+        hi: {
+            name: "हैली धूमकेतु",
+            description: "सबसे प्रसिद्ध धूमकेतु! बर्फ और धूल का एक गोला जिसकी शानदार पूंछ हमेशा सूर्य से दूर की ओर इशारा करती है।",
+            funFact: "हैली धूमकेतु हर 75-79 साल में पृथ्वी से दिखाई देता है! इसकी पिछली यात्रा 1986 में थी, और यह 2061 में वापस आएगा।",
+            temperature: "-70°C (नाभिक)",
+            realDistance: "0.59 - 35 AU (अत्यधिक दीर्घवृत्ताकार)",
+            averageDistanceToEarth: "बहुत बदलती रहती है",
+            orbitalPeriod: "~76 वर्ष"
+        },
+        ru: {
+            name: "Комета Галлея",
+            description: "Самая знаменитая комета! «Грязный снежок» из льда и пыли, чей впечатляющий хвост всегда направлен в сторону от Солнца.",
+            funFact: "Комета Галлея видна с Земли каждые 75-79 лет! Последний визит был в 1986 году, она вернётся в 2061 году.",
+            temperature: "-70°C (ядро)",
+            realDistance: "0,59 - 35 а.е. (сильно вытянутая)",
+            averageDistanceToEarth: "Сильно варьируется",
+            orbitalPeriod: "~76 лет"
+        }
+    },
     sun: {
         en: {
             name: "Sun",

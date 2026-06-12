@@ -4,7 +4,7 @@
 export interface SolarSystemObject {
     id: string;
     name: string;
-    type: 'star' | 'planet' | 'dwarf-planet' | 'satellite' | 'telescope' | 'asteroid-belt';
+    type: 'star' | 'planet' | 'dwarf-planet' | 'satellite' | 'telescope' | 'asteroid-belt' | 'comet';
 
     // Visual properties
     color: string;
@@ -641,6 +641,30 @@ export const solarSystemData: SolarSystemObject[] = [
         orbitalPeriod: '284 years',
         moons: 2,
         description: 'The egg-shaped dwarf planet! It\'s one of the fastest rotating objects in our solar system.'
+    },
+    // COMETS
+    {
+        id: 'halley',
+        name: "Halley's Comet",
+        type: 'comet',
+        color: '#BFE3FF',
+        size: 0.35,
+        distance: 55, // Semi-major axis (stylized): perihelion ~9 (Mercury), aphelion ~100 (Neptune)
+        orbitSpeed: 0.35,
+        rotationSpeed: 0.8,
+        eccentricity: 0.83, // Real: 0.967 — softened for visibility
+        periapsis: 111,
+        inclination: 162, // Retrograde orbit, like the real Halley!
+        ascendingNode: 58,
+        scientificRadius: 5.5,
+        scientificDistance: 2667950000, // Semi-major axis ~17.8 AU
+        funFact: "Halley's Comet is visible from Earth every 75-79 years! Its last visit was in 1986, and it will return in 2061.",
+        temperature: '-70°C (nucleus) / 30,000°C (coma near Sun)',
+        realDistance: '0.59 - 35 AU (highly elliptical)',
+        averageDistanceToEarth: 'Varies enormously',
+        orbitalPeriod: '~76 years',
+        moons: 0,
+        description: 'The most famous comet of all! A dirty snowball of ice and dust whose spectacular tail always points away from the Sun.'
     },
     // CUSTOM OBJECTS - Satellites & Telescopes
     {

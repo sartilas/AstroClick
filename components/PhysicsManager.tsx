@@ -4,7 +4,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { Rocket, Explosion } from './types';
-import { Trail, Text, Line } from '@react-three/drei';
+import { Html, Line } from '@react-three/drei';
 import { solarSystemData } from '@/data/solarSystemData';
 import { kerbolSystemData } from '@/data/kerbolSystemData';
 import { SystemType } from './types';
@@ -27,6 +27,11 @@ function formatScore(score: number): string {
     if (score >= 1000) return (score / 1000).toFixed(1) + 'k';
     return Math.floor(score).toString();
 }
+
+// Reusable temp vectors to avoid per-frame allocations (GC churn)
+const _force = new THREE.Vector3();
+const _dir = new THREE.Vector3();
+const _step = new THREE.Vector3();
 
 interface PhysicsManagerProps {
     isActive: boolean;
@@ -60,18 +65,18 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
     // Audio ref for explosion
     const explosionAudio = useRef<HTMLAudioElement | null>(null);
 
-    // Initialize audio
+    // Initialize audio (self-hosted: no third-party CDN dependency, works offline)
     useEffect(() => {
-        explosionAudio.current = new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73467.mp3'); // Short explosion sound
+        explosionAudio.current = new Audio('/explosion.mp3'); // Short explosion sound (Pixabay license)
         explosionAudio.current.volume = 0.4;
     }, []);
 
-    const playExplosionSound = () => {
+    const playExplosionSound = useCallback(() => {
         if (explosionAudio.current) {
             explosionAudio.current.currentTime = 0;
             explosionAudio.current.play().catch(e => console.warn("Audio play failed", e));
         }
-    };
+    }, []);
 
     const totalPausedTimeRef = useRef(0);
     const pauseStartTimeRef = useRef<number | null>(null);
@@ -102,44 +107,20 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
     const G = 50;
     const ATTRACTOR_G = 15000;
     const ATTRACTOR_DISTANCE = 50;
-    const MAX_LIFETIME = 30000;
 
-    // Physics Simulation Helper
-    const calculatePhysicsStep = (pos: THREE.Vector3, vel: THREE.Vector3, delta: number, bodies: any[]) => {
-        const force = new THREE.Vector3(0, 0, 0);
-        let hasCollided = false;
-
-        for (const bodyData of bodies) {
-            const obj = scene.getObjectByName(`celestial-${bodyData.id}`);
-            if (obj) {
-                // Approximate position access for simulation (might lag one frame vs real update but fine for prediction)
-                // For prediction, using the CURRENT body position is acceptable as planets move slowly compared to rockets
-                const bodyPos = obj.position.clone();
-
-                const distSq = pos.distanceToSquared(bodyPos);
-                const dist = Math.sqrt(distSq);
-
-                // Collision Check
-                if (dist < (bodyData.radius + 0.5)) {
-                    hasCollided = true;
-                }
-
-                // Gravity
-                if (dist > bodyData.radius) {
-                    const dir = bodyPos.clone().sub(pos).normalize();
-                    const fVal = (G * bodyData.mass) / distSq;
-                    force.add(dir.multiplyScalar(fVal));
-                }
-            }
-        }
-
-        if (!hasCollided) {
-            vel.add(force.multiplyScalar(delta));
-            pos.add(vel.clone().multiplyScalar(delta));
-        }
-
-        return hasCollided;
-    };
+    // Celestial bodies metadata + preallocated world-position vectors.
+    // Positions are refreshed ONCE per frame instead of one scene lookup
+    // per body per rocket (was O(rockets x bodies) traversals per frame).
+    const bodiesMeta = useMemo(() => {
+        const data = systemType === 'kerbol' ? kerbolSystemData : solarSystemData;
+        return data.map(d => ({
+            id: d.id,
+            mass: d.id === 'sun' ? 2000 : (d.size * 200),
+            radius: d.id === 'sun' ? 5 : (d.size * 1.5),
+            position: new THREE.Vector3(),
+            found: false
+        }));
+    }, [systemType]);
 
 
     // Launch Logic extracted for reuse
@@ -241,7 +222,8 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
         };
     }, [isActive, launchRocket, gl.domElement]);
 
-    const explodeSatellite = (id: number, position: THREE.Vector3) => {
+    // Stable callback so memoized SatelliteMesh components don't re-render needlessly
+    const explodeSatellite = useCallback((id: number, position: THREE.Vector3) => {
         setExplosions(prev => [...prev, { id: Math.random(), position: position.clone(), startTime: getSimTime() }]);
         playExplosionSound();
         setRockets(prev => {
@@ -254,18 +236,34 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             }
             return prev.filter(r => r.id !== id);
         });
-    };
+    }, [getSimTime, playExplosionSound, setRockets, setHistory]);
 
     // Throttle trajectory updates
     const lastTrajectoryUpdate = useRef(0);
     const TRAJECTORY_THROTTLE_MS = 60; // Update trajectory every 60ms instead of every frame
 
-    // Cache body positions to avoid repeated scene lookups
-    const cachedBodyPositions = useRef<Map<string, THREE.Vector3>>(new Map());
+    // Throttle React state sync for score display (refs drive positions every frame)
+    const lastUiUpdate = useRef(0);
+    const UI_UPDATE_THROTTLE_MS = 200;
 
     useFrame((state, delta) => {
-        // --- 1. TRAJECTORY PREDICTION (Throttled for performance) ---
         const now = performance.now();
+        const needsPhysics = isActive || rockets.length > 0;
+
+        // --- 0. REFRESH BODY POSITIONS (once per frame, shared by trajectory + rockets) ---
+        if (needsPhysics) {
+            for (const body of bodiesMeta) {
+                const obj = scene.getObjectByName(`celestial-${body.id}`);
+                if (obj) {
+                    obj.getWorldPosition(body.position);
+                    body.found = true;
+                } else {
+                    body.found = false;
+                }
+            }
+        }
+
+        // --- 1. TRAJECTORY PREDICTION (Throttled for performance) ---
         const shouldUpdateTrajectory = now - lastTrajectoryUpdate.current > TRAJECTORY_THROTTLE_MS;
 
         if (isActive && shouldUpdateTrajectory) {
@@ -282,34 +280,18 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             const simPos = startPos.clone();
             const simVel = startVel.clone();
 
-            // Physics Bodies for Simulation - cache positions once per trajectory update
-            const currentSystemData = systemType === 'kerbol' ? kerbolSystemData : solarSystemData;
-            const bodies = currentSystemData.map(d => {
-                const obj = scene.getObjectByName(`celestial-${d.id}`);
-                if (obj) {
-                    cachedBodyPositions.current.set(d.id, obj.position.clone());
-                }
-                return {
-                    id: d.id,
-                    mass: d.id === 'sun' ? 2000 : (d.size * 200),
-                    radius: d.id === 'sun' ? 5 : (d.size * 1.5),
-                    position: cachedBodyPositions.current.get(d.id)
-                };
-            });
-
             // Limit to 50 iterations (originally 300, then 100) to limit visual distance as requested.
             // Also reduced from 100 because the user requested to limit the prediction distance.
             const simDelta = 0.016 * 3;
 
             let collisionDetected = false;
             for (let i = 0; i < 50; i++) {
-                // Inline physics calculation to use cached positions
-                const force = new THREE.Vector3(0, 0, 0);
+                const force = _force.set(0, 0, 0);
                 let hasCollided = false;
 
-                for (const bodyData of bodies) {
-                    const bodyPos = bodyData.position;
-                    if (bodyPos) {
+                for (const bodyData of bodiesMeta) {
+                    if (bodyData.found) {
+                        const bodyPos = bodyData.position;
                         const distSq = simPos.distanceToSquared(bodyPos);
                         const dist = Math.sqrt(distSq);
 
@@ -319,9 +301,9 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                         }
 
                         if (dist > bodyData.radius) {
-                            const dir = bodyPos.clone().sub(simPos).normalize();
+                            _dir.copy(bodyPos).sub(simPos).normalize();
                             const fVal = (G * bodyData.mass) / distSq;
-                            force.add(dir.multiplyScalar(fVal));
+                            force.add(_dir.multiplyScalar(fVal));
                         }
                     }
                 }
@@ -336,7 +318,7 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
 
                 if (!hasCollided) {
                     simVel.add(force.multiplyScalar(simDelta));
-                    simPos.add(simVel.clone().multiplyScalar(simDelta));
+                    simPos.add(_step.copy(simVel).multiplyScalar(simDelta));
                 }
 
                 points.push(simPos.clone());
@@ -378,14 +360,6 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
 
         if (rockets.length === 0) return;
 
-        const currentSystemData = systemType === 'kerbol' ? kerbolSystemData : solarSystemData;
-        const bodies = currentSystemData.map(d => ({
-            id: d.id,
-            // Reduced Sun mass (was 5000), kept others scaled
-            mass: d.id === 'sun' ? 2000 : (d.size * 200),
-            radius: d.id === 'sun' ? 5 : (d.size * 1.5)
-        }));
-
         rockets.forEach(rocket => {
             // --- SCORING & PHYSICS UPDATE ---
             const velocity = rocket.velocity;
@@ -410,15 +384,12 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             }
 
             let hasCollided = false;
-            const force = new THREE.Vector3(0, 0, 0);
+            const force = _force.set(0, 0, 0);
 
-            // Gravity & Collision
-            for (const bodyData of bodies) {
-                const obj = scene.getObjectByName(`celestial-${bodyData.id}`);
-                if (obj) {
-                    const bodyPos = new THREE.Vector3();
-                    obj.getWorldPosition(bodyPos);
-
+            // Gravity & Collision (uses positions cached once at frame start)
+            for (const bodyData of bodiesMeta) {
+                if (bodyData.found) {
+                    const bodyPos = bodyData.position;
                     const distSq = rocket.position.distanceToSquared(bodyPos);
                     const dist = Math.sqrt(distSq);
 
@@ -429,9 +400,9 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                     }
 
                     if (dist > bodyData.radius) {
-                        const dir = bodyPos.clone().sub(rocket.position).normalize();
+                        _dir.copy(bodyPos).sub(rocket.position).normalize();
                         const fVal = (G * bodyData.mass) / distSq;
-                        force.add(dir.multiplyScalar(fVal));
+                        force.add(_dir.multiplyScalar(fVal));
                     }
                 }
             }
@@ -443,9 +414,9 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                 if (distSq < 2) {
                     rocket.attractorEnabled = false;
                 } else if (distSq > 5) {
-                    const dir = attractorPos.clone().sub(rocket.position).normalize();
+                    _dir.copy(attractorPos).sub(rocket.position).normalize();
                     const fVal = ATTRACTOR_G / distSq;
-                    force.add(dir.multiplyScalar(fVal));
+                    force.add(_dir.multiplyScalar(fVal));
                 }
             }
 
@@ -462,21 +433,21 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                 }
 
                 // Super Gravity
-                const dir = bhPos.clone().sub(rocket.position).normalize();
+                _dir.copy(bhPos).sub(rocket.position).normalize();
                 // Stronger gravity than Sun
                 const fVal = (G * blackHole.mass) / distSqMax;
 
                 // Add drag to make them spiral in
                 velocity.multiplyScalar(0.99);
 
-                force.add(dir.multiplyScalar(fVal));
+                force.add(_dir.multiplyScalar(fVal));
                 // Also pull velocity vector to align with force for "suck in" effect
-                rocket.velocity.lerp(dir.multiplyScalar(100), 0.02 * scaledDelta);
+                rocket.velocity.lerp(_dir.multiplyScalar(100), 0.02 * scaledDelta);
             }
 
             // Integration
             rocket.velocity.add(force.multiplyScalar(scaledDelta));
-            rocket.position.add(rocket.velocity.clone().multiplyScalar(scaledDelta));
+            rocket.position.add(_step.copy(rocket.velocity).multiplyScalar(scaledDelta));
             activeRockets.push(rocket);
         });
 
@@ -497,7 +468,10 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
             });
         }
 
-        if (surviving.length !== rockets.length || state.clock.elapsedTime % 0.2 < 0.05) {
+        // Sync React state only when a rocket died or every 200ms (for score display);
+        // positions are driven imperatively via refs every frame.
+        if (killed.length > 0 || now - lastUiUpdate.current > UI_UPDATE_THROTTLE_MS) {
+            lastUiUpdate.current = now;
             setRockets(surviving);
         }
     });
@@ -508,8 +482,9 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
                 <SatelliteMesh
                     key={rocket.id}
                     rocket={rocket}
-                    onClick={() => explodeSatellite(rocket.id, rocket.position)}
+                    onExplode={explodeSatellite}
                     isPaused={timeScale === 0}
+                    scoreText={formatScore(rocket.score)}
                 />
             ))}
             {explosions.map(ex => (
@@ -533,29 +508,24 @@ export function PhysicsManager({ isActive, timeScale, rockets, setRockets, histo
     );
 }
 
-// Memoized satellite mesh for better performance
-const SatelliteMesh = React.memo(function SatelliteMesh({ rocket, onClick, isPaused }: { rocket: Rocket; onClick: () => void; isPaused: boolean }) {
+// Memoized satellite mesh for better performance.
+// Re-renders only when the displayed score string or pause state changes:
+// the rocket object itself is mutated in place and its position is applied via ref.
+const SatelliteMesh = React.memo(function SatelliteMesh({ rocket, onExplode, isPaused, scoreText }: { rocket: Rocket; onExplode: (id: number, position: THREE.Vector3) => void; isPaused: boolean; scoreText: string }) {
     const ref = useRef<THREE.Group>(null);
-    const textRef = useRef<THREE.Group>(null);
     const [hovered, setHover] = useState(false);
-    const frameCount = useRef(0);
 
     useEffect(() => {
         document.body.style.cursor = hovered ? 'pointer' : 'auto';
     }, [hovered]);
 
-    useFrame((state) => {
+    useFrame(() => {
         if (ref.current) {
             ref.current.position.copy(rocket.position);
             if (!isPaused) {
                 ref.current.rotation.y += 0.01;
                 ref.current.rotation.z += 0.005;
             }
-        }
-        // Throttle text lookAt to every 3rd frame for performance
-        frameCount.current++;
-        if (textRef.current && frameCount.current % 3 === 0) {
-            textRef.current.lookAt(state.camera.position);
         }
     });
 
@@ -565,44 +535,24 @@ const SatelliteMesh = React.memo(function SatelliteMesh({ rocket, onClick, isPau
             position={rocket.position}
             onPointerDown={(e) => {
                 e.stopPropagation();
-                onClick();
+                onExplode(rocket.id, rocket.position);
             }}
             onPointerOver={() => setHover(true)}
             onPointerOut={() => setHover(false)}
         >
-            {/* Info Text Overlay */}
-            <group position={[0, 2.5, 0]} ref={textRef}>
-                <Text
-                    fontSize={1.2}
-                    color="white"
-                    anchorX="center"
-                    anchorY="middle"
-                    outlineWidth={0.08}
-                    outlineColor="#000000"
-                >
-                    {rocket.name}
-                </Text>
-                <Text
-                    position={[0, -1.2, 0]}
-                    fontSize={1.0}
-                    color="#4fd0e7"
-                    anchorX="center"
-                    anchorY="middle"
-                    outlineWidth={0.08}
-                    outlineColor="#000000"
-                >
-                    {formatScore(rocket.score)} km
-                </Text>
-            </group>
+            {/* Info Label Overlay - DOM-based (troika <Text> shaders break with three 0.180),
+                consistent with the planet hover labels */}
+            <Html position={[0, 2.5, 0]} center style={{ pointerEvents: 'none' }} zIndexRange={[40, 0]}>
+                <div className="flex flex-col items-center whitespace-nowrap" translate="no">
+                    <span className="text-white text-xs font-bold drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">{rocket.name}</span>
+                    <span className="text-[#4fd0e7] text-[11px] font-mono font-bold drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">{scoreText} km</span>
+                </div>
+            </Html>
 
-            {/* Trail - reduced length for better performance */}
-            <Trail
-                width={1.0}
-                length={12}
-                color={new THREE.Color("#4fd0e7")}
-                attenuation={(t) => t * t}
-            >
-                <group scale={0.5}>
+            {/* NOTE: drei <Trail> (meshline) renders broken full-screen geometry with
+                three 0.180 — removed during the React 19 / three upgrade. The engine
+                point light below keeps a glow effect on each satellite. */}
+            <group scale={0.5}>
                     {/* Switch based on rocket.designType */}
                     {rocket.designType === 0 && (
                         /* Design 0: Standard Probe (The original one) */
@@ -845,8 +795,7 @@ const SatelliteMesh = React.memo(function SatelliteMesh({ rocket, onClick, isPau
 
                     {/* Engine Glow for all */}
                     <pointLight position={[0, -1.5, 0]} color="#4fd0e7" distance={2} intensity={0.5} />
-                </group>
-            </Trail>
+            </group>
         </group>
     );
 });

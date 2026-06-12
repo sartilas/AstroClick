@@ -55,7 +55,7 @@ export function AsteroidBelt({ timeScale = 1, orbitMode = 'simplified' }: Astero
             data.push({ position: [x, y, z], rotation, scale, color: colorHex });
         }
         return data;
-    }, [orbitMode]);
+    }, [orbitMode, count]);
 
     useLayoutEffect(() => {
         if (meshRef.current) {

@@ -1,5 +1,5 @@
 import { useRef, useMemo } from 'react';
-import { useFrame, extend, ReactThreeFiber } from '@react-three/fiber';
+import { useFrame, extend, type ThreeElement } from '@react-three/fiber';
 import * as THREE from 'three';
 import { shaderMaterial } from '@react-three/drei';
 import { solarSystemData } from '../../data/solarSystemData';
@@ -194,11 +194,10 @@ const GravityTechMaterial = shaderMaterial(
 
 extend({ GravityTechMaterial });
 
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            gravityTechMaterial: ReactThreeFiber.Object3DNode<THREE.ShaderMaterial, typeof GravityTechMaterial>;
-        }
+// R3F v9: custom elements are declared on the ThreeElements interface
+declare module '@react-three/fiber' {
+    interface ThreeElements {
+        gravityTechMaterial: ThreeElement<typeof GravityTechMaterial>;
     }
 }
 

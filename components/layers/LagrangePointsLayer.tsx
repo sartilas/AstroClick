@@ -1,5 +1,5 @@
-import { Text, Html, Billboard, shaderMaterial } from '@react-three/drei';
-import { useFrame, extend, ReactThreeFiber } from '@react-three/fiber';
+import { Html, Billboard, shaderMaterial } from '@react-three/drei';
+import { useFrame, extend, type ThreeElement } from '@react-three/fiber';
 import { useRef, useState, useMemo } from 'react';
 import * as THREE from 'three';
 import { dictionary, Language } from '../../data/dictionary';
@@ -58,11 +58,10 @@ const LagrangeGlowMaterial = shaderMaterial(
 
 extend({ LagrangeGlowMaterial });
 
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            lagrangeGlowMaterial: ReactThreeFiber.Object3DNode<THREE.ShaderMaterial, typeof LagrangeGlowMaterial>;
-        }
+// R3F v9: custom elements are declared on the ThreeElements interface
+declare module '@react-three/fiber' {
+    interface ThreeElements {
+        lagrangeGlowMaterial: ThreeElement<typeof LagrangeGlowMaterial>;
     }
 }
 
@@ -123,20 +122,12 @@ function LagrangePoint({ id, position, selected, onSelect, lang }: LagrangePoint
                 </mesh>
             </Billboard>
 
-            {/* Label */}
-            <Billboard>
-                <Text
-                    position={[0, 1.8, 0]}
-                    fontSize={1.2} // Increased font size
-                    color="#AECFEB" // Light blue text
-                    anchorX="center"
-                    anchorY="bottom"
-                    outlineWidth={0.05}
-                    outlineColor="#000000"
-                >
+            {/* Label - DOM-based (troika <Text> shaders break with three 0.180) */}
+            <Html position={[0, 1.8, 0]} center style={{ pointerEvents: 'none' }} zIndexRange={[40, 0]}>
+                <span className="text-[#AECFEB] text-sm font-bold font-mono drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]" translate="no">
                     {id}
-                </Text>
-            </Billboard>
+                </span>
+            </Html>
 
             {/* Info Card - Only visible when selected */}
             {selected && data && (
